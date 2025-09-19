@@ -1,11 +1,11 @@
-﻿decision_id,decision_name,decision_category,decision_status,steps,completed_steps,contact_group
-1,Customer Analytics Platform,Conditional Decisoin,Completed,Identify Requirements|Shape Solution|Describe Options|Consult Stakeholders|Finalize Decision,"1,2,3",Keith Dewar | Nick Latocha | Emanuele Tamiazzo
-2,Marketing Attribution Tool,For Information,Active,Research Tools|Define Budget|Vendor Evaluation|Pilot Testing,"1,2",Budget approved for Q1
-3,Data Warehouse Migration,Unconditional Decision,Completed,Current State Analysis|Future Architecture|Migration Plan|Testing Strategy|Execute Migration|Post-Migration Validation,1,6 steps needed for this complex project
-4,Sales Dashboard Tool,Sales,Active,Requirements|Design|Implementation,"1,2,3",Simplified 3-step process
-5,Product Analytics Suite,Product,Active,Identify Needs|Market Research|RFP Creation|Vendor Proposals|Evaluation|Selection|Contract Negotiation,"1,2",7-step procurement process
-6,Financial Reporting System,Finance,Completed,Planning|Analysis|Development|Testing|Deployment,,Not started yet - backlog
-7,Soda is the defaul DQ tool,Human Resources,Active,Step A|Go to SRB|Approve budget|Implementation Planning,"1,2,3",Legal review needed before step 4
-8,Supply Chain Analytics,Operations,Completed,Define KPIs|Tool Selection|Integration Planning|Testing|Rollout,"1,2,3,4",Almost complete
-9,Customer Segmentation Tool,Marketing,Completed,Business Case|Technical Requirements|Vendor Evaluation,,New initiative
-10,Real-time Analytics Dashboard,Executive,Active,Stakeholder Interviews|Requirements Documentation|Architecture Design|Prototype Development|User Testing|Final Deployment,"1,2",Executive visibility project
+﻿decision_id,decision_name,decision_category,decision_description,decision_material,decision_status,steps,completed_steps,contact_group
+1,Customer Analytics Platform,Conditional Decisoin,blah blah,https://www.bbc.co.uk/news,Completed,Identify Requirements|Shape Solution|Describe Options|Consult Stakeholders|Finalize Decision,"1,2,3",Keith Dewar | Nick Latocha | Emanuele Tamiazzo
+2,Marketing Attribution Tool,For Information,testing testing,https://www.bbc.co.uk/news,Active,Research Tools|Define Budget|Vendor Evaluation|Pilot Testing,"1,2",Budget approved for Q1
+3,Data Warehouse Migration,Unconditional Decision,,https://www.bbc.co.uk/news,Completed,Current State Analysis|Future Architecture|Migration Plan|Testing Strategy|Execute Migration|Post-Migration Validation,1,6 steps needed for this complex project
+4,Sales Dashboard Tool,Sales,,https://www.bbc.co.uk/news,Active,Requirements|Design|Implementation,"1,2,3",Simplified 3-step process
+5,Product Analytics Suite,Product,,https://www.bbc.co.uk/news,Active,Identify Needs|Market Research|RFP Creation|Vendor Proposals|Evaluation|Selection|Contract Negotiation,"1,2",7-step procurement process
+6,Financial Reporting System,Finance,,https://www.bbc.co.uk/news,Completed,Planning|Analysis|Development|Testing|Deployment,,Not started yet - backlog
+7,Soda is the defaul DQ tool,Human Resources,,https://www.bbc.co.uk/news,Active,Step A|Go to SRB|Approve budget|Implementation Planning,"1,2,3",Legal review needed before step 4
+8,Supply Chain Analytics,Operations,,https://www.bbc.co.uk/news,Completed,Define KPIs|Tool Selection|Integration Planning|Testing|Rollout,"1,2,3,4",Almost complete
+9,Customer Segmentation Tool,Marketing,,https://www.bbc.co.uk/news,Completed,Business Case|Technical Requirements|Vendor Evaluation,,New initiative
+10,Real-time Analytics Dashboard,Executive,hello world,https://www.bbc.co.uk/news,Active,Stakeholder Interviews|Requirements Documentation|Architecture Design|Prototype Development|User Testing|Final Deployment,"1,2",Executive visibility project
