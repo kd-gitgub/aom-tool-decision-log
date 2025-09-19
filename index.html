@@ -540,7 +540,7 @@
                     <div>Decision Name</div>
                     <div>Category</div>
                     <div>Status</div>
-                    <div>Contact Group</div>
+                    <div>Decision Group</div>
                     <div>Progress</div>
                     <div>Actions</div>
                 </div>
@@ -821,7 +821,7 @@
                                     <button style="padding: 12px 24px; background: #444791; color: white; border: none; border-radius: 8px; font-size: 0.95em; font-weight: 600; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px;" 
                                             onmouseover="this.style.transform='translateY(-2px)';" 
                                             onmouseout="this.style.transform='translateY(0)';">
-                                        Teams chat for Contact Group
+                                        Decision Group Teams chat
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                             <path d="M5 12L19 12M19 12L12 5M19 12L12 19"/>
                                         </svg>
@@ -854,7 +854,7 @@
                             
                             ${decision.contact_group ? `
                             <div style="min-width: 200px; padding: 20px; background: #f8fafc; border-radius: 12px;">
-                                <div style="font-size: 0.85em; color: #64748b; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Contact Group</div>
+                                <div style="font-size: 0.85em; color: #64748b; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Decision Group</div>
                                 <div style="display: flex; flex-direction: column; gap: 8px;">
                                     ${decision.contact_group.split('|').map(name => name.trim()).filter(name => name).map((name, index) => `
                                         <div style="font-size: 1em; color: #1e293b; font-weight: 500; padding: 6px 0; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center;">
