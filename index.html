@@ -397,7 +397,7 @@
 
         .list-header {
             display: grid;
-            grid-template-columns: 2fr 1.5fr 1.5fr 1.5fr 120px;
+            grid-template-columns: 2fr 1.2fr 1fr 1.2fr 1fr 100px;
             padding: 15px 20px;
             background: #f8fafc;
             font-weight: 600;
@@ -409,7 +409,7 @@
 
         .list-row {
             display: grid;
-            grid-template-columns: 2fr 1.5fr 1.5fr 1.5fr 120px;
+            grid-template-columns: 2fr 1.2fr 1fr 1.2fr 1fr 100px;
             padding: 20px;
             border-bottom: 1px solid #f1f5f9;
             align-items: center;
@@ -507,6 +507,7 @@
                 <div class="list-header">
                     <div>Decision Name</div>
                     <div>Category</div>
+                    <div>Status</div>
                     <div>Contact Group</div>
                     <div>Progress</div>
                     <div>Actions</div>
@@ -552,9 +553,9 @@
                 }
                 values.push(current.trim()); // Add last value
                 
-                // Create decision object with new field names
-                const stepNames = values[3] ? values[3].split('|').map(s => s.trim()) : [];
-                const completedIndices = values[4] ? values[4].split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n)) : [];
+                // Create decision object with new field names and decision_status
+                const stepNames = values[4] ? values[4].split('|').map(s => s.trim()) : [];
+                const completedIndices = values[5] ? values[5].split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n)) : [];
                 
                 const steps = stepNames.map((name, idx) => ({
                     name: name,
@@ -565,9 +566,10 @@
                     decision_id: parseInt(values[0]),
                     decision_name: values[1] || '',
                     decision_category: values[2] || '',
+                    decision_status: values[3] || '',
                     steps: steps,
                     completed_steps: completedIndices,
-                    contact_group: values[5] || ''
+                    contact_group: values[6] || ''
                 });
             }
             
@@ -579,7 +581,7 @@
             try {
                 // Add timestamp to prevent caching issues when CSV is updated
                 const timestamp = new Date().getTime();
-                const response = await fetch(`decision-log.csv?t=${timestamp}`);
+                const response = await fetch(`decisionlog.csv?t=${timestamp}`);
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
@@ -593,12 +595,13 @@
                         decision_id: 1,
                         decision_name: "Sample Decision",
                         decision_category: "Sample Category",
+                        decision_status: "Backlog",
                         steps: [
                             { name: "Step 1", completed: false },
                             { name: "Step 2", completed: false },
                             { name: "Step 3", completed: false }
                         ],
-                        contact_group: "Sample Group - Add decision-log.csv to load real data"
+                        contact_group: "Sample Group - Add decisionlog.csv to load real data"
                     }];
                 }
                 
@@ -607,7 +610,7 @@
                 
             } catch (error) {
                 console.error('Error loading CSV:', error);
-                console.log('Using sample data instead. Make sure decision-log.csv is in the same folder.');
+                console.log('Using sample data instead. Make sure decisionlog.csv is in the same folder.');
                 
                 // Fallback sample data if CSV cannot be loaded
                 decisions = [
@@ -615,6 +618,7 @@
                         decision_id: 1,
                         decision_name: "Customer Analytics Platform",
                         decision_category: "Customer Intelligence",
+                        decision_status: "Active Discussion",
                         steps: [
                             { name: "Identify Requirements", completed: true },
                             { name: "Shape Solution", completed: true },
@@ -628,6 +632,7 @@
                         decision_id: 2,
                         decision_name: "Marketing Attribution Tool",
                         decision_category: "Marketing",
+                        decision_status: "Active Discussion",
                         steps: [
                             { name: "Research Tools", completed: true },
                             { name: "Define Budget", completed: true },
@@ -681,12 +686,27 @@
             const isCompleted = progress === 100;
             const stepCount = decision.steps ? decision.steps.length : 0;
             
+            // Determine status badge color
+            let statusColor = '#64748b'; // default gray
+            if (decision.decision_status === 'Active Discussion') {
+                statusColor = '#0079FF';
+            } else if (decision.decision_status === 'Completed') {
+                statusColor = '#10b981';
+            } else if (decision.decision_status === 'Backlog') {
+                statusColor = '#94a3b8';
+            }
+            
             return `
                 <div class="decision-card" data-id="${decision.decision_id}" onclick="toggleCard(${decision.decision_id})">
                     <div class="card-header">
                         <div>
                             <div class="card-title">${decision.decision_name}</div>
-                            <span class="card-category">${decision.decision_category}</span>
+                            <div style="display: flex; gap: 10px; align-items: center; margin-top: 5px;">
+                                <span class="card-category">${decision.decision_category}</span>
+                                <span style="font-size: 0.75em; padding: 3px 8px; background: ${statusColor}20; color: ${statusColor}; border-radius: 4px; font-weight: 600;">
+                                    ${decision.decision_status}
+                                </span>
+                            </div>
                         </div>
                     </div>
                     
@@ -746,10 +766,25 @@
         function createListRow(decision) {
             const progress = calculateProgress(decision.steps);
             
+            // Determine status color
+            let statusColor = '#64748b';
+            if (decision.decision_status === 'Active Discussion') {
+                statusColor = '#0079FF';
+            } else if (decision.decision_status === 'Completed') {
+                statusColor = '#10b981';
+            } else if (decision.decision_status === 'Backlog') {
+                statusColor = '#94a3b8';
+            }
+            
             return `
                 <div class="list-row" onclick="toggleCard(${decision.decision_id})">
                     <div>${decision.decision_name}</div>
                     <div>${decision.decision_category}</div>
+                    <div>
+                        <span style="font-size: 0.8em; padding: 3px 8px; background: ${statusColor}20; color: ${statusColor}; border-radius: 4px; font-weight: 600;">
+                            ${decision.decision_status}
+                        </span>
+                    </div>
                     <div>${decision.contact_group || '-'}</div>
                     <div>
                         <div style="display: flex; align-items: center; gap: 10px;">
@@ -776,11 +811,11 @@
             let filteredDecisions = decisions;
             
             if (currentFilter === 'active') {
-                filteredDecisions = decisions.filter(d => calculateProgress(d.steps) > 0 && calculateProgress(d.steps) < 100);
+                filteredDecisions = decisions.filter(d => d.decision_status === 'Active Discussion');
             } else if (currentFilter === 'completed') {
-                filteredDecisions = decisions.filter(d => calculateProgress(d.steps) === 100);
+                filteredDecisions = decisions.filter(d => d.decision_status === 'Completed');
             } else if (currentFilter === 'backlog') {
-                filteredDecisions = decisions.filter(d => calculateProgress(d.steps) === 0);
+                filteredDecisions = decisions.filter(d => d.decision_status === 'Backlog');
             }
             
             gridContainer.innerHTML = filteredDecisions.map(d => createDecisionCard(d)).join('');
@@ -791,12 +826,9 @@
 
         function updateSummaryStats() {
             const totalDecisions = decisions.length;
-            const completedDecisions = decisions.filter(d => calculateProgress(d.steps) === 100).length;
-            const activeDecisions = decisions.filter(d => {
-                const progress = calculateProgress(d.steps);
-                return progress > 0 && progress < 100;
-            }).length;
-            const backlogDecisions = decisions.filter(d => calculateProgress(d.steps) === 0).length;
+            const completedDecisions = decisions.filter(d => d.decision_status === 'Completed').length;
+            const activeDecisions = decisions.filter(d => d.decision_status === 'Active Discussion').length;
+            const backlogDecisions = decisions.filter(d => d.decision_status === 'Backlog').length;
             
             document.getElementById('totalDecisions').textContent = totalDecisions;
             document.getElementById('completedDecisions').textContent = completedDecisions;
@@ -868,7 +900,7 @@
             // Save to localStorage as backup
             // Note: To persist changes, you would need to save back to CSV on the server
             localStorage.setItem('analyticsDecisions', JSON.stringify(decisions));
-            console.log('Changes saved to localStorage. To persist, update your decision-log.csv file.');
+            console.log('Changes saved to localStorage. To persist, update your decisionlog.csv file.');
         }
 
         function loadData() {
