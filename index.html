@@ -145,9 +145,6 @@
         }
 
         .decision-id-badge {
-            position: absolute;
-            top: 12px;
-            right: 12px;
             background: #f1f5f9;
             color: #64748b;
             padding: 4px 8px;
@@ -155,6 +152,7 @@
             font-size: 0.75em;
             font-weight: 600;
             border: 1px solid #e2e8f0;
+            margin-right: 10px;
         }
 
         .decision-card:hover {
@@ -738,7 +736,6 @@
             
             return `
                 <div class="decision-card" data-id="${decision.decision_id}" onclick="toggleCard(${decision.decision_id})">
-                    <span class="decision-id-badge">ID: ${decision.decision_id}</span>
                     <div class="card-header">
                         <div>
                             <div class="card-title">${decision.decision_name}</div>
@@ -758,8 +755,9 @@
                         </div>
                     </div>
                     
-                    <div style="font-size: 0.85em; color: #64748b; margin-top: 10px;">
-                        ${stepCount} steps • ${decision.steps.filter(s => s.completed).length} completed
+                    <div style="font-size: 0.85em; color: #64748b; margin-top: 10px; display: flex; align-items: center;">
+                        <span class="decision-id-badge">ID: ${decision.decision_id}</span>
+                        <span>${stepCount} steps • ${decision.steps.filter(s => s.completed).length} completed</span>
                     </div>
                     
                     <div class="expanded-content">
@@ -785,8 +783,14 @@
                             
                             ${decision.contact_group ? `
                             <div style="min-width: 200px; padding: 20px; background: #f8fafc; border-radius: 12px; border-left: 4px solid #0079FF;">
-                                <div style="font-size: 0.85em; color: #64748b; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Contact Group</div>
-                                <div style="font-size: 1.1em; color: #1e293b; font-weight: 600;">${decision.contact_group}</div>
+                                <div style="font-size: 0.85em; color: #64748b; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Contact Group</div>
+                                <div style="display: flex; flex-direction: column; gap: 8px;">
+                                    ${decision.contact_group.split('|').map(name => name.trim()).filter(name => name).map(name => `
+                                        <div style="font-size: 1em; color: #1e293b; font-weight: 500; padding: 6px 0; border-bottom: 1px solid #e2e8f0;">
+                                            ${name}
+                                        </div>
+                                    `).join('')}
+                                </div>
                             </div>
                             ` : ''}
                         </div>
