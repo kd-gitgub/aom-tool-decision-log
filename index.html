@@ -314,11 +314,7 @@
             border-radius: 8px;
             background: #f8fafc;
             transition: all 0.2s;
-            cursor: pointer;
-        }
-
-        .detailed-step:hover {
-            background: #f1f5f9;
+            cursor: default;
         }
 
         .detailed-step.completed {
@@ -838,14 +834,13 @@
                                     const completed = step.completed;
                                     const active = !completed && decision.steps.slice(0, index).every(s => s.completed);
                                     return `
-                                        <div class="detailed-step ${completed ? 'completed' : ''} ${active ? 'active' : ''}"
-                                             onclick="toggleStep(event, ${decision.decision_id}, ${index})">
+                                        <div class="detailed-step ${completed ? 'completed' : ''} ${active ? 'active' : ''}">
                                             <div class="detailed-step-indicator">
-                                                ${completed ? '✔' : index + 1}
+                                                ${completed ? '✓' : index + 1}
                                             </div>
                                             <div class="detailed-step-content">
                                                 <div class="detailed-step-title">Step ${index + 1}: ${step.name}</div>
-                                                <div class="detailed-step-desc">Click to toggle completion status</div>
+                                                <div class="detailed-step-desc">Status from CSV file</div>
                                             </div>
                                         </div>
                                     `;
@@ -1026,42 +1021,8 @@
                         top: scrollPosition,
                         behavior: 'smooth'
                     });
-                    
-                    // Alternative method that works better in some browsers
-                    // card.scrollIntoView({ 
-                    //     behavior: 'smooth', 
-                    //     block: 'start',
-                    //     inline: 'nearest' 
-                    // });
                 }, 100); // Small delay to allow expansion to begin
             }
-        }
-
-        function toggleStep(event, decisionId, stepIndex) {
-            event.stopPropagation();
-            const decision = decisions.find(d => d.decision_id === decisionId);
-            decision.steps[stepIndex].completed = !decision.steps[stepIndex].completed;
-            renderDecisions();
-            saveData();
-        }
-
-        function completeNextStep(event, decisionId) {
-            event.stopPropagation();
-            const decision = decisions.find(d => d.decision_id === decisionId);
-            const nextIncomplete = decision.steps.findIndex(s => !s.completed);
-            if (nextIncomplete !== -1) {
-                decision.steps[nextIncomplete].completed = true;
-                renderDecisions();
-                saveData();
-            }
-        }
-
-        function resetDecision(event, decisionId) {
-            event.stopPropagation();
-            const decision = decisions.find(d => d.decision_id === decisionId);
-            decision.steps.forEach(s => s.completed = false);
-            renderDecisions();
-            saveData();
         }
 
         function filterDecisions(filter) {
@@ -1084,28 +1045,9 @@
             }
         }
 
-        function saveData() {
-            // Save to localStorage as backup
-            // Note: To persist changes, you would need to save back to CSV on the server
-            localStorage.setItem('analyticsDecisions', JSON.stringify(decisions));
-            console.log('Changes saved to localStorage. To persist, update your decision-log.csv file.');
-        }
-
         function loadData() {
             // Load from CSV using PapaParse
-            loadDecisionsFromCSV().then(() => {
-                // After loading from CSV, check if there are any session changes in localStorage
-                const saved = localStorage.getItem('analyticsDecisions');
-                if (saved) {
-                    try {
-                        const savedData = JSON.parse(saved);
-                        // You could merge session changes here if needed
-                        console.log('Session changes available in localStorage');
-                    } catch (e) {
-                        console.error('Error parsing saved data:', e);
-                    }
-                }
-            });
+            loadDecisionsFromCSV();
         }
 
         // Initialize dashboard
