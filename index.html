@@ -12,7 +12,7 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            font-family: 'Segoe UI', 'Segoe UI Web (West European)', 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
@@ -54,18 +54,18 @@
             background: #f8fafc;
             padding: 20px;
             border-radius: 12px;
-            border-left: 4px solid #3b82f6;
+            border-left: 4px solid #001CAD;
         }
 
         .summary-value {
             font-size: 2em;
             font-weight: bold;
-            color: #3b82f6;
+            color: #001CAD;
             margin-bottom: 5px;
         }
 
         .summary-label {
-            color: #64748b;
+            color: #001CAD;
             font-size: 0.9em;
         }
 
@@ -79,23 +79,24 @@
 
         .filter-btn {
             padding: 8px 16px;
-            border: 2px solid #e2e8f0;
+            border: 1px solid #0079FF;
             background: white;
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.2s;
-            color: #64748b;
+            color: #0079FF;
             font-size: 0.9em;
         }
 
         .filter-btn.active {
-            background: #3b82f6;
+            background: #0079FF;
             color: white;
-            border-color: #3b82f6;
+            border-color: #0079FF;
         }
 
         .filter-btn:hover {
-            border-color: #3b82f6;
+            border-color: #0079FF;
+            opacity: 0.9;
         }
 
         .view-toggle {
@@ -113,13 +114,13 @@
             background: transparent;
             border-radius: 6px;
             cursor: pointer;
-            color: #64748b;
+            color: #0079FF;
             transition: all 0.2s;
         }
 
         .view-btn.active {
             background: white;
-            color: #3b82f6;
+            color: #0079FF;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
@@ -177,29 +178,6 @@
             border-radius: 4px;
         }
 
-        .priority-badge {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.75em;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .priority-high {
-            background: #fee2e2;
-            color: #dc2626;
-        }
-
-        .priority-medium {
-            background: #fef3c7;
-            color: #d97706;
-        }
-
-        .priority-low {
-            background: #dbeafe;
-            color: #2563eb;
-        }
-
         /* Progress Ring */
         .progress-ring-container {
             display: flex;
@@ -255,7 +233,7 @@
         }
 
         .mini-step.active {
-            background: #3b82f6;
+            background: #0079FF;
             animation: pulse 2s infinite;
         }
 
@@ -336,9 +314,9 @@
         }
 
         .detailed-step.active .detailed-step-indicator {
-            border-color: #3b82f6;
-            color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            border-color: #0079FF;
+            color: #0079FF;
+            box-shadow: 0 0 0 3px rgba(0, 121, 255, 0.1);
         }
 
         .detailed-step-content {
@@ -354,6 +332,15 @@
         .detailed-step-desc {
             font-size: 0.85em;
             color: #64748b;
+        }
+
+        .step.active .step-title,
+        .step.completed .step-title {
+            color: #333;
+        }
+
+        .decision-card .detailed-step.active .detailed-step-title {
+            color: #0079FF;
         }
 
         /* Card Actions */
@@ -410,7 +397,7 @@
 
         .list-header {
             display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1fr 120px;
+            grid-template-columns: 2fr 1.5fr 1.5fr 1.5fr 120px;
             padding: 15px 20px;
             background: #f8fafc;
             font-weight: 600;
@@ -422,7 +409,7 @@
 
         .list-row {
             display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1fr 120px;
+            grid-template-columns: 2fr 1.5fr 1.5fr 1.5fr 120px;
             padding: 20px;
             border-bottom: 1px solid #f1f5f9;
             align-items: center;
@@ -432,6 +419,119 @@
 
         .list-row:hover {
             background: #fafafa;
+        }
+
+        .progress-bar-container {
+            margin: 40px 0 30px;
+            background: #e2e8f0;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981 0%, #0079FF 100%);
+            transition: width 0.5s ease;
+            border-radius: 4px;
+        }
+
+        .controls {
+            margin-top: 30px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-reset {
+            background: #f1f5f9;
+            color: #475569;
+            border: 2px solid #e2e8f0;
+        }
+
+        .btn-reset:hover {
+            background: #e2e8f0;
+        }
+
+        .btn-complete {
+            background: #0079FF;
+            color: white;
+        }
+
+        .btn-complete:hover {
+            background: #0066dd;
+            box-shadow: 0 4px 12px rgba(0, 121, 255, 0.3);
+        }
+
+        /* Vertical connecting line */
+        .step:not(:last-child) .step-indicator-wrapper::after {
+            content: '';
+            position: absolute;
+            top: 50px;
+            left: 24px;
+            width: 2px;
+            height: 40px;
+            background: #e2e8f0;
+            z-index: 1;
+        }
+
+        .step.completed:not(:last-child) .step-indicator-wrapper::after {
+            background: #10b981;
+        }
+
+        .step-content {
+            flex: 1;
+            padding-top: 10px;
+        }
+
+        .step-title {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        .step-description {
+            color: #64748b;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        .step.completed .step-title {
+            color: #10b981;
+        }
+
+        /* Default state - not started */
+        .step-indicator {
+            background: white;
+            border: 2px solid #e2e8f0;
+            color: #94a3b8;
+        }
+
+        /* Active/Current state */
+        .step.active .step-indicator {
+            background: white;
+            border: 3px solid #0079FF;
+            color: #0079FF;
+            box-shadow: 0 0 0 4px rgba(0, 121, 255, 0.1);
+        }
+
+        /* Completed state */
+        .step.completed .step-indicator {
+            background: #10b981;
+            border: none;
+            color: white;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
         }
 
         @keyframes pulse {
@@ -485,24 +585,24 @@
                     <div class="summary-label">Total Decisions</div>
                 </div>
                 <div class="summary-stat">
-                    <div class="summary-value" id="avgProgress">0%</div>
-                    <div class="summary-label">Average Progress</div>
+                    <div class="summary-value" id="activeDecisions">0</div>
+                    <div class="summary-label">Active Discussion</div>
                 </div>
                 <div class="summary-stat">
                     <div class="summary-value" id="completedDecisions">0</div>
                     <div class="summary-label">Completed</div>
                 </div>
                 <div class="summary-stat">
-                    <div class="summary-value" id="activeDecisions">0</div>
-                    <div class="summary-label">In Progress</div>
+                    <div class="summary-value" id="backlogDecisions">0</div>
+                    <div class="summary-label">Backlog</div>
                 </div>
             </div>
             
             <div class="filter-controls">
                 <button class="filter-btn active" onclick="filterDecisions('all')">All Decisions</button>
-                <button class="filter-btn" onclick="filterDecisions('active')">Active</button>
+                <button class="filter-btn" onclick="filterDecisions('active')">Active Discussion</button>
                 <button class="filter-btn" onclick="filterDecisions('completed')">Completed</button>
-                <button class="filter-btn" onclick="filterDecisions('high')">High Priority</button>
+                <button class="filter-btn" onclick="filterDecisions('backlog')">Backlog</button>
                 
                 <div class="view-toggle">
                     <button class="view-btn active" onclick="setView('grid')">Grid</button>
@@ -520,7 +620,7 @@
                 <div class="list-header">
                     <div>Decision Name</div>
                     <div>Category</div>
-                    <div>Priority</div>
+                    <div>Contact Group</div>
                     <div>Progress</div>
                     <div>Actions</div>
                 </div>
@@ -530,118 +630,132 @@
     </div>
 
     <script>
-        // Sample decision data
-        const decisions = [
-            {
-                id: 1,
-                name: "Customer Analytics Platform",
-                category: "Customer Intelligence",
-                priority: "high",
-                steps: [
-                    { name: "Identify Requirements", completed: true },
-                    { name: "Shape Solution", completed: true },
-                    { name: "Describe Options", completed: true },
-                    { name: "Consult Stakeholders", completed: false },
-                    { name: "Finalize Decision", completed: false }
-                ]
-            },
-            {
-                id: 2,
-                name: "Marketing Attribution Tool",
-                category: "Marketing",
-                priority: "high",
-                steps: [
-                    { name: "Identify Requirements", completed: true },
-                    { name: "Shape Solution", completed: true },
-                    { name: "Describe Options", completed: false },
-                    { name: "Consult Stakeholders", completed: false },
-                    { name: "Finalize Decision", completed: false }
-                ]
-            },
-            {
-                id: 3,
-                name: "Data Warehouse Migration",
-                category: "Infrastructure",
-                priority: "medium",
-                steps: [
-                    { name: "Identify Requirements", completed: true },
-                    { name: "Shape Solution", completed: false },
-                    { name: "Describe Options", completed: false },
-                    { name: "Consult Stakeholders", completed: false },
-                    { name: "Finalize Decision", completed: false }
-                ]
-            },
-            {
-                id: 4,
-                name: "Sales Dashboard Tool",
-                category: "Sales",
-                priority: "medium",
-                steps: [
-                    { name: "Identify Requirements", completed: true },
-                    { name: "Shape Solution", completed: true },
-                    { name: "Describe Options", completed: true },
-                    { name: "Consult Stakeholders", completed: true },
-                    { name: "Finalize Decision", completed: true }
-                ]
-            },
-            {
-                id: 5,
-                name: "Product Analytics Suite",
-                category: "Product",
-                priority: "high",
-                steps: [
-                    { name: "Identify Requirements", completed: true },
-                    { name: "Shape Solution", completed: true },
-                    { name: "Describe Options", completed: false },
-                    { name: "Consult Stakeholders", completed: false },
-                    { name: "Finalize Decision", completed: false }
-                ]
-            },
-            {
-                id: 6,
-                name: "Financial Reporting System",
-                category: "Finance",
-                priority: "low",
-                steps: [
-                    { name: "Identify Requirements", completed: false },
-                    { name: "Shape Solution", completed: false },
-                    { name: "Describe Options", completed: false },
-                    { name: "Consult Stakeholders", completed: false },
-                    { name: "Finalize Decision", completed: false }
-                ]
-            },
-            {
-                id: 7,
-                name: "HR Analytics Platform",
-                category: "Human Resources",
-                priority: "low",
-                steps: [
-                    { name: "Identify Requirements", completed: true },
-                    { name: "Shape Solution", completed: true },
-                    { name: "Describe Options", completed: true },
-                    { name: "Consult Stakeholders", completed: false },
-                    { name: "Finalize Decision", completed: false }
-                ]
-            },
-            {
-                id: 8,
-                name: "Supply Chain Analytics",
-                category: "Operations",
-                priority: "medium",
-                steps: [
-                    { name: "Identify Requirements", completed: true },
-                    { name: "Shape Solution", completed: true },
-                    { name: "Describe Options", completed: true },
-                    { name: "Consult Stakeholders", completed: true },
-                    { name: "Finalize Decision", completed: false }
-                ]
-            }
-        ];
-
+        // Decisions array will be populated from CSV
+        let decisions = [];
         let currentView = 'grid';
         let currentFilter = 'all';
 
+        // Function to parse CSV text
+        function parseCSV(csvText) {
+            const lines = csvText.split('\n').filter(line => line.trim());
+            if (lines.length === 0) return [];
+            
+            // Parse headers
+            const headers = lines[0].split(',').map(h => h.trim());
+            
+            // Parse data rows
+            const data = [];
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i];
+                // Handle commas within quoted fields
+                const values = [];
+                let current = '';
+                let inQuotes = false;
+                
+                for (let j = 0; j < line.length; j++) {
+                    const char = line[j];
+                    if (char === '"') {
+                        inQuotes = !inQuotes;
+                    } else if (char === ',' && !inQuotes) {
+                        values.push(current.trim());
+                        current = '';
+                    } else {
+                        current += char;
+                    }
+                }
+                values.push(current.trim()); // Add last value
+                
+                // Create decision object with new field names
+                const stepNames = values[3] ? values[3].split('|').map(s => s.trim()) : [];
+                const completedIndices = values[4] ? values[4].split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n)) : [];
+                
+                const steps = stepNames.map((name, idx) => ({
+                    name: name,
+                    completed: completedIndices.includes(idx + 1)
+                }));
+                
+                data.push({
+                    decision_id: parseInt(values[0]),
+                    decision_name: values[1] || '',
+                    decision_category: values[2] || '',
+                    steps: steps,
+                    completed_steps: completedIndices,
+                    contact_group: values[5] || ''
+                });
+            }
+            
+            return data;
+        }
+
+        // Function to load decisions from CSV file
+        async function loadDecisionsFromCSV() {
+            try {
+                // Add timestamp to prevent caching issues when CSV is updated
+                const timestamp = new Date().getTime();
+                const response = await fetch(`decisionlog.csv?t=${timestamp}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const csvText = await response.text();
+                decisions = parseCSV(csvText);
+                
+                if (decisions.length === 0) {
+                    console.warn('No decisions loaded from CSV');
+                    // Provide some default data if CSV is empty or missing
+                    decisions = [{
+                        decision_id: 1,
+                        decision_name: "Sample Decision",
+                        decision_category: "Sample Category",
+                        steps: [
+                            { name: "Step 1", completed: false },
+                            { name: "Step 2", completed: false },
+                            { name: "Step 3", completed: false }
+                        ],
+                        contact_group: "Sample Group - Add decisionlog.csv to load real data"
+                    }];
+                }
+                
+                renderDecisions();
+                console.log(`Loaded ${decisions.length} decisions from CSV`);
+                
+            } catch (error) {
+                console.error('Error loading CSV:', error);
+                console.log('Using sample data instead. Make sure decisionlog.csv is in the same folder.');
+                
+                // Fallback sample data if CSV cannot be loaded
+                decisions = [
+                    {
+                        decision_id: 1,
+                        decision_name: "Customer Analytics Platform",
+                        decision_category: "Customer Intelligence",
+                        steps: [
+                            { name: "Identify Requirements", completed: true },
+                            { name: "Shape Solution", completed: true },
+                            { name: "Describe Options", completed: true },
+                            { name: "Consult Stakeholders", completed: false },
+                            { name: "Finalize Decision", completed: false }
+                        ],
+                        contact_group: "Analytics Team"
+                    },
+                    {
+                        decision_id: 2,
+                        decision_name: "Marketing Attribution Tool",
+                        decision_category: "Marketing",
+                        steps: [
+                            { name: "Research Tools", completed: true },
+                            { name: "Define Budget", completed: true },
+                            { name: "Vendor Evaluation", completed: false },
+                            { name: "Pilot Testing", completed: false }
+                        ],
+                        contact_group: "Marketing Ops"
+                    }
+                ];
+                renderDecisions();
+            }
+        }
+
         function calculateProgress(steps) {
+            if (!steps || steps.length === 0) return 0;
             const completed = steps.filter(s => s.completed).length;
             return Math.round((completed / steps.length) * 100);
         }
@@ -654,7 +768,7 @@
                 <div class="progress-ring">
                     <svg width="80" height="80">
                         <circle cx="40" cy="40" r="35" fill="none" stroke="#e2e8f0" stroke-width="8"/>
-                        <circle cx="40" cy="40" r="35" fill="none" stroke="${progress === 100 ? '#10b981' : '#3b82f6'}" 
+                        <circle cx="40" cy="40" r="35" fill="none" stroke="${progress === 100 ? '#10b981' : '#0079FF'}" 
                                 stroke-width="8" class="progress-ring-circle"
                                 style="stroke-dashoffset: ${offset}"/>
                     </svg>
@@ -678,15 +792,15 @@
         function createDecisionCard(decision) {
             const progress = calculateProgress(decision.steps);
             const isCompleted = progress === 100;
+            const stepCount = decision.steps ? decision.steps.length : 0;
             
             return `
-                <div class="decision-card" data-id="${decision.id}" onclick="toggleCard(${decision.id})">
+                <div class="decision-card" data-id="${decision.decision_id}" onclick="toggleCard(${decision.decision_id})">
                     <div class="card-header">
                         <div>
-                            <div class="card-title">${decision.name}</div>
-                            <span class="card-category">${decision.category}</span>
+                            <div class="card-title">${decision.decision_name}</div>
+                            <span class="card-category">${decision.decision_category}</span>
                         </div>
-                        <span class="priority-badge priority-${decision.priority}">${decision.priority}</span>
                     </div>
                     
                     <div class="progress-ring-container">
@@ -696,31 +810,44 @@
                         </div>
                     </div>
                     
+                    <div style="font-size: 0.85em; color: #64748b; margin-top: 10px;">
+                        ${stepCount} steps • ${decision.steps.filter(s => s.completed).length} completed
+                    </div>
+                    
                     <div class="expanded-content">
-                        <div class="detailed-steps">
-                            ${decision.steps.map((step, index) => {
-                                const completed = step.completed;
-                                const active = !completed && decision.steps.slice(0, index).every(s => s.completed);
-                                return `
-                                    <div class="detailed-step ${completed ? 'completed' : ''} ${active ? 'active' : ''}"
-                                         onclick="toggleStep(event, ${decision.id}, ${index})">
-                                        <div class="detailed-step-indicator">
-                                            ${completed ? '✓' : index + 1}
+                        <div style="display: flex; gap: 30px; align-items: flex-start;">
+                            <div class="detailed-steps" style="flex: 1;">
+                                ${decision.steps.map((step, index) => {
+                                    const completed = step.completed;
+                                    const active = !completed && decision.steps.slice(0, index).every(s => s.completed);
+                                    return `
+                                        <div class="detailed-step ${completed ? 'completed' : ''} ${active ? 'active' : ''}"
+                                             onclick="toggleStep(event, ${decision.decision_id}, ${index})">
+                                            <div class="detailed-step-indicator">
+                                                ${completed ? '✓' : index + 1}
+                                            </div>
+                                            <div class="detailed-step-content">
+                                                <div class="detailed-step-title">Step ${index + 1}: ${step.name}</div>
+                                                <div class="detailed-step-desc">Click to toggle completion status</div>
+                                            </div>
                                         </div>
-                                        <div class="detailed-step-content">
-                                            <div class="detailed-step-title">${step.name}</div>
-                                            <div class="detailed-step-desc">Click to toggle completion status</div>
-                                        </div>
-                                    </div>
-                                `;
-                            }).join('')}
+                                    `;
+                                }).join('')}
+                            </div>
+                            
+                            ${decision.contact_group ? `
+                            <div style="min-width: 200px; padding: 20px; background: #f8fafc; border-radius: 12px; border-left: 4px solid #0079FF;">
+                                <div style="font-size: 0.85em; color: #64748b; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Contact Group</div>
+                                <div style="font-size: 1.1em; color: #1e293b; font-weight: 600;">${decision.contact_group}</div>
+                            </div>
+                            ` : ''}
                         </div>
                         
-                        <div class="card-actions">
-                            <button class="card-btn btn-complete-next" onclick="completeNextStep(event, ${decision.id})">
+                        <div class="card-actions" style="margin-top: 30px;">
+                            <button class="card-btn btn-complete-next" onclick="completeNextStep(event, ${decision.decision_id})">
                                 Complete Next Step
                             </button>
-                            <button class="card-btn btn-view-details" onclick="resetDecision(event, ${decision.id})">
+                            <button class="card-btn btn-view-details" onclick="resetDecision(event, ${decision.decision_id})">
                                 Reset Progress
                             </button>
                         </div>
@@ -733,20 +860,23 @@
             const progress = calculateProgress(decision.steps);
             
             return `
-                <div class="list-row" onclick="toggleCard(${decision.id})">
-                    <div>${decision.name}</div>
-                    <div>${decision.category}</div>
-                    <div><span class="priority-badge priority-${decision.priority}">${decision.priority}</span></div>
+                <div class="list-row" onclick="toggleCard(${decision.decision_id})">
+                    <div>${decision.decision_name}</div>
+                    <div>${decision.decision_category}</div>
+                    <div>${decision.contact_group || '-'}</div>
                     <div>
                         <div style="display: flex; align-items: center; gap: 10px;">
                             <div style="flex: 1; height: 8px; background: #e2e8f0; border-radius: 4px;">
-                                <div style="width: ${progress}%; height: 100%; background: ${progress === 100 ? '#10b981' : '#3b82f6'}; border-radius: 4px; transition: width 0.3s;"></div>
+                                <div style="width: ${progress}%; height: 100%; background: ${progress === 100 ? '#10b981' : '#0079FF'}; border-radius: 4px; transition: width 0.3s;"></div>
                             </div>
                             <span style="font-weight: 600; color: #64748b; font-size: 0.9em;">${progress}%</span>
                         </div>
+                        <div style="font-size: 0.75em; color: #94a3b8; margin-top: 4px;">
+                            ${decision.steps.filter(s => s.completed).length}/${decision.steps.length} steps
+                        </div>
                     </div>
                     <div>
-                        <button class="card-btn btn-view-details" onclick="event.stopPropagation(); toggleCard(${decision.id})">View</button>
+                        <button class="card-btn btn-view-details" onclick="event.stopPropagation(); toggleCard(${decision.decision_id})">View</button>
                     </div>
                 </div>
             `;
@@ -762,8 +892,8 @@
                 filteredDecisions = decisions.filter(d => calculateProgress(d.steps) > 0 && calculateProgress(d.steps) < 100);
             } else if (currentFilter === 'completed') {
                 filteredDecisions = decisions.filter(d => calculateProgress(d.steps) === 100);
-            } else if (currentFilter === 'high') {
-                filteredDecisions = decisions.filter(d => d.priority === 'high');
+            } else if (currentFilter === 'backlog') {
+                filteredDecisions = decisions.filter(d => calculateProgress(d.steps) === 0);
             }
             
             gridContainer.innerHTML = filteredDecisions.map(d => createDecisionCard(d)).join('');
@@ -779,14 +909,12 @@
                 const progress = calculateProgress(d.steps);
                 return progress > 0 && progress < 100;
             }).length;
-            
-            const totalProgress = decisions.reduce((sum, d) => sum + calculateProgress(d.steps), 0);
-            const avgProgress = Math.round(totalProgress / totalDecisions);
+            const backlogDecisions = decisions.filter(d => calculateProgress(d.steps) === 0).length;
             
             document.getElementById('totalDecisions').textContent = totalDecisions;
             document.getElementById('completedDecisions').textContent = completedDecisions;
             document.getElementById('activeDecisions').textContent = activeDecisions;
-            document.getElementById('avgProgress').textContent = avgProgress + '%';
+            document.getElementById('backlogDecisions').textContent = backlogDecisions;
         }
 
         function toggleCard(id) {
@@ -804,7 +932,7 @@
 
         function toggleStep(event, decisionId, stepIndex) {
             event.stopPropagation();
-            const decision = decisions.find(d => d.id === decisionId);
+            const decision = decisions.find(d => d.decision_id === decisionId);
             decision.steps[stepIndex].completed = !decision.steps[stepIndex].completed;
             renderDecisions();
             saveData();
@@ -812,7 +940,7 @@
 
         function completeNextStep(event, decisionId) {
             event.stopPropagation();
-            const decision = decisions.find(d => d.id === decisionId);
+            const decision = decisions.find(d => d.decision_id === decisionId);
             const nextIncomplete = decision.steps.findIndex(s => !s.completed);
             if (nextIncomplete !== -1) {
                 decision.steps[nextIncomplete].completed = true;
@@ -823,7 +951,7 @@
 
         function resetDecision(event, decisionId) {
             event.stopPropagation();
-            const decision = decisions.find(d => d.id === decisionId);
+            const decision = decisions.find(d => d.decision_id === decisionId);
             decision.steps.forEach(s => s.completed = false);
             renderDecisions();
             saveData();
@@ -850,26 +978,33 @@
         }
 
         function saveData() {
+            // Save to localStorage as backup
+            // Note: To persist changes, you would need to save back to CSV on the server
             localStorage.setItem('analyticsDecisions', JSON.stringify(decisions));
+            console.log('Changes saved to localStorage. To persist, update your decisionlog.csv file.');
         }
 
         function loadData() {
-            const saved = localStorage.getItem('analyticsDecisions');
-            if (saved) {
-                const savedData = JSON.parse(saved);
-                // Merge saved progress with current decisions structure
-                savedData.forEach(savedDecision => {
-                    const decision = decisions.find(d => d.id === savedDecision.id);
-                    if (decision) {
-                        decision.steps = savedDecision.steps;
+            // First try to load from CSV, localStorage is used as a backup for session changes
+            loadDecisionsFromCSV().then(() => {
+                // After loading from CSV, check if there are any session changes in localStorage
+                const saved = localStorage.getItem('analyticsDecisions');
+                if (saved) {
+                    try {
+                        const savedData = JSON.parse(saved);
+                        // You could merge session changes here if needed
+                        console.log('Session changes available in localStorage');
+                    } catch (e) {
+                        console.error('Error parsing saved data:', e);
                     }
-                });
-            }
+                }
+            });
         }
 
-        // Initialize
-        loadData();
-        renderDecisions();
+        // Initialize dashboard
+        window.addEventListener('DOMContentLoaded', () => {
+            loadData();
+        });
     </script>
 </body>
 </html>
