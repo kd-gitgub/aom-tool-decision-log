@@ -144,17 +144,6 @@
             overflow: hidden;
         }
 
-        .decision-id-badge {
-            background: #f1f5f9;
-            color: #64748b;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 0.75em;
-            font-weight: 600;
-            border: 1px solid #e2e8f0;
-            margin-right: 10px;
-        }
-
         .decision-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
@@ -165,6 +154,17 @@
             max-width: 800px;
             margin: 0 auto;
             width: 100%;
+        }
+
+        .decision-id-badge {
+            background: #f1f5f9;
+            color: #64748b;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.75em;
+            font-weight: 600;
+            border: 1px solid #e2e8f0;
+            margin-right: 10px;
         }
 
         .card-header {
@@ -658,7 +658,7 @@
                             { name: "Consult Stakeholders", completed: false },
                             { name: "Finalize Decision", completed: false }
                         ],
-                        contact_group: "Analytics Team"
+                        contact_group: "Analytics Team | Data Engineering"
                     },
                     {
                         decision_id: 2,
@@ -671,7 +671,7 @@
                             { name: "Vendor Evaluation", completed: false },
                             { name: "Pilot Testing", completed: false }
                         ],
-                        contact_group: "Marketing Ops"
+                        contact_group: "Marketing Ops | Analytics Team"
                     }
                 ];
                 renderDecisions();
