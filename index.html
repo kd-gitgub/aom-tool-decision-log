@@ -144,6 +144,19 @@
             overflow: hidden;
         }
 
+        .decision-id-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: #f1f5f9;
+            color: #64748b;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.75em;
+            font-weight: 600;
+            border: 1px solid #e2e8f0;
+        }
+
         .decision-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
@@ -544,6 +557,7 @@
                     delimiter: ',',
                     quoteChar: '"',
                     escapeChar: '"',
+                    trimHeaders: true, // Trim spaces from headers
                     complete: function(results) {
                         console.log('Papa Parse complete. Found', results.data.length, 'rows');
                         console.log('Headers:', results.meta.fields);
@@ -554,10 +568,22 @@
                 });
                 
                 console.log('Parsed data:', parseResult.data);
+                console.log('First row keys:', Object.keys(parseResult.data[0] || {}));
                 
                 // Transform parsed data to our format
                 decisions = parseResult.data.map((row, idx) => {
                     console.log(`Processing row ${idx + 1}:`, row);
+                    
+                    // Try to find the decision_status field with different possible key variations
+                    let rawStatus = row.decision_status || row['decision_status'] || '';
+                    
+                    // Debug: log all keys and values for first row
+                    if (idx === 0) {
+                        console.log('First row - all fields:');
+                        Object.keys(row).forEach(key => {
+                            console.log(`  "${key}": "${row[key]}"`);
+                        });
+                    }
                     
                     // Parse steps (pipe-separated)
                     const stepsRaw = row.steps || '';
@@ -584,8 +610,9 @@
                         completed: completedIndices.includes(idx + 1) // Steps are 1-indexed
                     }));
                     
-                    // Clean and normalize the status
-                    let status = row.decision_status || 'Backlog';
+                    // Clean and normalize the status - with better debugging
+                    console.log(`  Raw status value: "${rawStatus}"`);
+                    let status = rawStatus || 'Backlog';
                     status = status.trim();
                     
                     // Normalize status values
@@ -596,6 +623,8 @@
                     } else if (status.toLowerCase() === 'backlog') {
                         status = 'Backlog';
                     }
+                    
+                    console.log(`  Final status: "${status}"`);
                     
                     return {
                         decision_id: parseInt(row.decision_id) || (idx + 1),
@@ -709,6 +738,7 @@
             
             return `
                 <div class="decision-card" data-id="${decision.decision_id}" onclick="toggleCard(${decision.decision_id})">
+                    <span class="decision-id-badge">ID: ${decision.decision_id}</span>
                     <div class="card-header">
                         <div>
                             <div class="card-title">${decision.decision_name}</div>
