@@ -142,6 +142,9 @@
             cursor: pointer;
             position: relative;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 280px;
         }
 
         .decision-card:hover {
@@ -154,6 +157,14 @@
             max-width: 800px;
             margin: 0 auto;
             width: 100%;
+            min-height: auto;
+        }
+
+        .card-top-badges {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
         }
 
         .decision-id-badge {
@@ -164,13 +175,9 @@
             font-size: 0.75em;
             font-weight: 600;
             border: 1px solid #e2e8f0;
-            margin-right: 10px;
         }
 
         .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
             margin-bottom: 20px;
         }
 
@@ -188,6 +195,19 @@
             padding: 4px 10px;
             background: #f1f5f9;
             border-radius: 4px;
+            margin-right: 8px;
+        }
+
+        .card-middle-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .card-bottom-section {
+            margin-top: auto;
+            padding-top: 10px;
         }
 
         /* Progress Ring */
@@ -742,28 +762,33 @@
             
             return `
                 <div class="decision-card" data-id="${decision.decision_id}" onclick="toggleCard(${decision.decision_id})">
-                    <div class="card-header">
+                    <div class="card-top-badges">
+                        <span class="decision-id-badge">Decision ID: ${decision.decision_id}</span>
                         <div>
-                            <div class="card-title">${decision.decision_name}</div>
-                            <div style="display: flex; gap: 10px; align-items: center; margin-top: 5px;">
-                                <span class="card-category">${decision.decision_category}</span>
-                                <span style="font-size: 0.75em; padding: 3px 8px; background: ${statusColor}20; color: ${statusColor}; border-radius: 4px; font-weight: 600;">
-                                    ${displayStatus}
-                                </span>
+                            <span class="card-category">${decision.decision_category}</span>
+                            <span style="font-size: 0.75em; padding: 3px 8px; background: ${statusColor}20; color: ${statusColor}; border-radius: 4px; font-weight: 600;">
+                                ${displayStatus}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="card-header">
+                        <div class="card-title">${decision.decision_name}</div>
+                    </div>
+                    
+                    <div class="card-middle-section">
+                        <div class="progress-ring-container">
+                            ${createProgressRing(progress)}
+                            <div class="mini-steps">
+                                ${createMiniSteps(decision.steps)}
                             </div>
                         </div>
                     </div>
                     
-                    <div class="progress-ring-container">
-                        ${createProgressRing(progress)}
-                        <div class="mini-steps">
-                            ${createMiniSteps(decision.steps)}
+                    <div class="card-bottom-section">
+                        <div style="font-size: 0.85em; color: #64748b;">
+                            ${stepCount} steps • ${decision.steps.filter(s => s.completed).length} completed
                         </div>
-                    </div>
-                    
-                    <div style="font-size: 0.85em; color: #64748b; margin-top: 10px; display: flex; align-items: center;">
-                        <span class="decision-id-badge">ID: ${decision.decision_id}</span>
-                        <span>${stepCount} steps • ${decision.steps.filter(s => s.completed).length} completed</span>
                     </div>
                     
                     <div class="expanded-content">
