@@ -523,54 +523,95 @@
         let currentView = 'grid';
         let currentFilter = 'all';
 
+        // Alternative robust CSV parsing function
+        function parseCSVLine(line) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+            
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                const nextChar = line[i + 1];
+                
+                if (char === '"') {
+                    if (inQuotes && nextChar === '"') {
+                        // Escaped quote
+                        current += '"';
+                        i++; // Skip next quote
+                    } else {
+                        // Toggle quote state
+                        inQuotes = !inQuotes;
+                    }
+                } else if (char === ',' && !inQuotes) {
+                    result.push(current);
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            result.push(current); // Add last field
+            
+            return result;
+        }
+        
         // Function to parse CSV text
         function parseCSV(csvText) {
+            // Normalize line endings
+            csvText = csvText.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
             const lines = csvText.split('\n').filter(line => line.trim());
+            
             if (lines.length === 0) return [];
             
+            console.log('CSV Lines found:', lines.length);
+            console.log('Headers:', lines[0]);
+            
             // Parse headers
-            const headers = lines[0].split(',').map(h => h.trim());
+            const headers = parseCSVLine(lines[0]);
+            console.log('Parsed headers:', headers);
             
             // Parse data rows
             const data = [];
             for (let i = 1; i < lines.length; i++) {
-                const line = lines[i];
-                // Handle commas within quoted fields
-                const values = [];
-                let current = '';
-                let inQuotes = false;
+                const line = lines[i].trim();
+                if (!line) continue; // Skip empty lines
                 
-                for (let j = 0; j < line.length; j++) {
-                    const char = line[j];
-                    if (char === '"') {
-                        inQuotes = !inQuotes;
-                    } else if (char === ',' && !inQuotes) {
-                        values.push(current.trim());
-                        current = '';
-                    } else {
-                        current += char;
+                console.log(`Line ${i}:`, line);
+                
+                const values = parseCSVLine(line);
+                console.log(`Row ${i} values:`, values);
+                
+                // Clean up values - remove quotes if present
+                for (let j = 0; j < values.length; j++) {
+                    values[j] = values[j].trim();
+                    if (values[j].startsWith('"') && values[j].endsWith('"')) {
+                        values[j] = values[j].slice(1, -1);
                     }
                 }
-                values.push(current.trim()); // Add last value
                 
                 // Create decision object with new field names and decision_status
                 const stepNames = values[4] ? values[4].split('|').map(s => s.trim()) : [];
                 const completedIndices = values[5] ? values[5].split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n)) : [];
+                
+                console.log(`Row ${i} steps:`, stepNames);
+                console.log(`Row ${i} completed:`, completedIndices);
                 
                 const steps = stepNames.map((name, idx) => ({
                     name: name,
                     completed: completedIndices.includes(idx + 1)
                 }));
                 
-                data.push({
-                    decision_id: parseInt(values[0]),
-                    decision_name: values[1] || '',
-                    decision_category: values[2] || '',
-                    decision_status: values[3] || '',
-                    steps: steps,
+                const decision = {
+                    decision_id: parseInt(values[0]) || i,
+                    decision_name: values[1] || `Decision ${i}`,
+                    decision_category: values[2] || 'Unknown',
+                    decision_status: values[3] || 'Backlog',
+                    steps: steps.length > 0 ? steps : [{ name: 'No steps defined', completed: false }],
                     completed_steps: completedIndices,
                     contact_group: values[6] || ''
-                });
+                };
+                
+                console.log(`Decision ${i}:`, decision);
+                data.push(decision);
             }
             
             return data;
@@ -586,6 +627,8 @@
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 const csvText = await response.text();
+                console.log('Raw CSV text (first 500 chars):', csvText.substring(0, 500));
+                
                 decisions = parseCSV(csvText);
                 
                 if (decisions.length === 0) {
@@ -605,6 +648,7 @@
                     }];
                 }
                 
+                console.log('Final parsed decisions:', decisions);
                 renderDecisions();
                 console.log(`Loaded ${decisions.length} decisions from CSV`);
                 
@@ -810,13 +854,27 @@
             
             let filteredDecisions = decisions;
             
+            console.log('All decisions before filtering:', decisions);
+            console.log('Current filter:', currentFilter);
+            
             if (currentFilter === 'active') {
-                filteredDecisions = decisions.filter(d => d.decision_status === 'Active Discussion');
+                filteredDecisions = decisions.filter(d => {
+                    const status = (d.decision_status || '').trim();
+                    return status === 'Active Discussion' || status === 'active discussion' || status === 'Active' || status === 'active';
+                });
             } else if (currentFilter === 'completed') {
-                filteredDecisions = decisions.filter(d => d.decision_status === 'Completed');
+                filteredDecisions = decisions.filter(d => {
+                    const status = (d.decision_status || '').trim();
+                    return status === 'Completed' || status === 'completed' || status === 'Complete' || status === 'complete';
+                });
             } else if (currentFilter === 'backlog') {
-                filteredDecisions = decisions.filter(d => d.decision_status === 'Backlog');
+                filteredDecisions = decisions.filter(d => {
+                    const status = (d.decision_status || '').trim();
+                    return status === 'Backlog' || status === 'backlog';
+                });
             }
+            
+            console.log('Filtered decisions:', filteredDecisions);
             
             gridContainer.innerHTML = filteredDecisions.map(d => createDecisionCard(d)).join('');
             listContainer.innerHTML = filteredDecisions.map(d => createListRow(d)).join('');
@@ -826,9 +884,23 @@
 
         function updateSummaryStats() {
             const totalDecisions = decisions.length;
-            const completedDecisions = decisions.filter(d => d.decision_status === 'Completed').length;
-            const activeDecisions = decisions.filter(d => d.decision_status === 'Active Discussion').length;
-            const backlogDecisions = decisions.filter(d => d.decision_status === 'Backlog').length;
+            
+            const completedDecisions = decisions.filter(d => {
+                const status = (d.decision_status || '').trim();
+                return status === 'Completed' || status === 'completed' || status === 'Complete' || status === 'complete';
+            }).length;
+            
+            const activeDecisions = decisions.filter(d => {
+                const status = (d.decision_status || '').trim();
+                return status === 'Active Discussion' || status === 'active discussion' || status === 'Active' || status === 'active';
+            }).length;
+            
+            const backlogDecisions = decisions.filter(d => {
+                const status = (d.decision_status || '').trim();
+                return status === 'Backlog' || status === 'backlog';
+            }).length;
+            
+            console.log('Stats - Total:', totalDecisions, 'Active:', activeDecisions, 'Completed:', completedDecisions, 'Backlog:', backlogDecisions);
             
             document.getElementById('totalDecisions').textContent = totalDecisions;
             document.getElementById('completedDecisions').textContent = completedDecisions;
