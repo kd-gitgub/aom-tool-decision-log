@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Analytics Decision Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -523,170 +524,7 @@
         let currentView = 'grid';
         let currentFilter = 'all';
 
-        // Robust CSV line parsing function
-        function parseCSVLine(line) {
-            const result = [];
-            let current = '';
-            let inQuotes = false;
-            
-            for (let i = 0; i < line.length; i++) {
-                const char = line[i];
-                const nextChar = line[i + 1];
-                
-                if (char === '"') {
-                    if (inQuotes && nextChar === '"') {
-                        // Escaped quote
-                        current += '"';
-                        i++; // Skip next quote
-                    } else {
-                        // Toggle quote state
-                        inQuotes = !inQuotes;
-                    }
-                } else if (char === ',' && !inQuotes) {
-                    result.push(current);
-                    current = '';
-                } else {
-                    current += char;
-                }
-            }
-            result.push(current); // Add last field
-            
-            return result;
-        }
-        
-        // Function to parse CSV text - STRICT 7-COLUMN FORMAT
-        function parseCSV(csvText) {
-            // Normalize line endings
-            csvText = csvText.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-            const lines = csvText.split('\n').filter(line => line.trim());
-            
-            if (lines.length === 0) return [];
-            
-            console.log('=== CSV PARSING DEBUG ===');
-            console.log('Total lines found:', lines.length);
-            console.log('First line (headers):', lines[0]);
-            
-            // Parse headers
-            const headers = parseCSVLine(lines[0]);
-            console.log('Headers found:', headers);
-            
-            // EXPECTED COLUMN ORDER (0-indexed):
-            // 0: decision_id
-            // 1: decision_name
-            // 2: decision_category
-            // 3: decision_status
-            // 4: steps
-            // 5: completed_steps
-            // 6: contact_group
-            
-            console.log('Expected 7 columns in order: decision_id, decision_name, decision_category, decision_status, steps, completed_steps, contact_group');
-            console.log(`Actual column count: ${headers.length}`);
-            
-            if (headers.length !== 7) {
-                console.error(`ERROR: Expected exactly 7 columns but found ${headers.length}!`);
-                console.error('Make sure your CSV has these 7 columns in order:');
-                console.error('decision_id,decision_name,decision_category,decision_status,steps,completed_steps,contact_group');
-            }
-            
-            // Parse data rows
-            const data = [];
-            for (let i = 1; i < lines.length; i++) {
-                const line = lines[i].trim();
-                if (!line) continue; // Skip empty lines
-                
-                console.log(`\n--- Parsing Row ${i} ---`);
-                console.log('Raw line:', line);
-                
-                const values = parseCSVLine(line);
-                console.log('Values parsed:', values.length, 'columns');
-                
-                // Clean up values - remove quotes if present
-                for (let j = 0; j < values.length; j++) {
-                    values[j] = values[j].trim();
-                    if (values[j].startsWith('"') && values[j].endsWith('"')) {
-                        values[j] = values[j].slice(1, -1);
-                    }
-                }
-                
-                // STRICTLY READ FROM EXPECTED POSITIONS
-                const decision_id = values[0] || '';
-                const decision_name = values[1] || '';
-                const decision_category = values[2] || '';
-                const decision_status = values[3] || 'Backlog';
-                const steps_raw = values[4] || '';
-                const completed_steps_raw = values[5] || '';
-                const contact_group = values[6] || '';
-                
-                console.log('Column values:');
-                console.log('  Col 0 - decision_id:', decision_id);
-                console.log('  Col 1 - decision_name:', decision_name);
-                console.log('  Col 2 - decision_category:', decision_category);
-                console.log('  Col 3 - decision_status:', decision_status);
-                console.log('  Col 4 - steps:', steps_raw);
-                console.log('  Col 5 - completed_steps:', completed_steps_raw);
-                console.log('  Col 6 - contact_group:', contact_group);
-                
-                // Validate decision_status
-                const validStatuses = ['Completed', 'completed', 'Active', 'active', 'Backlog', 'backlog', 'Active Discussion'];
-                if (!validStatuses.some(s => s.toLowerCase() === decision_status.toLowerCase())) {
-                    console.warn(`WARNING: Unexpected status value: "${decision_status}"`);
-                    console.warn('Expected one of: Completed, Active, or Backlog');
-                }
-                
-                // Check for common errors
-                if (decision_status.includes('|')) {
-                    console.error('ERROR: decision_status contains pipe character!');
-                    console.error(`decision_status = "${decision_status}"`);
-                    console.error('This likely means columns are misaligned in the CSV.');
-                    console.error('Please check that decision_status is in column 4 (0-indexed position 3)');
-                }
-                
-                // Parse steps (pipe-separated)
-                const stepNames = steps_raw ? steps_raw.split('|').map(s => s.trim()) : [];
-                console.log('  Parsed step names:', stepNames);
-                
-                // Parse completed steps (comma-separated numbers)
-                const completedIndices = completed_steps_raw ? 
-                    completed_steps_raw.split(',')
-                        .map(n => parseInt(n.trim()))
-                        .filter(n => !isNaN(n)) : [];
-                console.log('  Completed step numbers:', completedIndices);
-                
-                // Create step objects
-                const stepsArray = stepNames.map((name, idx) => ({
-                    name: name,
-                    completed: completedIndices.includes(idx + 1) // Steps are 1-indexed
-                }));
-                
-                // Create decision object
-                const decision = {
-                    decision_id: parseInt(decision_id) || i,
-                    decision_name: decision_name || `Decision ${i}`,
-                    decision_category: decision_category || 'Unknown',
-                    decision_status: decision_status || 'Backlog',
-                    steps: stepsArray.length > 0 ? stepsArray : [{ name: 'No steps defined', completed: false }],
-                    completed_steps: completedIndices,
-                    contact_group: contact_group || ''
-                };
-                
-                console.log('Final decision object:', decision);
-                data.push(decision);
-            }
-            
-            console.log('\n=== PARSING COMPLETE ===');
-            console.log('Total decisions parsed:', data.length);
-            
-            // Summary of statuses found
-            const statusSummary = {};
-            data.forEach(d => {
-                statusSummary[d.decision_status] = (statusSummary[d.decision_status] || 0) + 1;
-            });
-            console.log('Status summary:', statusSummary);
-            
-            return data;
-        }
-
-        // Function to load decisions from CSV file
+        // Function to load decisions from CSV file using PapaParse
         async function loadDecisionsFromCSV() {
             try {
                 // Add timestamp to prevent caching issues when CSV is updated
@@ -698,28 +536,82 @@
                 const csvText = await response.text();
                 console.log('Raw CSV text (first 500 chars):', csvText.substring(0, 500));
                 
-                decisions = parseCSV(csvText);
+                // Use Papa Parse to handle complex CSV with proper quoting
+                const parseResult = Papa.parse(csvText, {
+                    header: true,
+                    skipEmptyLines: true,
+                    dynamicTyping: false, // Keep everything as strings for now
+                    delimiter: ',',
+                    quoteChar: '"',
+                    escapeChar: '"',
+                    complete: function(results) {
+                        console.log('Papa Parse complete. Found', results.data.length, 'rows');
+                        console.log('Headers:', results.meta.fields);
+                        if (results.errors.length > 0) {
+                            console.warn('Parse warnings/errors:', results.errors);
+                        }
+                    }
+                });
                 
-                if (decisions.length === 0) {
-                    console.warn('No decisions loaded from CSV');
-                    // Provide some default data if CSV is empty or missing
-                    decisions = [{
-                        decision_id: 1,
-                        decision_name: "Sample Decision",
-                        decision_category: "Sample Category",
-                        decision_status: "Backlog",
-                        steps: [
-                            { name: "Step 1", completed: false },
-                            { name: "Step 2", completed: false },
-                            { name: "Step 3", completed: false }
-                        ],
-                        contact_group: "Sample Group - Add decision-log.csv to load real data"
-                    }];
-                }
+                console.log('Parsed data:', parseResult.data);
                 
-                console.log('Final parsed decisions:', decisions);
+                // Transform parsed data to our format
+                decisions = parseResult.data.map((row, idx) => {
+                    console.log(`Processing row ${idx + 1}:`, row);
+                    
+                    // Parse steps (pipe-separated)
+                    const stepsRaw = row.steps || '';
+                    const stepNames = stepsRaw ? stepsRaw.split('|').map(s => s.trim()) : [];
+                    console.log('  Step names:', stepNames);
+                    
+                    // Parse completed steps (could be comma-separated like "1,2,3" or with decimals like "1,2,3,4")
+                    const completedRaw = row.completed_steps || '';
+                    let completedIndices = [];
+                    if (completedRaw) {
+                        // Split by comma and handle both integers and decimals
+                        const parts = completedRaw.split(',').map(s => s.trim());
+                        completedIndices = parts.map(part => {
+                            // Take only the integer part if there's a decimal
+                            const num = parseFloat(part);
+                            return Math.floor(num);
+                        }).filter(n => !isNaN(n) && n > 0);
+                    }
+                    console.log('  Completed indices:', completedIndices);
+                    
+                    // Create step objects
+                    const stepsArray = stepNames.map((name, idx) => ({
+                        name: name,
+                        completed: completedIndices.includes(idx + 1) // Steps are 1-indexed
+                    }));
+                    
+                    // Clean and normalize the status
+                    let status = row.decision_status || 'Backlog';
+                    status = status.trim();
+                    
+                    // Normalize status values
+                    if (status.toLowerCase() === 'completed' || status.toLowerCase() === 'complete') {
+                        status = 'Completed';
+                    } else if (status.toLowerCase() === 'active' || status.toLowerCase() === 'active discussion') {
+                        status = 'Active';
+                    } else if (status.toLowerCase() === 'backlog') {
+                        status = 'Backlog';
+                    }
+                    
+                    return {
+                        decision_id: parseInt(row.decision_id) || (idx + 1),
+                        decision_name: row.decision_name || `Decision ${idx + 1}`,
+                        decision_category: row.decision_category || 'Unknown',
+                        decision_status: status,
+                        steps: stepsArray.length > 0 ? stepsArray : [{ name: 'No steps defined', completed: false }],
+                        completed_steps: completedIndices,
+                        contact_group: row.contact_group || ''
+                    };
+                }).filter(d => d.decision_name && d.decision_name !== ''); // Filter out empty rows
+                
+                console.log(`Successfully loaded ${decisions.length} decisions from CSV`);
+                console.log('Final decisions:', decisions);
+                
                 renderDecisions();
-                console.log(`Loaded ${decisions.length} decisions from CSV`);
                 
             } catch (error) {
                 console.error('Error loading CSV:', error);
@@ -850,7 +742,7 @@
                                         <div class="detailed-step ${completed ? 'completed' : ''} ${active ? 'active' : ''}"
                                              onclick="toggleStep(event, ${decision.decision_id}, ${index})">
                                             <div class="detailed-step-indicator">
-                                                ${completed ? '✓' : index + 1}
+                                                ${completed ? '✔' : index + 1}
                                             </div>
                                             <div class="detailed-step-content">
                                                 <div class="detailed-step-title">Step ${index + 1}: ${step.name}</div>
@@ -1079,7 +971,7 @@
         }
 
         function loadData() {
-            // First try to load from CSV, localStorage is used as a backup for session changes
+            // Load from CSV using PapaParse
             loadDecisionsFromCSV().then(() => {
                 // After loading from CSV, check if there are any session changes in localStorage
                 const saved = localStorage.getItem('analyticsDecisions');
