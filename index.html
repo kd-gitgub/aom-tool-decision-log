@@ -554,7 +554,7 @@
             return result;
         }
         
-        // Function to parse CSV text - ALIGNED WITH EXACT STRUCTURE
+        // Function to parse CSV text - STRICT 7-COLUMN FORMAT
         function parseCSV(csvText) {
             // Normalize line endings
             csvText = csvText.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
@@ -566,14 +566,26 @@
             console.log('Total lines found:', lines.length);
             console.log('First line (headers):', lines[0]);
             
-            // Parse headers to verify structure
+            // Parse headers
             const headers = parseCSVLine(lines[0]);
-            console.log('Expected columns: decision_id, decision_name, decision_category, decision_status, steps, completed_steps, contact_group');
-            console.log('Actual headers found:', headers);
+            console.log('Headers found:', headers);
             
-            // Verify we have the right number of columns
+            // EXPECTED COLUMN ORDER (0-indexed):
+            // 0: decision_id
+            // 1: decision_name
+            // 2: decision_category
+            // 3: decision_status
+            // 4: steps
+            // 5: completed_steps
+            // 6: contact_group
+            
+            console.log('Expected 7 columns in order: decision_id, decision_name, decision_category, decision_status, steps, completed_steps, contact_group');
+            console.log(`Actual column count: ${headers.length}`);
+            
             if (headers.length !== 7) {
-                console.warn(`WARNING: Expected 7 columns but found ${headers.length}`);
+                console.error(`ERROR: Expected exactly 7 columns but found ${headers.length}!`);
+                console.error('Make sure your CSV has these 7 columns in order:');
+                console.error('decision_id,decision_name,decision_category,decision_status,steps,completed_steps,contact_group');
             }
             
             // Parse data rows
@@ -586,6 +598,7 @@
                 console.log('Raw line:', line);
                 
                 const values = parseCSVLine(line);
+                console.log('Values parsed:', values.length, 'columns');
                 
                 // Clean up values - remove quotes if present
                 for (let j = 0; j < values.length; j++) {
@@ -595,56 +608,80 @@
                     }
                 }
                 
-                console.log('Parsed values:');
-                console.log('  [0] decision_id:', values[0]);
-                console.log('  [1] decision_name:', values[1]);
-                console.log('  [2] decision_category:', values[2]);
-                console.log('  [3] decision_status:', values[3]);
-                console.log('  [4] steps:', values[4]);
-                console.log('  [5] completed_steps:', values[5]);
-                console.log('  [6] contact_group:', values[6]);
+                // STRICTLY READ FROM EXPECTED POSITIONS
+                const decision_id = values[0] || '';
+                const decision_name = values[1] || '';
+                const decision_category = values[2] || '';
+                const decision_status = values[3] || 'Backlog';
+                const steps_raw = values[4] || '';
+                const completed_steps_raw = values[5] || '';
+                const contact_group = values[6] || '';
+                
+                console.log('Column values:');
+                console.log('  Col 0 - decision_id:', decision_id);
+                console.log('  Col 1 - decision_name:', decision_name);
+                console.log('  Col 2 - decision_category:', decision_category);
+                console.log('  Col 3 - decision_status:', decision_status);
+                console.log('  Col 4 - steps:', steps_raw);
+                console.log('  Col 5 - completed_steps:', completed_steps_raw);
+                console.log('  Col 6 - contact_group:', contact_group);
+                
+                // Validate decision_status
+                const validStatuses = ['Completed', 'completed', 'Active', 'active', 'Backlog', 'backlog', 'Active Discussion'];
+                if (!validStatuses.some(s => s.toLowerCase() === decision_status.toLowerCase())) {
+                    console.warn(`WARNING: Unexpected status value: "${decision_status}"`);
+                    console.warn('Expected one of: Completed, Active, or Backlog');
+                }
+                
+                // Check for common errors
+                if (decision_status.includes('|')) {
+                    console.error('ERROR: decision_status contains pipe character!');
+                    console.error(`decision_status = "${decision_status}"`);
+                    console.error('This likely means columns are misaligned in the CSV.');
+                    console.error('Please check that decision_status is in column 4 (0-indexed position 3)');
+                }
                 
                 // Parse steps (pipe-separated)
-                const stepNames = values[4] ? values[4].split('|').map(s => s.trim()) : [];
-                console.log('  Parsed steps:', stepNames);
+                const stepNames = steps_raw ? steps_raw.split('|').map(s => s.trim()) : [];
+                console.log('  Parsed step names:', stepNames);
                 
                 // Parse completed steps (comma-separated numbers)
-                const completedIndices = values[5] ? 
-                    values[5].split(',')
+                const completedIndices = completed_steps_raw ? 
+                    completed_steps_raw.split(',')
                         .map(n => parseInt(n.trim()))
                         .filter(n => !isNaN(n)) : [];
-                console.log('  Completed step indices:', completedIndices);
+                console.log('  Completed step numbers:', completedIndices);
                 
                 // Create step objects
-                const steps = stepNames.map((name, idx) => ({
+                const stepsArray = stepNames.map((name, idx) => ({
                     name: name,
                     completed: completedIndices.includes(idx + 1) // Steps are 1-indexed
                 }));
                 
                 // Create decision object
                 const decision = {
-                    decision_id: parseInt(values[0]) || i,
-                    decision_name: values[1] || `Decision ${i}`,
-                    decision_category: values[2] || 'Unknown Category',
-                    decision_status: values[3] || 'Backlog', // Should be: Completed, Active, or Backlog
-                    steps: steps.length > 0 ? steps : [{ name: 'No steps defined', completed: false }],
+                    decision_id: parseInt(decision_id) || i,
+                    decision_name: decision_name || `Decision ${i}`,
+                    decision_category: decision_category || 'Unknown',
+                    decision_status: decision_status || 'Backlog',
+                    steps: stepsArray.length > 0 ? stepsArray : [{ name: 'No steps defined', completed: false }],
                     completed_steps: completedIndices,
-                    contact_group: values[6] || ''
+                    contact_group: contact_group || ''
                 };
                 
-                console.log('Created decision object:', decision);
-                
-                // Validate decision_status
-                const validStatuses = ['Completed', 'Active', 'Backlog', 'Active Discussion'];
-                if (!validStatuses.includes(decision.decision_status)) {
-                    console.warn(`WARNING: Unexpected status "${decision.decision_status}" for decision ${decision.decision_id}`);
-                }
-                
+                console.log('Final decision object:', decision);
                 data.push(decision);
             }
             
             console.log('\n=== PARSING COMPLETE ===');
             console.log('Total decisions parsed:', data.length);
+            
+            // Summary of statuses found
+            const statusSummary = {};
+            data.forEach(d => {
+                statusSummary[d.decision_status] = (statusSummary[d.decision_status] || 0) + 1;
+            });
+            console.log('Status summary:', statusSummary);
             
             return data;
         }
