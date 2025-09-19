@@ -473,7 +473,7 @@
                 </div>
                 <div class="summary-stat">
                     <div class="summary-value" id="activeDecisions">0</div>
-                    <div class="summary-label">Active Discussion</div>
+                    <div class="summary-label">Active</div>
                 </div>
                 <div class="summary-stat">
                     <div class="summary-value" id="completedDecisions">0</div>
@@ -487,7 +487,7 @@
             
             <div class="filter-controls">
                 <button class="filter-btn active" onclick="filterDecisions('all')">All Decisions</button>
-                <button class="filter-btn" onclick="filterDecisions('active')">Active Discussion</button>
+                <button class="filter-btn" onclick="filterDecisions('active')">Active</button>
                 <button class="filter-btn" onclick="filterDecisions('completed')">Completed</button>
                 <button class="filter-btn" onclick="filterDecisions('backlog')">Backlog</button>
                 
@@ -523,7 +523,7 @@
         let currentView = 'grid';
         let currentFilter = 'all';
 
-        // Alternative robust CSV parsing function
+        // Robust CSV line parsing function
         function parseCSVLine(line) {
             const result = [];
             let current = '';
@@ -554,7 +554,7 @@
             return result;
         }
         
-        // Function to parse CSV text
+        // Function to parse CSV text - ALIGNED WITH EXACT STRUCTURE
         function parseCSV(csvText) {
             // Normalize line endings
             csvText = csvText.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
@@ -562,12 +562,19 @@
             
             if (lines.length === 0) return [];
             
-            console.log('CSV Lines found:', lines.length);
-            console.log('Headers:', lines[0]);
+            console.log('=== CSV PARSING DEBUG ===');
+            console.log('Total lines found:', lines.length);
+            console.log('First line (headers):', lines[0]);
             
-            // Parse headers
+            // Parse headers to verify structure
             const headers = parseCSVLine(lines[0]);
-            console.log('Parsed headers:', headers);
+            console.log('Expected columns: decision_id, decision_name, decision_category, decision_status, steps, completed_steps, contact_group');
+            console.log('Actual headers found:', headers);
+            
+            // Verify we have the right number of columns
+            if (headers.length !== 7) {
+                console.warn(`WARNING: Expected 7 columns but found ${headers.length}`);
+            }
             
             // Parse data rows
             const data = [];
@@ -575,10 +582,10 @@
                 const line = lines[i].trim();
                 if (!line) continue; // Skip empty lines
                 
-                console.log(`Line ${i}:`, line);
+                console.log(`\n--- Parsing Row ${i} ---`);
+                console.log('Raw line:', line);
                 
                 const values = parseCSVLine(line);
-                console.log(`Row ${i} values:`, values);
                 
                 // Clean up values - remove quotes if present
                 for (let j = 0; j < values.length; j++) {
@@ -588,31 +595,56 @@
                     }
                 }
                 
-                // Create decision object with new field names and decision_status
+                console.log('Parsed values:');
+                console.log('  [0] decision_id:', values[0]);
+                console.log('  [1] decision_name:', values[1]);
+                console.log('  [2] decision_category:', values[2]);
+                console.log('  [3] decision_status:', values[3]);
+                console.log('  [4] steps:', values[4]);
+                console.log('  [5] completed_steps:', values[5]);
+                console.log('  [6] contact_group:', values[6]);
+                
+                // Parse steps (pipe-separated)
                 const stepNames = values[4] ? values[4].split('|').map(s => s.trim()) : [];
-                const completedIndices = values[5] ? values[5].split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n)) : [];
+                console.log('  Parsed steps:', stepNames);
                 
-                console.log(`Row ${i} steps:`, stepNames);
-                console.log(`Row ${i} completed:`, completedIndices);
+                // Parse completed steps (comma-separated numbers)
+                const completedIndices = values[5] ? 
+                    values[5].split(',')
+                        .map(n => parseInt(n.trim()))
+                        .filter(n => !isNaN(n)) : [];
+                console.log('  Completed step indices:', completedIndices);
                 
+                // Create step objects
                 const steps = stepNames.map((name, idx) => ({
                     name: name,
-                    completed: completedIndices.includes(idx + 1)
+                    completed: completedIndices.includes(idx + 1) // Steps are 1-indexed
                 }));
                 
+                // Create decision object
                 const decision = {
                     decision_id: parseInt(values[0]) || i,
                     decision_name: values[1] || `Decision ${i}`,
-                    decision_category: values[2] || 'Unknown',
-                    decision_status: values[3] || 'Backlog',
+                    decision_category: values[2] || 'Unknown Category',
+                    decision_status: values[3] || 'Backlog', // Should be: Completed, Active, or Backlog
                     steps: steps.length > 0 ? steps : [{ name: 'No steps defined', completed: false }],
                     completed_steps: completedIndices,
                     contact_group: values[6] || ''
                 };
                 
-                console.log(`Decision ${i}:`, decision);
+                console.log('Created decision object:', decision);
+                
+                // Validate decision_status
+                const validStatuses = ['Completed', 'Active', 'Backlog', 'Active Discussion'];
+                if (!validStatuses.includes(decision.decision_status)) {
+                    console.warn(`WARNING: Unexpected status "${decision.decision_status}" for decision ${decision.decision_id}`);
+                }
+                
                 data.push(decision);
             }
+            
+            console.log('\n=== PARSING COMPLETE ===');
+            console.log('Total decisions parsed:', data.length);
             
             return data;
         }
@@ -662,7 +694,7 @@
                         decision_id: 1,
                         decision_name: "Customer Analytics Platform",
                         decision_category: "Customer Intelligence",
-                        decision_status: "Active Discussion",
+                        decision_status: "Active",
                         steps: [
                             { name: "Identify Requirements", completed: true },
                             { name: "Shape Solution", completed: true },
@@ -676,7 +708,7 @@
                         decision_id: 2,
                         decision_name: "Marketing Attribution Tool",
                         decision_category: "Marketing",
-                        decision_status: "Active Discussion",
+                        decision_status: "Active",
                         steps: [
                             { name: "Research Tools", completed: true },
                             { name: "Define Budget", completed: true },
@@ -730,15 +762,21 @@
             const isCompleted = progress === 100;
             const stepCount = decision.steps ? decision.steps.length : 0;
             
-            // Determine status badge color
+            // Determine status badge color based on actual status values
             let statusColor = '#64748b'; // default gray
-            if (decision.decision_status === 'Active Discussion') {
+            const status = (decision.decision_status || '').trim();
+            
+            if (status === 'Active' || status === 'active' || 
+                status === 'Active Discussion' || status === 'active discussion') {
                 statusColor = '#0079FF';
-            } else if (decision.decision_status === 'Completed') {
+            } else if (status === 'Completed' || status === 'completed') {
                 statusColor = '#10b981';
-            } else if (decision.decision_status === 'Backlog') {
+            } else if (status === 'Backlog' || status === 'backlog') {
                 statusColor = '#94a3b8';
             }
+            
+            // Display the status as provided in the CSV
+            const displayStatus = decision.decision_status || 'Unknown';
             
             return `
                 <div class="decision-card" data-id="${decision.decision_id}" onclick="toggleCard(${decision.decision_id})">
@@ -748,7 +786,7 @@
                             <div style="display: flex; gap: 10px; align-items: center; margin-top: 5px;">
                                 <span class="card-category">${decision.decision_category}</span>
                                 <span style="font-size: 0.75em; padding: 3px 8px; background: ${statusColor}20; color: ${statusColor}; border-radius: 4px; font-weight: 600;">
-                                    ${decision.decision_status}
+                                    ${displayStatus}
                                 </span>
                             </div>
                         </div>
@@ -810,15 +848,20 @@
         function createListRow(decision) {
             const progress = calculateProgress(decision.steps);
             
-            // Determine status color
+            // Determine status color based on actual values
             let statusColor = '#64748b';
-            if (decision.decision_status === 'Active Discussion') {
+            const status = (decision.decision_status || '').trim();
+            
+            if (status === 'Active' || status === 'active' || 
+                status === 'Active Discussion' || status === 'active discussion') {
                 statusColor = '#0079FF';
-            } else if (decision.decision_status === 'Completed') {
+            } else if (status === 'Completed' || status === 'completed') {
                 statusColor = '#10b981';
-            } else if (decision.decision_status === 'Backlog') {
+            } else if (status === 'Backlog' || status === 'backlog') {
                 statusColor = '#94a3b8';
             }
+            
+            const displayStatus = decision.decision_status || 'Unknown';
             
             return `
                 <div class="list-row" onclick="toggleCard(${decision.decision_id})">
@@ -826,7 +869,7 @@
                     <div>${decision.decision_category}</div>
                     <div>
                         <span style="font-size: 0.8em; padding: 3px 8px; background: ${statusColor}20; color: ${statusColor}; border-radius: 4px; font-weight: 600;">
-                            ${decision.decision_status}
+                            ${displayStatus}
                         </span>
                     </div>
                     <div>${decision.contact_group || '-'}</div>
@@ -854,27 +897,34 @@
             
             let filteredDecisions = decisions;
             
-            console.log('All decisions before filtering:', decisions);
+            console.log('=== FILTERING DEBUG ===');
+            console.log('All decisions:', decisions);
             console.log('Current filter:', currentFilter);
             
             if (currentFilter === 'active') {
                 filteredDecisions = decisions.filter(d => {
                     const status = (d.decision_status || '').trim();
-                    return status === 'Active Discussion' || status === 'active discussion' || status === 'Active' || status === 'active';
+                    // Match "Active" or "Active Discussion"
+                    return status === 'Active' || status === 'active' || 
+                           status === 'Active Discussion' || status === 'active discussion';
                 });
+                console.log('Active filtered:', filteredDecisions);
             } else if (currentFilter === 'completed') {
                 filteredDecisions = decisions.filter(d => {
                     const status = (d.decision_status || '').trim();
-                    return status === 'Completed' || status === 'completed' || status === 'Complete' || status === 'complete';
+                    return status === 'Completed' || status === 'completed' || 
+                           status === 'Complete' || status === 'complete';
                 });
+                console.log('Completed filtered:', filteredDecisions);
             } else if (currentFilter === 'backlog') {
                 filteredDecisions = decisions.filter(d => {
                     const status = (d.decision_status || '').trim();
                     return status === 'Backlog' || status === 'backlog';
                 });
+                console.log('Backlog filtered:', filteredDecisions);
             }
             
-            console.log('Filtered decisions:', filteredDecisions);
+            console.log('Final filtered decisions:', filteredDecisions.length);
             
             gridContainer.innerHTML = filteredDecisions.map(d => createDecisionCard(d)).join('');
             listContainer.innerHTML = filteredDecisions.map(d => createListRow(d)).join('');
@@ -887,12 +937,14 @@
             
             const completedDecisions = decisions.filter(d => {
                 const status = (d.decision_status || '').trim();
-                return status === 'Completed' || status === 'completed' || status === 'Complete' || status === 'complete';
+                return status === 'Completed' || status === 'completed';
             }).length;
             
             const activeDecisions = decisions.filter(d => {
                 const status = (d.decision_status || '').trim();
-                return status === 'Active Discussion' || status === 'active discussion' || status === 'Active' || status === 'active';
+                // Count both "Active" and "Active Discussion"
+                return status === 'Active' || status === 'active' || 
+                       status === 'Active Discussion' || status === 'active discussion';
             }).length;
             
             const backlogDecisions = decisions.filter(d => {
@@ -900,7 +952,21 @@
                 return status === 'Backlog' || status === 'backlog';
             }).length;
             
-            console.log('Stats - Total:', totalDecisions, 'Active:', activeDecisions, 'Completed:', completedDecisions, 'Backlog:', backlogDecisions);
+            console.log('=== STATS DEBUG ===');
+            console.log('Total:', totalDecisions);
+            console.log('Active:', activeDecisions);
+            console.log('Completed:', completedDecisions);
+            console.log('Backlog:', backlogDecisions);
+            
+            // Log any decisions with unrecognized status
+            const unrecognized = decisions.filter(d => {
+                const status = (d.decision_status || '').trim();
+                return !['Active', 'active', 'Active Discussion', 'active discussion', 
+                        'Completed', 'completed', 'Backlog', 'backlog'].includes(status);
+            });
+            if (unrecognized.length > 0) {
+                console.warn('Decisions with unrecognized status:', unrecognized);
+            }
             
             document.getElementById('totalDecisions').textContent = totalDecisions;
             document.getElementById('completedDecisions').textContent = completedDecisions;
