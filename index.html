@@ -581,7 +581,7 @@
             try {
                 // Add timestamp to prevent caching issues when CSV is updated
                 const timestamp = new Date().getTime();
-                const response = await fetch(`decisionlog.csv?t=${timestamp}`);
+                const response = await fetch(`decision-log.csv?t=${timestamp}`);
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
@@ -601,7 +601,7 @@
                             { name: "Step 2", completed: false },
                             { name: "Step 3", completed: false }
                         ],
-                        contact_group: "Sample Group - Add decisionlog.csv to load real data"
+                        contact_group: "Sample Group - Add decision-log.csv to load real data"
                     }];
                 }
                 
@@ -610,7 +610,7 @@
                 
             } catch (error) {
                 console.error('Error loading CSV:', error);
-                console.log('Using sample data instead. Make sure decisionlog.csv is in the same folder.');
+                console.log('Using sample data instead. Make sure decision-log.csv is in the same folder.');
                 
                 // Fallback sample data if CSV cannot be loaded
                 decisions = [
@@ -900,7 +900,7 @@
             // Save to localStorage as backup
             // Note: To persist changes, you would need to save back to CSV on the server
             localStorage.setItem('analyticsDecisions', JSON.stringify(decisions));
-            console.log('Changes saved to localStorage. To persist, update your decisionlog.csv file.');
+            console.log('Changes saved to localStorage. To persist, update your decision-log.csv file.');
         }
 
         function loadData() {
