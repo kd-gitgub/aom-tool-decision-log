@@ -1010,7 +1010,31 @@
                 }
             });
             
+            const wasExpanded = card.classList.contains('expanded');
             card.classList.toggle('expanded');
+            
+            // If card is now expanded, scroll it into view
+            if (!wasExpanded && card.classList.contains('expanded')) {
+                // Wait for the expansion animation to start
+                setTimeout(() => {
+                    // Calculate the top position with some offset for better visibility
+                    const headerHeight = document.querySelector('.dashboard-header').offsetHeight;
+                    const scrollPosition = card.offsetTop - headerHeight - 20; // 20px extra padding
+                    
+                    // Smooth scroll to the card
+                    window.scrollTo({
+                        top: scrollPosition,
+                        behavior: 'smooth'
+                    });
+                    
+                    // Alternative method that works better in some browsers
+                    // card.scrollIntoView({ 
+                    //     behavior: 'smooth', 
+                    //     block: 'start',
+                    //     inline: 'nearest' 
+                    // });
+                }, 100); // Small delay to allow expansion to begin
+            }
         }
 
         function toggleStep(event, decisionId, stepIndex) {
