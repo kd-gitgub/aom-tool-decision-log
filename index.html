@@ -782,11 +782,12 @@
                             </div>
                             
                             ${decision.contact_group ? `
-                            <div style="min-width: 200px; padding: 20px; background: #f8fafc; border-radius: 12px; border-left: 4px solid #0079FF;">
+                            <div style="min-width: 200px; padding: 20px; background: #f8fafc; border-radius: 12px;">
                                 <div style="font-size: 0.85em; color: #64748b; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Contact Group</div>
                                 <div style="display: flex; flex-direction: column; gap: 8px;">
-                                    ${decision.contact_group.split('|').map(name => name.trim()).filter(name => name).map(name => `
-                                        <div style="font-size: 1em; color: #1e293b; font-weight: 500; padding: 6px 0; border-bottom: 1px solid #e2e8f0;">
+                                    ${decision.contact_group.split('|').map(name => name.trim()).filter(name => name).map((name, index) => `
+                                        <div style="font-size: 1em; color: #1e293b; font-weight: 500; padding: 6px 0; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center;">
+                                            <span style="color: #94a3b8; margin-right: 10px; font-weight: 600; font-size: 0.9em;">${index + 1}.</span>
                                             ${name}
                                         </div>
                                     `).join('')}
@@ -1024,6 +1025,16 @@
         // Initialize dashboard
         window.addEventListener('DOMContentLoaded', () => {
             loadData();
+            
+            // Add ESC key listener to close expanded cards
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape' || event.key === 'Esc') {
+                    const expandedCard = document.querySelector('.decision-card.expanded');
+                    if (expandedCard) {
+                        expandedCard.classList.remove('expanded');
+                    }
+                }
+            });
         });
     </script>
 </body>
