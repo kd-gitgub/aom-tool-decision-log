@@ -628,6 +628,8 @@
                         decision_id: parseInt(row.decision_id) || (idx + 1),
                         decision_name: row.decision_name || `Decision ${idx + 1}`,
                         decision_category: row.decision_category || 'Unknown',
+                        decision_description: row.decision_description || '',
+                        decision_material: row.decision_material || '',
                         decision_status: status,
                         steps: stepsArray.length > 0 ? stepsArray : [{ name: 'No steps defined', completed: false }],
                         completed_steps: completedIndices,
@@ -650,6 +652,8 @@
                         decision_id: 1,
                         decision_name: "Customer Analytics Platform",
                         decision_category: "Customer Intelligence",
+                        decision_description: "Implementing a comprehensive analytics platform to gain deeper insights into customer behavior, preferences, and journey patterns across all touchpoints.",
+                        decision_material: "https://example.com/analytics-platform-docs",
                         decision_status: "Active",
                         steps: [
                             { name: "Identify Requirements", completed: true },
@@ -664,6 +668,8 @@
                         decision_id: 2,
                         decision_name: "Marketing Attribution Tool",
                         decision_category: "Marketing",
+                        decision_description: "Selecting and implementing a multi-touch attribution solution to better understand marketing channel effectiveness and optimize spend allocation.",
+                        decision_material: "https://example.com/attribution-research",
                         decision_status: "Active",
                         steps: [
                             { name: "Research Tools", completed: true },
@@ -761,6 +767,24 @@
                     </div>
                     
                     <div class="expanded-content">
+                        ${(decision.decision_description || decision.decision_material) ? `
+                        <div style="margin-bottom: 30px; padding: 20px; background: #fafafa; border-radius: 12px; border: 1px solid #e2e8f0;">
+                            ${decision.decision_description ? `
+                            <div style="margin-bottom: ${decision.decision_material ? '16px' : '0'};">
+                                <h4 style="font-size: 0.85em; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">Decision Description</h4>
+                                <p style="color: #1e293b; font-size: 1em; line-height: 1.6;">${decision.decision_description}</p>
+                            </div>
+                            ` : ''}
+                            ${decision.decision_material ? `
+                            <a href="${decision.decision_material}" target="_blank" style="display: inline-block; text-decoration: none;">
+                                <button style="padding: 10px 20px; background: #0079FF; color: white; border: none; border-radius: 8px; font-size: 0.9em; font-weight: 500; cursor: pointer; transition: background 0.2s;">
+                                    📄 Background & reading material
+                                </button>
+                            </a>
+                            ` : ''}
+                        </div>
+                        ` : ''}
+                        
                         <div style="display: flex; gap: 30px; align-items: flex-start;">
                             <div class="detailed-steps" style="flex: 1;">
                                 ${decision.steps.map((step, index) => {
