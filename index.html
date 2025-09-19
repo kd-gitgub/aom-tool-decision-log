@@ -771,14 +771,18 @@
                         <div style="margin-bottom: 30px; padding: 20px; background: #fafafa; border-radius: 12px; border: 1px solid #e2e8f0;">
                             ${decision.decision_description ? `
                             <div style="margin-bottom: ${decision.decision_material ? '16px' : '0'};">
-                                <h4 style="font-size: 0.85em; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">Decision Description</h4>
                                 <p style="color: #1e293b; font-size: 1em; line-height: 1.6;">${decision.decision_description}</p>
                             </div>
                             ` : ''}
                             ${decision.decision_material ? `
                             <a href="${decision.decision_material}" target="_blank" style="display: inline-block; text-decoration: none;">
-                                <button style="padding: 10px 20px; background: #0079FF; color: white; border: none; border-radius: 8px; font-size: 0.9em; font-weight: 500; cursor: pointer; transition: background 0.2s;">
-                                    📄 Background & reading material
+                                <button style="padding: 12px 24px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; font-size: 0.95em; font-weight: 600; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);" 
+                                        onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(102, 126, 234, 0.4)';" 
+                                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(102, 126, 234, 0.3)';">
+                                    Decision material
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M5 12L19 12M19 12L12 5M19 12L12 19"/>
+                                    </svg>
                                 </button>
                             </a>
                             ` : ''}
