@@ -78,6 +78,29 @@
             align-items: center;
         }
 
+        .filter-dropdown {
+            padding: 8px 12px;
+            border: 1px solid #0079FF;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #0079FF;
+            font-size: 0.9em;
+            min-width: 140px;
+        }
+
+        .filter-dropdown:focus {
+            outline: none;
+            border-color: #0079FF;
+            box-shadow: 0 0 0 2px rgba(0, 121, 255, 0.1);
+        }
+
+        .filter-dropdown:hover {
+            border-color: #0079FF;
+            opacity: 0.9;
+        }
+
         .filter-btn {
             padding: 8px 16px;
             border: 1px solid #0079FF;
@@ -519,6 +542,10 @@
                 <button class="filter-btn" onclick="filterDecisions('completed')">Completed</button>
                 <button class="filter-btn" onclick="filterDecisions('backlog')">Backlog</button>
                 
+                <select class="filter-dropdown" id="levelFilter" onchange="filterByLevel()">
+                    <option value="all">Decision Level</option>
+                </select>
+                
                 <div class="view-toggle">
                     <button class="view-btn active" onclick="setView('grid')">Grid</button>
                     <button class="view-btn" onclick="setView('list')">List</button>
@@ -550,6 +577,7 @@
         let decisions = [];
         let currentView = 'grid';
         let currentFilter = 'all';
+        let currentLevelFilter = 'all';
 
         // Function to load decisions from CSV file using PapaParse
         async function loadDecisionsFromCSV() {
@@ -658,6 +686,7 @@
                 console.log(`Successfully loaded ${decisions.length} decisions from CSV`);
                 console.log('Final decisions:', decisions);
                 
+                populateLevelFilter();
                 renderDecisions();
                 
             } catch (error) {
@@ -702,9 +731,35 @@
                         contact_group: "Marketing Ops | Analytics Team"
                     }
                 ];
+                populateLevelFilter();
                 renderDecisions();
             }
         }
+
+        function populateLevelFilter() {
+            const levelDropdown = document.getElementById('levelFilter');
+            
+            // Get unique decision levels from the data
+            const uniqueLevels = [...new Set(decisions
+                .map(d => d.decision_level)
+                .filter(level => level && level.trim() !== '')
+            )].sort();
+            
+            // Clear existing options except "Decision Level"
+            levelDropdown.innerHTML = '<option value="all">Decision Level</option>';
+            
+            // Add options for each unique level
+            uniqueLevels.forEach(level => {
+                const option = document.createElement('option');
+                option.value = level;
+                option.textContent = level;
+                levelDropdown.appendChild(option);
+            });
+        }
+
+        function filterByLevel() {
+            currentLevelFilter = document.getElementById('levelFilter').value;
+            renderDecisions();
 
         function calculateProgress(steps) {
             if (!steps || steps.length === 0) return 0;
@@ -930,7 +985,9 @@
             console.log('=== FILTERING DEBUG ===');
             console.log('All decisions:', decisions);
             console.log('Current filter:', currentFilter);
+            console.log('Current level filter:', currentLevelFilter);
             
+            // Apply status filter
             if (currentFilter === 'active') {
                 filteredDecisions = decisions.filter(d => {
                     const status = (d.decision_status || '').trim();
@@ -952,6 +1009,14 @@
                     return status === 'Backlog' || status === 'backlog';
                 });
                 console.log('Backlog filtered:', filteredDecisions);
+            }
+            
+            // Apply level filter
+            if (currentLevelFilter !== 'all') {
+                filteredDecisions = filteredDecisions.filter(d => {
+                    return (d.decision_level || '').trim() === currentLevelFilter;
+                });
+                console.log('Level filtered:', filteredDecisions);
             }
             
             console.log('Final filtered decisions:', filteredDecisions.length);
