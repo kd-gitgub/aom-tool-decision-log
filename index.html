@@ -593,7 +593,7 @@
                         </div>
                         <div class="dropdown-content">
                             <label class="dropdown-option">
-                                <input type="checkbox" value="all" checked onchange="handleStatusChange()"> All
+                                <input type="checkbox" value="all" checked onchange="handleAllStatusChange(this)"> All
                             </label>
                         </div>
                     </div>
@@ -607,7 +607,7 @@
                         </div>
                         <div class="dropdown-content">
                             <label class="dropdown-option">
-                                <input type="checkbox" value="all" checked onchange="handleLevelChange()"> All
+                                <input type="checkbox" value="all" checked onchange="handleAllLevelChange(this)"> All
                             </label>
                         </div>
                     </div>
@@ -802,7 +802,7 @@
             
             statusDropdown.innerHTML = `
                 <label class="dropdown-option">
-                    <input type="checkbox" value="all" checked onchange="handleStatusChange()"> All
+                    <input type="checkbox" value="all" checked onchange="handleAllStatusChange(this)"> All
                 </label>
             `;
             
@@ -810,7 +810,7 @@
                 const option = document.createElement('label');
                 option.className = 'dropdown-option';
                 option.innerHTML = `
-                    <input type="checkbox" value="${status}" onchange="handleStatusChange()"> ${status}
+                    <input type="checkbox" value="${status}" onchange="handleIndividualStatusChange(this)"> ${status}
                 `;
                 statusDropdown.appendChild(option);
             });
@@ -824,7 +824,7 @@
             
             levelDropdown.innerHTML = `
                 <label class="dropdown-option">
-                    <input type="checkbox" value="all" checked onchange="handleLevelChange()"> All
+                    <input type="checkbox" value="all" checked onchange="handleAllLevelChange(this)"> All
                 </label>
             `;
             
@@ -832,10 +832,82 @@
                 const option = document.createElement('label');
                 option.className = 'dropdown-option';
                 option.innerHTML = `
-                    <input type="checkbox" value="${level}" onchange="handleLevelChange()"> ${level}
+                    <input type="checkbox" value="${level}" onchange="handleIndividualLevelChange(this)"> ${level}
                 `;
                 levelDropdown.appendChild(option);
             });
+        }
+
+        // Handle "All" checkbox changes for status
+        function handleAllStatusChange(allCheckbox) {
+            const otherCheckboxes = document.querySelectorAll('#decisionStatusDropdown input[type="checkbox"]:not([value="all"])');
+            
+            if (allCheckbox.checked) {
+                // Check all individual items
+                otherCheckboxes.forEach(cb => cb.checked = true);
+            } else {
+                // Uncheck all individual items
+                otherCheckboxes.forEach(cb => cb.checked = false);
+            }
+            
+            updateStatusLabel();
+            applyFilters();
+        }
+
+        // Handle individual status checkbox changes
+        function handleIndividualStatusChange(checkbox) {
+            const allCheckbox = document.querySelector('#decisionStatusDropdown input[value="all"]');
+            const otherCheckboxes = document.querySelectorAll('#decisionStatusDropdown input[type="checkbox"]:not([value="all"])');
+            
+            // Check if all individual items are now selected
+            const allIndividualChecked = Array.from(otherCheckboxes).every(cb => cb.checked);
+            
+            if (allIndividualChecked) {
+                // If all individual items are checked, check "All" too
+                allCheckbox.checked = true;
+            } else {
+                // If not all individual items are checked, uncheck "All"
+                allCheckbox.checked = false;
+            }
+            
+            updateStatusLabel();
+            applyFilters();
+        }
+
+        // Handle "All" checkbox changes for level
+        function handleAllLevelChange(allCheckbox) {
+            const otherCheckboxes = document.querySelectorAll('#decisionLevelDropdown input[type="checkbox"]:not([value="all"])');
+            
+            if (allCheckbox.checked) {
+                // Check all individual items
+                otherCheckboxes.forEach(cb => cb.checked = true);
+            } else {
+                // Uncheck all individual items
+                otherCheckboxes.forEach(cb => cb.checked = false);
+            }
+            
+            updateLevelLabel();
+            applyFilters();
+        }
+
+        // Handle individual level checkbox changes
+        function handleIndividualLevelChange(checkbox) {
+            const allCheckbox = document.querySelector('#decisionLevelDropdown input[value="all"]');
+            const otherCheckboxes = document.querySelectorAll('#decisionLevelDropdown input[type="checkbox"]:not([value="all"])');
+            
+            // Check if all individual items are now selected
+            const allIndividualChecked = Array.from(otherCheckboxes).every(cb => cb.checked);
+            
+            if (allIndividualChecked) {
+                // If all individual items are checked, check "All" too
+                allCheckbox.checked = true;
+            } else {
+                // If not all individual items are checked, uncheck "All"
+                allCheckbox.checked = false;
+            }
+            
+            updateLevelLabel();
+            applyFilters();
         }
 
         function getSelectedStatuses() {
@@ -846,50 +918,6 @@
         function getSelectedLevels() {
             const checkboxes = document.querySelectorAll('#decisionLevelDropdown input[type="checkbox"]:checked');
             return Array.from(checkboxes).map(cb => cb.value);
-        }
-
-        function handleStatusChange() {
-            const allCheckbox = document.querySelector('#decisionStatusDropdown input[value="all"]');
-            const otherCheckboxes = document.querySelectorAll('#decisionStatusDropdown input[type="checkbox"]:not([value="all"])');
-            
-            if (allCheckbox.checked) {
-                // If "All" was just checked, check all others
-                otherCheckboxes.forEach(cb => cb.checked = true);
-            } else {
-                // If "All" was just unchecked, uncheck all others
-                otherCheckboxes.forEach(cb => cb.checked = false);
-            }
-            
-            // Check if all individual items are checked (auto-check "All")
-            const allIndividualChecked = Array.from(otherCheckboxes).every(cb => cb.checked);
-            if (allIndividualChecked && otherCheckboxes.length > 0) {
-                allCheckbox.checked = true;
-            }
-            
-            updateStatusLabel();
-            applyFilters();
-        }
-
-        function handleLevelChange() {
-            const allCheckbox = document.querySelector('#decisionLevelDropdown input[value="all"]');
-            const otherCheckboxes = document.querySelectorAll('#decisionLevelDropdown input[type="checkbox"]:not([value="all"])');
-            
-            if (allCheckbox.checked) {
-                // If "All" was just checked, check all others
-                otherCheckboxes.forEach(cb => cb.checked = true);
-            } else {
-                // If "All" was just unchecked, uncheck all others
-                otherCheckboxes.forEach(cb => cb.checked = false);
-            }
-            
-            // Check if all individual items are checked (auto-check "All")
-            const allIndividualChecked = Array.from(otherCheckboxes).every(cb => cb.checked);
-            if (allIndividualChecked && otherCheckboxes.length > 0) {
-                allCheckbox.checked = true;
-            }
-            
-            updateLevelLabel();
-            applyFilters();
         }
 
         function updateStatusLabel() {
