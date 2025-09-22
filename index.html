@@ -10,6 +10,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Segoe UI', 'Segoe UI Web (West European)', 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', sans-serif;
         }
 
         body {
@@ -78,26 +79,68 @@
             align-items: center;
         }
 
-        .filter-btn {
+        .decision-type-filter select {
             padding: 8px 16px;
-            border: 1px solid #0079FF;
+            border: 1px solid #001CAD;
             background: white;
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.2s;
-            color: #0079FF;
+            color: #001CAD;
             font-size: 0.9em;
+            font-family: inherit;
+            min-width: 140px;
+            padding-right: 35px;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='%23001CAD'%3e%3cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'%3e%3c/path%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            background-size: 18px;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
         }
 
-        .filter-btn.active {
-            background: #0079FF;
-            color: white;
-            border-color: #0079FF;
-        }
-
-        .filter-btn:hover {
-            border-color: #0079FF;
+        .decision-type-filter select:hover {
+            border-color: #001CAD;
             opacity: 0.9;
+        }
+
+        .decision-type-filter select:focus {
+            outline: none;
+            border-color: #001CAD;
+            box-shadow: 0 0 0 3px rgba(0, 28, 173, 0.1);
+        }
+
+        .decision-level-filter select {
+            padding: 8px 16px;
+            border: 1px solid #001CAD;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #001CAD;
+            font-size: 0.9em;
+            font-family: inherit;
+            min-width: 140px;
+            padding-right: 35px;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='%23001CAD'%3e%3cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'%3e%3c/path%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            background-size: 18px;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+        }
+
+        .decision-level-filter select:hover {
+            border-color: #001CAD;
+            opacity: 0.9;
+        }
+
+        .decision-level-filter select:focus {
+            outline: none;
+            border-color: #001CAD;
+            box-shadow: 0 0 0 3px rgba(0, 28, 173, 0.1);
         }
 
         .view-toggle {
@@ -514,10 +557,20 @@
             </div>
             
             <div class="filter-controls">
-                <button class="filter-btn active" onclick="filterDecisions('all')">All Decisions</button>
-                <button class="filter-btn" onclick="filterDecisions('active')">Active</button>
-                <button class="filter-btn" onclick="filterDecisions('completed')">Completed</button>
-                <button class="filter-btn" onclick="filterDecisions('backlog')">Backlog</button>
+                <div class="decision-type-filter">
+                    <select id="decisionTypeSelect" onchange="filterByDecisionType()">
+                        <option value="all">Decision Type</option>
+                        <option value="active">Active</option>
+                        <option value="completed">Completed</option>
+                        <option value="backlog">Backlog</option>
+                    </select>
+                </div>
+                
+                <div class="decision-level-filter">
+                    <select id="decisionLevelSelect" onchange="filterByDecisionLevel()">
+                        <option value="all">Decision Level</option>
+                    </select>
+                </div>
                 
                 <div class="view-toggle">
                     <button class="view-btn active" onclick="setView('grid')">Grid</button>
@@ -550,6 +603,7 @@
         let decisions = [];
         let currentView = 'grid';
         let currentFilter = 'all';
+        let currentDecisionLevel = 'all';
 
         // Function to load decisions from CSV file using PapaParse
         async function loadDecisionsFromCSV() {
@@ -658,6 +712,7 @@
                 console.log(`Successfully loaded ${decisions.length} decisions from CSV`);
                 console.log('Final decisions:', decisions);
                 
+                populateDecisionLevelFilter();
                 renderDecisions();
                 
             } catch (error) {
@@ -702,6 +757,7 @@
                         contact_group: "Marketing Ops | Analytics Team"
                     }
                 ];
+                populateDecisionLevelFilter();
                 renderDecisions();
             }
         }
@@ -875,6 +931,39 @@
             `;
         }
 
+        function populateDecisionLevelFilter() {
+            const select = document.getElementById('decisionLevelSelect');
+            
+            // Get unique decision levels from the data
+            const uniqueLevels = [...new Set(decisions
+                .map(d => d.decision_level)
+                .filter(level => level && level.trim() !== '')
+            )].sort();
+            
+            // Clear existing options (except the first one)
+            select.innerHTML = '<option value="all">Decision Level</option>';
+            
+            // Add options for each unique decision level
+            uniqueLevels.forEach(level => {
+                const option = document.createElement('option');
+                option.value = level;
+                option.textContent = level;
+                select.appendChild(option);
+            });
+        }
+
+        function filterByDecisionLevel() {
+            const select = document.getElementById('decisionLevelSelect');
+            currentDecisionLevel = select.value;
+            renderDecisions();
+        }
+
+        function filterByDecisionType() {
+            const select = document.getElementById('decisionTypeSelect');
+            currentFilter = select.value;
+            renderDecisions();
+        }
+
         function createListRow(decision) {
             const progress = calculateProgress(decision.steps);
             
@@ -930,9 +1019,11 @@
             console.log('=== FILTERING DEBUG ===');
             console.log('All decisions:', decisions);
             console.log('Current filter:', currentFilter);
+            console.log('Current decision level:', currentDecisionLevel);
             
+            // Apply status filter
             if (currentFilter === 'active') {
-                filteredDecisions = decisions.filter(d => {
+                filteredDecisions = filteredDecisions.filter(d => {
                     const status = (d.decision_status || '').trim();
                     // Match "Active" or "Active Discussion"
                     return status === 'Active' || status === 'active' || 
@@ -940,18 +1031,26 @@
                 });
                 console.log('Active filtered:', filteredDecisions);
             } else if (currentFilter === 'completed') {
-                filteredDecisions = decisions.filter(d => {
+                filteredDecisions = filteredDecisions.filter(d => {
                     const status = (d.decision_status || '').trim();
                     return status === 'Completed' || status === 'completed' || 
                            status === 'Complete' || status === 'complete';
                 });
                 console.log('Completed filtered:', filteredDecisions);
             } else if (currentFilter === 'backlog') {
-                filteredDecisions = decisions.filter(d => {
+                filteredDecisions = filteredDecisions.filter(d => {
                     const status = (d.decision_status || '').trim();
                     return status === 'Backlog' || status === 'backlog';
                 });
                 console.log('Backlog filtered:', filteredDecisions);
+            }
+            
+            // Apply decision level filter
+            if (currentDecisionLevel !== 'all') {
+                filteredDecisions = filteredDecisions.filter(d => {
+                    return d.decision_level && d.decision_level.trim() === currentDecisionLevel;
+                });
+                console.log('Decision level filtered:', filteredDecisions);
             }
             
             console.log('Final filtered decisions:', filteredDecisions.length);
@@ -1032,13 +1131,6 @@
                     });
                 }, 100); // Small delay to allow expansion to begin
             }
-        }
-
-        function filterDecisions(filter) {
-            currentFilter = filter;
-            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            renderDecisions();
         }
 
         function setView(view) {
