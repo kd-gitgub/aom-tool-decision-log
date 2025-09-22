@@ -648,6 +648,7 @@
                         decision_material: row.decision_material || '',
                         group_discussion: row.group_discussion || '',
                         decision_status: status,
+                        decision_level: row.decision_level || '',
                         steps: stepsArray.length > 0 ? stepsArray : [{ name: 'No steps defined', completed: false }],
                         completed_steps: completedIndices,
                         contact_group: row.contact_group || ''
@@ -673,6 +674,7 @@
                         decision_material: "https://example.com/analytics-platform-docs",
                         group_discussion: "https://example.com/discussion-forum",
                         decision_status: "Active",
+                        decision_level: "Strategic",
                         steps: [
                             { name: "Identify Requirements", completed: true },
                             { name: "Shape Solution", completed: true },
@@ -690,6 +692,7 @@
                         decision_material: "https://example.com/attribution-research",
                         group_discussion: "https://example.com/marketing-discussion",
                         decision_status: "Active",
+                        decision_level: "Tactical",
                         steps: [
                             { name: "Research Tools", completed: true },
                             { name: "Define Budget", completed: true },
@@ -764,10 +767,12 @@
                     <div class="card-top-badges" style="margin-left: -4px;">
                         <div></div>
                         <div>
-                            <span class="card-category">${decision.decision_category}</span>
-                            <span style="font-size: 0.75em; padding: 3px 8px; background: ${statusColor}20; color: ${statusColor}; border-radius: 4px; font-weight: 600;">
-                                ${displayStatus}
+                            ${decision.decision_level ? `
+                            <span style="font-size: 0.75em; padding: 3px 8px; background: #f1f5f9; color: #475569; border-radius: 4px; font-weight: 600; border: 1px solid #e2e8f0;">
+                                ${decision.decision_level}
                             </span>
+                            ` : ''}
+                            <span class="card-category" style="${decision.decision_level ? 'margin-left: 8px;' : ''}">${decision.decision_category}</span>
                         </div>
                     </div>
                     
@@ -786,7 +791,12 @@
                     
                     <div class="card-bottom-section">
                         <div style="font-size: 0.85em; color: #64748b; display: flex; justify-content: space-between; align-items: center;">
-                            <span class="decision-id-badge">Decision ID: ${decision.decision_id}</span>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span class="decision-id-badge">Decision ID: ${decision.decision_id}</span>
+                                <span style="font-size: 0.75em; padding: 3px 8px; background: ${statusColor}20; color: ${statusColor}; border-radius: 4px; font-weight: 600;">
+                                    ${displayStatus}
+                                </span>
+                            </div>
                             <span>${stepCount} steps • ${decision.steps.filter(s => s.completed).length} completed</span>
                         </div>
                     </div>
