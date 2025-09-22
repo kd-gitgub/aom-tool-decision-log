@@ -1200,8 +1200,14 @@
             
             let filteredDecisions = decisions;
             
-            // Apply status filter - check if decision status matches any selected status
-            if (!selectedStatuses.includes('all') && selectedStatuses.length > 0) {
+            // Apply status filter
+            if (selectedStatuses.includes('all')) {
+                // If "All" is selected, don't filter by status
+            } else if (selectedStatuses.length === 0) {
+                // If nothing is selected, show no decisions
+                filteredDecisions = [];
+            } else {
+                // Filter to show only selected statuses
                 filteredDecisions = filteredDecisions.filter(d => {
                     const status = (d.decision_status || '').trim();
                     return selectedStatuses.some(selectedStatus => 
@@ -1210,13 +1216,21 @@
                 });
             }
             
-            // Apply decision level filter - check if decision level matches any selected level
-            if (!selectedLevels.includes('all') && selectedLevels.length > 0) {
-                filteredDecisions = filteredDecisions.filter(d => {
-                    return d.decision_level && selectedLevels.some(selectedLevel => 
-                        d.decision_level.trim() === selectedLevel
-                    );
-                });
+            // Apply decision level filter (only if we still have decisions after status filter)
+            if (filteredDecisions.length > 0) {
+                if (selectedLevels.includes('all')) {
+                    // If "All" is selected, don't filter by level
+                } else if (selectedLevels.length === 0) {
+                    // If nothing is selected, show no decisions
+                    filteredDecisions = [];
+                } else {
+                    // Filter to show only selected levels
+                    filteredDecisions = filteredDecisions.filter(d => {
+                        return d.decision_level && selectedLevels.some(selectedLevel => 
+                            d.decision_level.trim() === selectedLevel
+                        );
+                    });
+                }
             }
             
             gridContainer.innerHTML = filteredDecisions.map(d => createDecisionCard(d)).join('');
