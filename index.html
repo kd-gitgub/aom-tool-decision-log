@@ -223,14 +223,6 @@
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
         }
 
-        .decision-card.expanded {
-            grid-column: 1 / -1;
-            max-width: 800px;
-            margin: 0 auto;
-            width: 100%;
-            min-height: auto;
-        }
-
         .card-top-badges {
             display: flex;
             justify-content: flex-start;
@@ -360,19 +352,7 @@
             opacity: 1;
         }
 
-        /* Expanded View */
-        .expanded-content {
-            display: none;
-            margin-top: 30px;
-            padding-top: 30px;
-            border-top: 1px solid #e2e8f0;
-        }
-
-        .decision-card.expanded .expanded-content {
-            display: block;
-            animation: slideDown 0.3s ease;
-        }
-
+        /* Detailed Steps for Modal */
         .detailed-steps {
             margin-bottom: 20px;
         }
@@ -428,17 +408,7 @@
             margin-bottom: 3px;
         }
 
-        .detailed-step-desc {
-            font-size: 0.85em;
-            color: #64748b;
-        }
-
-        .step.active .step-title,
-        .step.completed .step-title {
-            color: #333;
-        }
-
-        .decision-card .detailed-step.active .detailed-step-title {
+        .detailed-step.active .detailed-step-title {
             color: #0079FF;
         }
 
@@ -517,9 +487,67 @@
             transition: background 0.2s;
             cursor: pointer;
         }
+        
+        .list-row > div {
+            display: flex;
+            align-items: center;
+            min-height: 40px;
+        }
 
         .list-row:hover {
             background: #fafafa;
+        }
+
+        /* Modal Overlay for Cards from List View */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 28, 102, 0.8);
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .modal-overlay.active {
+            display: block;
+        }
+
+        .modal-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 800px;
+            margin: 40px auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+            animation: slideDown 0.3s ease;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 32px;
+            height: 32px;
+            background: #f1f5f9;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            color: #64748b;
+            font-size: 18px;
+        }
+
+        .modal-close:hover {
+            background: #e2e8f0;
+            color: #1e293b;
         }
 
         @keyframes pulse {
@@ -643,6 +671,9 @@
                 <div id="listContent"></div>
             </div>
         </div>
+        
+        <!-- Modal Overlay for displaying cards from list view -->
+        <div id="modalOverlay" class="modal-overlay"></div>
     </div>
 
     <script>
@@ -1075,7 +1106,7 @@
             const displayStatus = decision.decision_status || 'Unknown';
             
             return `
-                <div class="decision-card" data-id="${decision.decision_id}" onclick="toggleCard(${decision.decision_id})">
+                <div class="decision-card" data-id="${decision.decision_id}" onclick="openDecisionModal(${decision.decision_id})">
                     <div class="card-top-badges" style="margin-left: -4px;">
                         <div></div>
                         <div>
@@ -1112,77 +1143,6 @@
                             <span>${stepCount} steps • ${decision.steps.filter(s => s.completed).length} completed</span>
                         </div>
                     </div>
-                    
-                    <div class="expanded-content">
-                        ${(decision.decision_description || decision.decision_material || decision.group_discussion) ? `
-                        <div style="margin-bottom: 30px; padding: 20px; background: #fafafa; border-radius: 12px; border: 1px solid #e2e8f0;">
-                            ${decision.decision_description ? `
-                            <div style="margin-bottom: ${(decision.decision_material || decision.group_discussion) ? '16px' : '0'};">
-                                <p style="color: #1e293b; font-size: 1em; line-height: 1.6;">${decision.decision_description}</p>
-                            </div>
-                            ` : ''}
-                            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-                                ${decision.decision_material ? `
-                                <a href="${decision.decision_material}" target="_blank" style="display: inline-block; text-decoration: none;">
-                                    <button style="padding: 12px 24px; background: #0079FF; color: white; border: none; border-radius: 8px; font-size: 0.95em; font-weight: 600; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px;" 
-                                            onmouseover="this.style.transform='translateY(-2px)';" 
-                                            onmouseout="this.style.transform='translateY(0)';">
-                                        Decision material
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M5 12L19 12M19 12L12 5M19 12L12 19"/>
-                                        </svg>
-                                    </button>
-                                </a>
-                                ` : ''}
-                                ${decision.group_discussion ? `
-                                <a href="${decision.group_discussion}" target="_blank" style="display: inline-block; text-decoration: none;">
-                                    <button style="padding: 12px 24px; background: #444791; color: white; border: none; border-radius: 8px; font-size: 0.95em; font-weight: 600; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px;" 
-                                            onmouseover="this.style.transform='translateY(-2px)';" 
-                                            onmouseout="this.style.transform='translateY(0)';">
-                                        Decision Group Teams chat
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M5 12L19 12M19 12L12 5M19 12L12 19"/>
-                                        </svg>
-                                    </button>
-                                </a>
-                                ` : ''}
-                            </div>
-                        </div>
-                        ` : ''}
-                        
-                        <div style="display: flex; gap: 30px; align-items: flex-start;">
-                            <div class="detailed-steps" style="flex: 1;">
-                                ${decision.steps.map((step, index) => {
-                                    const completed = step.completed;
-                                    const active = !completed && decision.steps.slice(0, index).every(s => s.completed);
-                                    return `
-                                        <div class="detailed-step ${completed ? 'completed' : ''} ${active ? 'active' : ''}">
-                                            <div class="detailed-step-indicator">
-                                                ${completed ? '✓' : index + 1}
-                                            </div>
-                                            <div class="detailed-step-content">
-                                                <div class="detailed-step-title">Step ${index + 1}: ${step.name}</div>
-                                            </div>
-                                        </div>
-                                    `;
-                                }).join('')}
-                            </div>
-                            
-                            ${decision.contact_group ? `
-                            <div style="min-width: 200px; padding: 20px; background: #f8fafc; border-radius: 12px;">
-                                <div style="font-size: 0.85em; color: #64748b; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Decision Group</div>
-                                <div style="display: flex; flex-direction: column; gap: 8px;">
-                                    ${decision.contact_group.split('|').map(name => name.trim()).filter(name => name).map((name, index) => `
-                                        <div style="font-size: 1em; color: #1e293b; font-weight: 500; padding: 6px 0; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center;">
-                                            <span style="color: #94a3b8; margin-right: 10px; font-weight: 600; font-size: 0.9em;">${index + 1}.</span>
-                                            ${name}
-                                        </div>
-                                    `).join('')}
-                                </div>
-                            </div>
-                            ` : ''}
-                        </div>
-                    </div>
                 </div>
             `;
         }
@@ -1205,8 +1165,8 @@
             const displayStatus = decision.decision_status || 'Unknown';
             
             return `
-                <div class="list-row" onclick="toggleCard(${decision.decision_id})">
-                    <div style="font-weight: 600; color: #475569;">${decision.decision_id}</div>
+                <div class="list-row" onclick="openDecisionModal(${decision.decision_id})">
+                    <div style="font-weight: 600; color: #475569; justify-content: center;">${decision.decision_id}</div>
                     <div>${decision.decision_name}</div>
                     <div>${decision.decision_category}</div>
                     <div>
@@ -1214,19 +1174,19 @@
                             ${displayStatus}
                         </span>
                     </div>
-                    <div>
-                        <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="flex-direction: column; justify-content: center; align-items: stretch;">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 2px;">
                             <div style="flex: 1; height: 8px; background: #e2e8f0; border-radius: 4px;">
                                 <div style="width: ${progress}%; height: 100%; background: ${progress === 100 ? '#10b981' : '#0079FF'}; border-radius: 4px; transition: width 0.3s;"></div>
                             </div>
-                            <span style="font-weight: 600; color: #64748b; font-size: 0.9em;">${progress}%</span>
+                            <span style="font-weight: 600; color: #64748b; font-size: 0.9em; min-width: 40px;">${progress}%</span>
                         </div>
-                        <div style="font-size: 0.75em; color: #94a3b8; margin-top: 4px;">
+                        <div style="font-size: 0.75em; color: #94a3b8; text-align: center;">
                             ${decision.steps.filter(s => s.completed).length}/${decision.steps.length} steps
                         </div>
                     </div>
-                    <div>
-                        <button class="card-btn btn-view-details" onclick="event.stopPropagation(); toggleCard(${decision.decision_id})">View</button>
+                    <div style="justify-content: center;">
+                        <button class="card-btn btn-view-details" onclick="event.stopPropagation(); openDecisionModal(${decision.decision_id})">View</button>
                     </div>
                 </div>
             `;
@@ -1256,29 +1216,138 @@
             document.getElementById('backlogDecisions').textContent = backlogDecisions;
         }
 
-        function toggleCard(id) {
-            const card = document.querySelector(`.decision-card[data-id="${id}"]`);
-            const allCards = document.querySelectorAll('.decision-card');
+        function openDecisionModal(id) {
+            // Find the decision data
+            const decision = decisions.find(d => d.decision_id === id);
+            if (!decision) return;
             
-            allCards.forEach(c => {
-                if (c !== card) {
-                    c.classList.remove('expanded');
-                }
-            });
+            // Create modal content
+            const modalContent = createModalCard(decision);
+            const modalOverlay = document.getElementById('modalOverlay');
+            modalOverlay.innerHTML = modalContent;
+            modalOverlay.classList.add('active');
             
-            const wasExpanded = card.classList.contains('expanded');
-            card.classList.toggle('expanded');
-            
-            if (!wasExpanded && card.classList.contains('expanded')) {
-                setTimeout(() => {
-                    const headerHeight = document.querySelector('.dashboard-header').offsetHeight;
-                    const scrollPosition = card.offsetTop - headerHeight - 20;
-                    window.scrollTo({
-                        top: scrollPosition,
-                        behavior: 'smooth'
-                    });
-                }, 100);
+            // Add event listener to close button
+            const closeBtn = modalOverlay.querySelector('.modal-close');
+            if (closeBtn) {
+                closeBtn.addEventListener('click', closeModal);
             }
+        }
+        
+        function createModalCard(decision) {
+            const progress = calculateProgress(decision.steps);
+            let statusColor = '#64748b';
+            const status = (decision.decision_status || '').trim();
+            
+            if (status.toLowerCase() === 'active') {
+                statusColor = '#0079FF';
+            } else if (status.toLowerCase() === 'completed') {
+                statusColor = '#10b981';
+            } else if (status.toLowerCase() === 'backlog') {
+                statusColor = '#94a3b8';
+            } else if (status.toLowerCase() === 'shaping') {
+                statusColor = '#f59e0b';
+            }
+            
+            return `
+                <div class="modal-card">
+                    <button class="modal-close">×</button>
+                    <div style="margin-bottom: 20px;">
+                        <span class="decision-id-badge">Decision ID: ${decision.decision_id}</span>
+                        ${decision.decision_level ? `
+                        <span style="font-size: 0.75em; padding: 3px 8px; background: #f1f5f9; color: #475569; border-radius: 4px; font-weight: 600; border: 1px solid #e2e8f0; margin-left: 8px;">
+                            ${decision.decision_level}
+                        </span>
+                        ` : ''}
+                        <span class="card-category" style="margin-left: 8px;">${decision.decision_category}</span>
+                        <span style="font-size: 0.75em; padding: 3px 8px; background: ${statusColor}20; color: ${statusColor}; border-radius: 4px; font-weight: 600; margin-left: 8px;">
+                            ${decision.decision_status}
+                        </span>
+                    </div>
+                    
+                    <h2 style="font-size: 1.8em; color: #1e293b; margin-bottom: 30px;">${decision.decision_name}</h2>
+                    
+                    ${(decision.decision_description || decision.decision_material || decision.group_discussion) ? `
+                    <div style="margin-bottom: 30px; padding: 20px; background: #fafafa; border-radius: 12px; border: 1px solid #e2e8f0;">
+                        ${decision.decision_description ? `
+                        <div style="margin-bottom: ${(decision.decision_material || decision.group_discussion) ? '16px' : '0'};">
+                            <p style="color: #1e293b; font-size: 1em; line-height: 1.6;">${decision.decision_description}</p>
+                        </div>
+                        ` : ''}
+                        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                            ${decision.decision_material ? `
+                            <a href="${decision.decision_material}" target="_blank" style="display: inline-block; text-decoration: none;">
+                                <button style="padding: 12px 24px; background: #0079FF; color: white; border: none; border-radius: 8px; font-size: 0.95em; font-weight: 600; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px;">
+                                    Decision material
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M5 12L19 12M19 12L12 5M19 12L12 19"/>
+                                    </svg>
+                                </button>
+                            </a>
+                            ` : ''}
+                            ${decision.group_discussion ? `
+                            <a href="${decision.group_discussion}" target="_blank" style="display: inline-block; text-decoration: none;">
+                                <button style="padding: 12px 24px; background: #444791; color: white; border: none; border-radius: 8px; font-size: 0.95em; font-weight: 600; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px;">
+                                    Decision Group Teams chat
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M5 12L19 12M19 12L12 5M19 12L12 19"/>
+                                    </svg>
+                                </button>
+                            </a>
+                            ` : ''}
+                        </div>
+                    </div>
+                    ` : ''}
+                    
+                    <div style="display: flex; gap: 30px; align-items: flex-start;">
+                        <div style="flex: 1;">
+                            <h3 style="font-size: 1.1em; color: #1e293b; margin-bottom: 20px;">Progress: ${progress}%</h3>
+                            <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 25px;">
+                                <div style="flex: 1; height: 12px; background: #e2e8f0; border-radius: 6px;">
+                                    <div style="width: ${progress}%; height: 100%; background: ${progress === 100 ? '#10b981' : '#0079FF'}; border-radius: 6px; transition: width 0.3s;"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="detailed-steps">
+                                ${decision.steps.map((step, index) => {
+                                    const completed = step.completed;
+                                    const active = !completed && decision.steps.slice(0, index).every(s => s.completed);
+                                    return `
+                                        <div class="detailed-step ${completed ? 'completed' : ''} ${active ? 'active' : ''}">
+                                            <div class="detailed-step-indicator">
+                                                ${completed ? '✓' : index + 1}
+                                            </div>
+                                            <div class="detailed-step-content">
+                                                <div class="detailed-step-title">Step ${index + 1}: ${step.name}</div>
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                        
+                        ${decision.contact_group ? `
+                        <div style="min-width: 200px; padding: 20px; background: #f8fafc; border-radius: 12px;">
+                            <div style="font-size: 0.85em; color: #64748b; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Decision Group</div>
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                ${decision.contact_group.split('|').map(name => name.trim()).filter(name => name).map((name, index) => `
+                                    <div style="font-size: 1em; color: #1e293b; font-weight: 500; padding: 6px 0; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center;">
+                                        <span style="color: #94a3b8; margin-right: 10px; font-weight: 600; font-size: 0.9em;">${index + 1}.</span>
+                                        ${name}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }
+        
+        function closeModal() {
+            const modalOverlay = document.getElementById('modalOverlay');
+            modalOverlay.classList.remove('active');
+            modalOverlay.innerHTML = '';
         }
 
         function setView(view) {
@@ -1294,18 +1363,39 @@
             }
         }
 
+        function setViewDirect(view) {
+            currentView = view;
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if ((view === 'grid' && btn.textContent === 'Grid') || 
+                    (view === 'list' && btn.textContent === 'List')) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            const container = document.getElementById('decisionsContainer');
+            if (view === 'list') {
+                container.classList.add('list-view');
+            } else {
+                container.classList.remove('list-view');
+            }
+        }
+
         // Initialize dashboard
         window.addEventListener('DOMContentLoaded', () => {
             loadDecisionsFromCSV();
             
-            // Add ESC key listener to close expanded cards and dropdowns
+            // Add ESC key listener to close modals and dropdowns
             document.addEventListener('keydown', function(event) {
                 if (event.key === 'Escape' || event.key === 'Esc') {
-                    const expandedCard = document.querySelector('.decision-card.expanded');
-                    if (expandedCard) {
-                        expandedCard.classList.remove('expanded');
+                    // Check if modal is open first
+                    const modalOverlay = document.getElementById('modalOverlay');
+                    if (modalOverlay && modalOverlay.classList.contains('active')) {
+                        closeModal();
+                        return;
                     }
-                    // Also close any open dropdowns
+                    
+                    // Close any open dropdowns
                     document.querySelectorAll('.custom-dropdown').forEach(dropdown => {
                         dropdown.classList.remove('open');
                         dropdown.querySelector('.dropdown-content').classList.remove('open');
@@ -1315,6 +1405,13 @@
             
             // Close dropdowns when clicking outside
             document.addEventListener('click', function(event) {
+                // Close modal if clicking on overlay background
+                if (event.target.id === 'modalOverlay' && event.target.classList.contains('active')) {
+                    closeModal();
+                    return;
+                }
+                
+                // Close dropdowns when clicking outside
                 if (!event.target.closest('.custom-dropdown')) {
                     document.querySelectorAll('.custom-dropdown').forEach(dropdown => {
                         dropdown.classList.remove('open');
