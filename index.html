@@ -593,7 +593,7 @@
                         </div>
                         <div class="dropdown-content">
                             <label class="dropdown-option">
-                                <input type="checkbox" value="all" checked onchange="handleAllSelection('status', this)"> All
+                                <input type="checkbox" value="all" checked onchange="handleStatusChange()"> All
                             </label>
                         </div>
                     </div>
@@ -607,7 +607,7 @@
                         </div>
                         <div class="dropdown-content">
                             <label class="dropdown-option">
-                                <input type="checkbox" value="all" checked onchange="handleAllSelection('level', this)"> All
+                                <input type="checkbox" value="all" checked onchange="handleLevelChange()"> All
                             </label>
                         </div>
                     </div>
@@ -643,8 +643,6 @@
         // Decisions array will be populated from CSV
         let decisions = [];
         let currentView = 'grid';
-        let selectedStatuses = ['all'];
-        let selectedLevels = ['all'];
 
         // Function to load decisions from CSV file using PapaParse
         async function loadDecisionsFromCSV() {
@@ -711,9 +709,8 @@
                 
                 console.log(`Successfully loaded ${decisions.length} decisions from CSV`);
                 
-                populateDecisionStatusFilter();
-                populateDecisionLevelFilter();
-                renderDecisions();
+                populateFilters();
+                applyFilters();
                 
             } catch (error) {
                 console.error('Error loading CSV:', error);
@@ -790,10 +787,202 @@
                         contact_group: "Business Intelligence"
                     }
                 ];
-                populateDecisionStatusFilter();
-                populateDecisionLevelFilter();
-                renderDecisions();
+                populateFilters();
+                applyFilters();
             }
+        }
+
+        function populateFilters() {
+            // Populate status filter
+            const statusDropdown = document.getElementById('decisionStatusDropdown').querySelector('.dropdown-content');
+            const uniqueStatuses = [...new Set(decisions
+                .map(d => d.decision_status)
+                .filter(status => status && status.trim() !== '')
+            )].sort();
+            
+            statusDropdown.innerHTML = `
+                <label class="dropdown-option">
+                    <input type="checkbox" value="all" checked onchange="handleStatusChange()"> All
+                </label>
+            `;
+            
+            uniqueStatuses.forEach(status => {
+                const option = document.createElement('label');
+                option.className = 'dropdown-option';
+                option.innerHTML = `
+                    <input type="checkbox" value="${status}" onchange="handleStatusChange()"> ${status}
+                `;
+                statusDropdown.appendChild(option);
+            });
+
+            // Populate level filter
+            const levelDropdown = document.getElementById('decisionLevelDropdown').querySelector('.dropdown-content');
+            const uniqueLevels = [...new Set(decisions
+                .map(d => d.decision_level)
+                .filter(level => level && level.trim() !== '')
+            )].sort();
+            
+            levelDropdown.innerHTML = `
+                <label class="dropdown-option">
+                    <input type="checkbox" value="all" checked onchange="handleLevelChange()"> All
+                </label>
+            `;
+            
+            uniqueLevels.forEach(level => {
+                const option = document.createElement('label');
+                option.className = 'dropdown-option';
+                option.innerHTML = `
+                    <input type="checkbox" value="${level}" onchange="handleLevelChange()"> ${level}
+                `;
+                levelDropdown.appendChild(option);
+            });
+        }
+
+        function getSelectedStatuses() {
+            const checkboxes = document.querySelectorAll('#decisionStatusDropdown input[type="checkbox"]:checked');
+            return Array.from(checkboxes).map(cb => cb.value);
+        }
+
+        function getSelectedLevels() {
+            const checkboxes = document.querySelectorAll('#decisionLevelDropdown input[type="checkbox"]:checked');
+            return Array.from(checkboxes).map(cb => cb.value);
+        }
+
+        function handleStatusChange() {
+            const allCheckbox = document.querySelector('#decisionStatusDropdown input[value="all"]');
+            const otherCheckboxes = document.querySelectorAll('#decisionStatusDropdown input[type="checkbox"]:not([value="all"])');
+            
+            if (allCheckbox.checked) {
+                // If "All" was just checked, check all others
+                otherCheckboxes.forEach(cb => cb.checked = true);
+            } else {
+                // If "All" was just unchecked, uncheck all others
+                otherCheckboxes.forEach(cb => cb.checked = false);
+            }
+            
+            // Check if all individual items are checked (auto-check "All")
+            const allIndividualChecked = Array.from(otherCheckboxes).every(cb => cb.checked);
+            if (allIndividualChecked && otherCheckboxes.length > 0) {
+                allCheckbox.checked = true;
+            }
+            
+            updateStatusLabel();
+            applyFilters();
+        }
+
+        function handleLevelChange() {
+            const allCheckbox = document.querySelector('#decisionLevelDropdown input[value="all"]');
+            const otherCheckboxes = document.querySelectorAll('#decisionLevelDropdown input[type="checkbox"]:not([value="all"])');
+            
+            if (allCheckbox.checked) {
+                // If "All" was just checked, check all others
+                otherCheckboxes.forEach(cb => cb.checked = true);
+            } else {
+                // If "All" was just unchecked, uncheck all others
+                otherCheckboxes.forEach(cb => cb.checked = false);
+            }
+            
+            // Check if all individual items are checked (auto-check "All")
+            const allIndividualChecked = Array.from(otherCheckboxes).every(cb => cb.checked);
+            if (allIndividualChecked && otherCheckboxes.length > 0) {
+                allCheckbox.checked = true;
+            }
+            
+            updateLevelLabel();
+            applyFilters();
+        }
+
+        function updateStatusLabel() {
+            const selected = getSelectedStatuses();
+            const label = document.getElementById('decisionStatusLabel');
+            
+            if (selected.includes('all')) {
+                label.textContent = 'All';
+            } else if (selected.length === 0) {
+                label.textContent = 'None';
+            } else if (selected.length === 1) {
+                label.textContent = selected[0];
+            } else {
+                label.textContent = `${selected.length} selected`;
+            }
+        }
+
+        function updateLevelLabel() {
+            const selected = getSelectedLevels();
+            const label = document.getElementById('decisionLevelLabel');
+            
+            if (selected.includes('all')) {
+                label.textContent = 'All';
+            } else if (selected.length === 0) {
+                label.textContent = 'None';
+            } else if (selected.length === 1) {
+                label.textContent = selected[0];
+            } else {
+                label.textContent = `${selected.length} selected`;
+            }
+        }
+
+        function applyFilters() {
+            const selectedStatuses = getSelectedStatuses();
+            const selectedLevels = getSelectedLevels();
+            
+            let filteredDecisions = decisions;
+            
+            // Apply status filter
+            if (selectedStatuses.includes('all')) {
+                // Show all statuses
+            } else if (selectedStatuses.length === 0) {
+                // Show none
+                filteredDecisions = [];
+            } else {
+                // Show only selected statuses
+                filteredDecisions = filteredDecisions.filter(d => {
+                    return selectedStatuses.includes(d.decision_status);
+                });
+            }
+            
+            // Apply level filter (only if we still have decisions)
+            if (filteredDecisions.length > 0) {
+                if (selectedLevels.includes('all')) {
+                    // Show all levels
+                } else if (selectedLevels.length === 0) {
+                    // Show none
+                    filteredDecisions = [];
+                } else {
+                    // Show only selected levels
+                    filteredDecisions = filteredDecisions.filter(d => {
+                        return selectedLevels.includes(d.decision_level);
+                    });
+                }
+            }
+            
+            renderDecisions(filteredDecisions);
+        }
+
+        function renderDecisions(filteredDecisions) {
+            const gridContainer = document.getElementById('decisionsGrid');
+            const listContainer = document.getElementById('listContent');
+            
+            gridContainer.innerHTML = filteredDecisions.map(d => createDecisionCard(d)).join('');
+            listContainer.innerHTML = filteredDecisions.map(d => createListRow(d)).join('');
+            
+            updateSummaryStats();
+        }
+
+        function toggleDropdown(dropdownId) {
+            // Close other dropdowns
+            document.querySelectorAll('.custom-dropdown').forEach(dropdown => {
+                if (dropdown.id !== dropdownId) {
+                    dropdown.classList.remove('open');
+                    dropdown.querySelector('.dropdown-content').classList.remove('open');
+                }
+            });
+            
+            // Toggle current dropdown
+            const dropdown = document.getElementById(dropdownId);
+            const content = dropdown.querySelector('.dropdown-content');
+            dropdown.classList.toggle('open');
+            content.classList.toggle('open');
         }
 
         function calculateProgress(steps) {
@@ -964,191 +1153,6 @@
             `;
         }
 
-        function populateDecisionStatusFilter() {
-            const dropdown = document.getElementById('decisionStatusDropdown').querySelector('.dropdown-content');
-            const uniqueStatuses = [...new Set(decisions
-                .map(d => d.decision_status)
-                .filter(status => status && status.trim() !== '')
-            )].sort();
-            
-            // Keep the All option and add unique statuses
-            dropdown.innerHTML = `
-                <label class="dropdown-option">
-                    <input type="checkbox" value="all" checked onchange="handleAllSelection('status', this)"> All
-                </label>
-            `;
-            
-            uniqueStatuses.forEach(status => {
-                const option = document.createElement('label');
-                option.className = 'dropdown-option';
-                option.innerHTML = `
-                    <input type="checkbox" value="${status.toLowerCase()}" onchange="handleStatusSelection(this)"> ${status}
-                `;
-                dropdown.appendChild(option);
-            });
-            
-            updateStatusLabel();
-        }
-
-        function populateDecisionLevelFilter() {
-            const dropdown = document.getElementById('decisionLevelDropdown').querySelector('.dropdown-content');
-            const uniqueLevels = [...new Set(decisions
-                .map(d => d.decision_level)
-                .filter(level => level && level.trim() !== '')
-            )].sort();
-            
-            // Keep the All option and add unique levels
-            dropdown.innerHTML = `
-                <label class="dropdown-option">
-                    <input type="checkbox" value="all" checked onchange="handleAllSelection('level', this)"> All
-                </label>
-            `;
-            
-            uniqueLevels.forEach(level => {
-                const option = document.createElement('label');
-                option.className = 'dropdown-option';
-                option.innerHTML = `
-                    <input type="checkbox" value="${level}" onchange="handleLevelSelection(this)"> ${level}
-                `;
-                dropdown.appendChild(option);
-            });
-            
-            updateLevelLabel();
-        }
-
-        function toggleDropdown(dropdownId) {
-            // Close other dropdowns
-            document.querySelectorAll('.custom-dropdown').forEach(dropdown => {
-                if (dropdown.id !== dropdownId) {
-                    dropdown.classList.remove('open');
-                    dropdown.querySelector('.dropdown-content').classList.remove('open');
-                }
-            });
-            
-            // Toggle current dropdown
-            const dropdown = document.getElementById(dropdownId);
-            const content = dropdown.querySelector('.dropdown-content');
-            dropdown.classList.toggle('open');
-            content.classList.toggle('open');
-        }
-
-        function handleAllSelection(type, checkbox) {
-            const dropdown = checkbox.closest('.dropdown-content');
-            const allCheckboxes = dropdown.querySelectorAll('input[type="checkbox"]');
-            
-            if (checkbox.checked) {
-                // If "All" is checked, check all other boxes
-                allCheckboxes.forEach(cb => cb.checked = true);
-                if (type === 'status') {
-                    selectedStatuses = ['all', ...Array.from(allCheckboxes).filter(cb => cb.value !== 'all').map(cb => cb.value)];
-                } else {
-                    selectedLevels = ['all', ...Array.from(allCheckboxes).filter(cb => cb.value !== 'all').map(cb => cb.value)];
-                }
-            } else {
-                // If "All" is unchecked, uncheck all other boxes
-                allCheckboxes.forEach(cb => cb.checked = false);
-                if (type === 'status') {
-                    selectedStatuses = [];
-                } else {
-                    selectedLevels = [];
-                }
-            }
-            
-            if (type === 'status') {
-                updateStatusLabel();
-            } else {
-                updateLevelLabel();
-            }
-            renderDecisions();
-        }
-
-        function handleStatusSelection(checkbox) {
-            const dropdown = checkbox.closest('.dropdown-content');
-            const allCheckbox = dropdown.querySelector('input[value="all"]');
-            
-            if (checkbox.checked) {
-                // Add to selected statuses
-                if (!selectedStatuses.includes(checkbox.value)) {
-                    selectedStatuses.push(checkbox.value);
-                }
-                // Check if all individual items are selected
-                const allIndividualChecked = Array.from(dropdown.querySelectorAll('input[type="checkbox"]:not([value="all"])'))
-                    .every(cb => cb.checked);
-                if (allIndividualChecked && !selectedStatuses.includes('all')) {
-                    allCheckbox.checked = true;
-                    selectedStatuses.unshift('all');
-                }
-            } else {
-                // Remove from selected statuses
-                selectedStatuses = selectedStatuses.filter(status => status !== checkbox.value);
-                // Uncheck "All" if it was checked
-                if (allCheckbox.checked) {
-                    allCheckbox.checked = false;
-                    selectedStatuses = selectedStatuses.filter(status => status !== 'all');
-                }
-            }
-            
-            updateStatusLabel();
-            renderDecisions();
-        }
-
-        function handleLevelSelection(checkbox) {
-            const dropdown = checkbox.closest('.dropdown-content');
-            const allCheckbox = dropdown.querySelector('input[value="all"]');
-            
-            if (checkbox.checked) {
-                // Add to selected levels
-                if (!selectedLevels.includes(checkbox.value)) {
-                    selectedLevels.push(checkbox.value);
-                }
-                // Check if all individual items are selected
-                const allIndividualChecked = Array.from(dropdown.querySelectorAll('input[type="checkbox"]:not([value="all"])'))
-                    .every(cb => cb.checked);
-                if (allIndividualChecked && !selectedLevels.includes('all')) {
-                    allCheckbox.checked = true;
-                    selectedLevels.unshift('all');
-                }
-            } else {
-                // Remove from selected levels
-                selectedLevels = selectedLevels.filter(level => level !== checkbox.value);
-                // Uncheck "All" if it was checked
-                if (allCheckbox.checked) {
-                    allCheckbox.checked = false;
-                    selectedLevels = selectedLevels.filter(level => level !== 'all');
-                }
-            }
-            
-            updateLevelLabel();
-            renderDecisions();
-        }
-
-        function updateStatusLabel() {
-            const label = document.getElementById('decisionStatusLabel');
-            if (selectedStatuses.includes('all') || selectedStatuses.length === 0) {
-                label.textContent = 'All';
-            } else if (selectedStatuses.length === 1) {
-                const status = selectedStatuses[0];
-                // Find the original status name (not lowercase)
-                const dropdown = document.getElementById('decisionStatusDropdown');
-                const checkbox = dropdown.querySelector(`input[value="${status}"]`);
-                const originalName = checkbox ? checkbox.parentElement.textContent.trim() : status;
-                label.textContent = originalName;
-            } else {
-                label.textContent = `${selectedStatuses.length} selected`;
-            }
-        }
-
-        function updateLevelLabel() {
-            const label = document.getElementById('decisionLevelLabel');
-            if (selectedLevels.includes('all') || selectedLevels.length === 0) {
-                label.textContent = 'All';
-            } else if (selectedLevels.length === 1) {
-                label.textContent = selectedLevels[0];
-            } else {
-                label.textContent = `${selectedLevels.length} selected`;
-            }
-        }
-
         function createListRow(decision) {
             const progress = calculateProgress(decision.steps);
             let statusColor = '#64748b';
@@ -1192,51 +1196,6 @@
                     </div>
                 </div>
             `;
-        }
-
-        function renderDecisions() {
-            const gridContainer = document.getElementById('decisionsGrid');
-            const listContainer = document.getElementById('listContent');
-            
-            let filteredDecisions = decisions;
-            
-            // Apply status filter
-            if (selectedStatuses.includes('all')) {
-                // If "All" is selected, don't filter by status
-            } else if (selectedStatuses.length === 0) {
-                // If nothing is selected, show no decisions
-                filteredDecisions = [];
-            } else {
-                // Filter to show only selected statuses
-                filteredDecisions = filteredDecisions.filter(d => {
-                    const status = (d.decision_status || '').trim();
-                    return selectedStatuses.some(selectedStatus => 
-                        status.toLowerCase() === selectedStatus.toLowerCase()
-                    );
-                });
-            }
-            
-            // Apply decision level filter (only if we still have decisions after status filter)
-            if (filteredDecisions.length > 0) {
-                if (selectedLevels.includes('all')) {
-                    // If "All" is selected, don't filter by level
-                } else if (selectedLevels.length === 0) {
-                    // If nothing is selected, show no decisions
-                    filteredDecisions = [];
-                } else {
-                    // Filter to show only selected levels
-                    filteredDecisions = filteredDecisions.filter(d => {
-                        return d.decision_level && selectedLevels.some(selectedLevel => 
-                            d.decision_level.trim() === selectedLevel
-                        );
-                    });
-                }
-            }
-            
-            gridContainer.innerHTML = filteredDecisions.map(d => createDecisionCard(d)).join('');
-            listContainer.innerHTML = filteredDecisions.map(d => createListRow(d)).join('');
-            
-            updateSummaryStats();
         }
 
         function updateSummaryStats() {
@@ -1305,7 +1264,7 @@
         window.addEventListener('DOMContentLoaded', () => {
             loadDecisionsFromCSV();
             
-            // Add ESC key listener to close expanded cards
+            // Add ESC key listener to close expanded cards and dropdowns
             document.addEventListener('keydown', function(event) {
                 if (event.key === 'Escape' || event.key === 'Esc') {
                     const expandedCard = document.querySelector('.decision-card.expanded');
