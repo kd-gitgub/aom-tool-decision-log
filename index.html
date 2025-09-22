@@ -496,7 +496,8 @@
 
         .list-header {
             display: grid;
-            grid-template-columns: 2fr 1.2fr 1fr 1.2fr 1fr 100px;
+            grid-template-columns: 60px 2fr 1.2fr 1fr 1.2fr 120px;
+            gap: 20px;
             padding: 15px 20px;
             background: #f8fafc;
             font-weight: 600;
@@ -508,7 +509,8 @@
 
         .list-row {
             display: grid;
-            grid-template-columns: 2fr 1.2fr 1fr 1.2fr 1fr 100px;
+            grid-template-columns: 60px 2fr 1.2fr 1fr 1.2fr 120px;
+            gap: 20px;
             padding: 20px;
             border-bottom: 1px solid #f1f5f9;
             align-items: center;
@@ -551,7 +553,11 @@
                 margin-top: 10px;
             }
 
-            .list-header,
+            .list-header {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
             .list-row {
                 grid-template-columns: 1fr;
                 gap: 10px;
@@ -627,12 +633,12 @@
             <!-- List View -->
             <div class="decisions-list" id="decisionsList">
                 <div class="list-header">
+                    <div>ID</div>
                     <div>Decision Name</div>
                     <div>Category</div>
                     <div>Status</div>
-                    <div>Decision Group</div>
                     <div>Progress</div>
-                    <div>Actions</div>
+                    <div>Decision Card</div>
                 </div>
                 <div id="listContent"></div>
             </div>
@@ -1200,6 +1206,7 @@
             
             return `
                 <div class="list-row" onclick="toggleCard(${decision.decision_id})">
+                    <div style="font-weight: 600; color: #475569;">${decision.decision_id}</div>
                     <div>${decision.decision_name}</div>
                     <div>${decision.decision_category}</div>
                     <div>
@@ -1207,7 +1214,6 @@
                             ${displayStatus}
                         </span>
                     </div>
-                    <div>${decision.contact_group || '-'}</div>
                     <div>
                         <div style="display: flex; align-items: center; gap: 10px;">
                             <div style="flex: 1; height: 8px; background: #e2e8f0; border-radius: 4px;">
