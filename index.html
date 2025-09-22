@@ -79,40 +79,24 @@
             align-items: center;
         }
 
-        .decision-type-filter select {
-            padding: 8px 16px;
-            border: 1px solid #001CAD;
-            background: white;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-            color: #001CAD;
+        .filter-label {
+            font-weight: 600;
+            color: #1e293b;
             font-size: 0.9em;
-            font-family: inherit;
-            min-width: 140px;
-            padding-right: 35px;
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='%23001CAD'%3e%3cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'%3e%3c/path%3e%3c/svg%3e");
-            background-repeat: no-repeat;
-            background-position: right 8px center;
-            background-size: 18px;
-            appearance: none;
-            -webkit-appearance: none;
-            -moz-appearance: none;
+            margin-right: 5px;
         }
 
-        .decision-type-filter select:hover {
-            border-color: #001CAD;
-            opacity: 0.9;
+        .decision-status-filter,
+        .decision-level-filter {
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
-        .decision-type-filter select:focus {
-            outline: none;
-            border-color: #001CAD;
-            box-shadow: 0 0 0 3px rgba(0, 28, 173, 0.1);
-        }
-
+        .decision-status-filter select,
         .decision-level-filter select {
             padding: 8px 16px;
+            padding-right: 35px;
             border: 1px solid #001CAD;
             background: white;
             border-radius: 8px;
@@ -122,7 +106,6 @@
             font-size: 0.9em;
             font-family: inherit;
             min-width: 140px;
-            padding-right: 35px;
             background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='%23001CAD'%3e%3cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'%3e%3c/path%3e%3c/svg%3e");
             background-repeat: no-repeat;
             background-position: right 8px center;
@@ -132,11 +115,13 @@
             -moz-appearance: none;
         }
 
+        .decision-status-filter select:hover,
         .decision-level-filter select:hover {
             border-color: #001CAD;
             opacity: 0.9;
         }
 
+        .decision-status-filter select:focus,
         .decision-level-filter select:focus {
             outline: none;
             border-color: #001CAD;
@@ -557,18 +542,17 @@
             </div>
             
             <div class="filter-controls">
-                <div class="decision-type-filter">
-                    <select id="decisionTypeSelect" onchange="filterByDecisionType()">
-                        <option value="all">Decision Type</option>
-                        <option value="active">Active</option>
-                        <option value="completed">Completed</option>
-                        <option value="backlog">Backlog</option>
+                <div class="decision-status-filter">
+                    <span class="filter-label">Decision Status:</span>
+                    <select id="decisionStatusSelect" onchange="filterByDecisionStatus()">
+                        <option value="all" selected>All</option>
                     </select>
                 </div>
                 
                 <div class="decision-level-filter">
+                    <span class="filter-label">Decision Level:</span>
                     <select id="decisionLevelSelect" onchange="filterByDecisionLevel()">
-                        <option value="all">Decision Level</option>
+                        <option value="all" selected>All</option>
                     </select>
                 </div>
                 
@@ -608,91 +592,50 @@
         // Function to load decisions from CSV file using PapaParse
         async function loadDecisionsFromCSV() {
             try {
-                // Add timestamp to prevent caching issues when CSV is updated
                 const timestamp = new Date().getTime();
                 const response = await fetch(`decision-log.csv?t=${timestamp}`);
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 const csvText = await response.text();
-                console.log('Raw CSV text (first 500 chars):', csvText.substring(0, 500));
                 
-                // Use Papa Parse to handle complex CSV with proper quoting
                 const parseResult = Papa.parse(csvText, {
                     header: true,
                     skipEmptyLines: true,
-                    dynamicTyping: false, // Keep everything as strings for now
+                    dynamicTyping: false,
                     delimiter: ',',
                     quoteChar: '"',
                     escapeChar: '"',
-                    trimHeaders: true, // Trim spaces from headers
-                    complete: function(results) {
-                        console.log('Papa Parse complete. Found', results.data.length, 'rows');
-                        console.log('Headers:', results.meta.fields);
-                        if (results.errors.length > 0) {
-                            console.warn('Parse warnings/errors:', results.errors);
-                        }
-                    }
+                    trimHeaders: true
                 });
-                
-                console.log('Parsed data:', parseResult.data);
-                console.log('First row keys:', Object.keys(parseResult.data[0] || {}));
                 
                 // Transform parsed data to our format
                 decisions = parseResult.data.map((row, idx) => {
-                    console.log(`Processing row ${idx + 1}:`, row);
-                    
-                    // Try to find the decision_status field with different possible key variations
-                    let rawStatus = row.decision_status || row['decision_status'] || '';
-                    
-                    // Debug: log all keys and values for first row
-                    if (idx === 0) {
-                        console.log('First row - all fields:');
-                        Object.keys(row).forEach(key => {
-                            console.log(`  "${key}": "${row[key]}"`);
-                        });
-                    }
+                    const rawStatus = row.decision_status || row['decision_status'] || '';
                     
                     // Parse steps (pipe-separated)
                     const stepsRaw = row.steps || '';
                     const stepNames = stepsRaw ? stepsRaw.split('|').map(s => s.trim()) : [];
-                    console.log('  Step names:', stepNames);
                     
-                    // Parse completed steps (could be comma-separated like "1,2,3" or with decimals like "1,2,3,4")
+                    // Parse completed steps
                     const completedRaw = row.completed_steps || '';
                     let completedIndices = [];
                     if (completedRaw) {
-                        // Split by comma and handle both integers and decimals
                         const parts = completedRaw.split(',').map(s => s.trim());
                         completedIndices = parts.map(part => {
-                            // Take only the integer part if there's a decimal
                             const num = parseFloat(part);
                             return Math.floor(num);
                         }).filter(n => !isNaN(n) && n > 0);
                     }
-                    console.log('  Completed indices:', completedIndices);
                     
                     // Create step objects
                     const stepsArray = stepNames.map((name, idx) => ({
                         name: name,
-                        completed: completedIndices.includes(idx + 1) // Steps are 1-indexed
+                        completed: completedIndices.includes(idx + 1)
                     }));
                     
-                    // Clean and normalize the status - with better debugging
-                    console.log(`  Raw status value: "${rawStatus}"`);
                     let status = rawStatus || 'Backlog';
                     status = status.trim();
-                    
-                    // Normalize status values
-                    if (status.toLowerCase() === 'completed' || status.toLowerCase() === 'complete') {
-                        status = 'Completed';
-                    } else if (status.toLowerCase() === 'active' || status.toLowerCase() === 'active discussion') {
-                        status = 'Active';
-                    } else if (status.toLowerCase() === 'backlog') {
-                        status = 'Backlog';
-                    }
-                    
-                    console.log(`  Final status: "${status}"`);
                     
                     return {
                         decision_id: parseInt(row.decision_id) || (idx + 1),
@@ -707,19 +650,18 @@
                         completed_steps: completedIndices,
                         contact_group: row.contact_group || ''
                     };
-                }).filter(d => d.decision_name && d.decision_name !== ''); // Filter out empty rows
+                }).filter(d => d.decision_name && d.decision_name !== '');
                 
                 console.log(`Successfully loaded ${decisions.length} decisions from CSV`);
-                console.log('Final decisions:', decisions);
                 
+                populateDecisionStatusFilter();
                 populateDecisionLevelFilter();
                 renderDecisions();
                 
             } catch (error) {
                 console.error('Error loading CSV:', error);
-                console.log('Using sample data instead. Make sure decision-log.csv is in the same folder.');
                 
-                // Fallback sample data if CSV cannot be loaded
+                // Fallback sample data
                 decisions = [
                     {
                         decision_id: 1,
@@ -746,7 +688,7 @@
                         decision_description: "Selecting and implementing a multi-touch attribution solution to better understand marketing channel effectiveness and optimize spend allocation.",
                         decision_material: "https://example.com/attribution-research",
                         group_discussion: "https://example.com/marketing-discussion",
-                        decision_status: "Active",
+                        decision_status: "Shaping",
                         decision_level: "Tactical",
                         steps: [
                             { name: "Research Tools", completed: true },
@@ -755,8 +697,43 @@
                             { name: "Pilot Testing", completed: false }
                         ],
                         contact_group: "Marketing Ops | Analytics Team"
+                    },
+                    {
+                        decision_id: 3,
+                        decision_name: "Data Warehouse Migration",
+                        decision_category: "Infrastructure",
+                        decision_description: "Migrating our data warehouse to a more scalable cloud solution.",
+                        decision_material: "",
+                        group_discussion: "",
+                        decision_status: "Completed",
+                        decision_level: "Strategic",
+                        steps: [
+                            { name: "Assess Current State", completed: true },
+                            { name: "Evaluate Options", completed: true },
+                            { name: "Migration Planning", completed: true },
+                            { name: "Execute Migration", completed: true }
+                        ],
+                        contact_group: "Data Engineering"
+                    },
+                    {
+                        decision_id: 4,
+                        decision_name: "Reporting Dashboard Update",
+                        decision_category: "Reporting",
+                        decision_description: "Updating our executive dashboards with new KPIs and visualizations.",
+                        decision_material: "",
+                        group_discussion: "",
+                        decision_status: "Backlog",
+                        decision_level: "Operational",
+                        steps: [
+                            { name: "Requirements Gathering", completed: false },
+                            { name: "Design Mockups", completed: false },
+                            { name: "Development", completed: false },
+                            { name: "Testing", completed: false }
+                        ],
+                        contact_group: "Business Intelligence"
                     }
                 ];
+                populateDecisionStatusFilter();
                 populateDecisionLevelFilter();
                 renderDecisions();
             }
@@ -799,23 +776,22 @@
 
         function createDecisionCard(decision) {
             const progress = calculateProgress(decision.steps);
-            const isCompleted = progress === 100;
             const stepCount = decision.steps ? decision.steps.length : 0;
             
-            // Determine status badge color based on actual status values
-            let statusColor = '#64748b'; // default gray
+            // Determine status badge color
+            let statusColor = '#64748b';
             const status = (decision.decision_status || '').trim();
             
-            if (status === 'Active' || status === 'active' || 
-                status === 'Active Discussion' || status === 'active discussion') {
+            if (status.toLowerCase() === 'active') {
                 statusColor = '#0079FF';
-            } else if (status === 'Completed' || status === 'completed') {
+            } else if (status.toLowerCase() === 'completed') {
                 statusColor = '#10b981';
-            } else if (status === 'Backlog' || status === 'backlog') {
+            } else if (status.toLowerCase() === 'backlog') {
                 statusColor = '#94a3b8';
+            } else if (status.toLowerCase() === 'shaping') {
+                statusColor = '#f59e0b';
             }
             
-            // Display the status as provided in the CSV
             const displayStatus = decision.decision_status || 'Unknown';
             
             return `
@@ -931,19 +907,32 @@
             `;
         }
 
+        function populateDecisionStatusFilter() {
+            const select = document.getElementById('decisionStatusSelect');
+            const uniqueStatuses = [...new Set(decisions
+                .map(d => d.decision_status)
+                .filter(status => status && status.trim() !== '')
+            )].sort();
+            
+            // Keep the All option and add unique statuses
+            select.innerHTML = '<option value="all" selected>All</option>';
+            uniqueStatuses.forEach(status => {
+                const option = document.createElement('option');
+                option.value = status.toLowerCase();
+                option.textContent = status;
+                select.appendChild(option);
+            });
+        }
+
         function populateDecisionLevelFilter() {
             const select = document.getElementById('decisionLevelSelect');
-            
-            // Get unique decision levels from the data
             const uniqueLevels = [...new Set(decisions
                 .map(d => d.decision_level)
                 .filter(level => level && level.trim() !== '')
             )].sort();
             
-            // Clear existing options (except the first one)
-            select.innerHTML = '<option value="all">Decision Level</option>';
-            
-            // Add options for each unique decision level
+            // Keep the All option and add unique levels
+            select.innerHTML = '<option value="all" selected>All</option>';
             uniqueLevels.forEach(level => {
                 const option = document.createElement('option');
                 option.value = level;
@@ -952,32 +941,31 @@
             });
         }
 
+        function filterByDecisionStatus() {
+            const select = document.getElementById('decisionStatusSelect');
+            currentFilter = select.value;
+            renderDecisions();
+        }
+
         function filterByDecisionLevel() {
             const select = document.getElementById('decisionLevelSelect');
             currentDecisionLevel = select.value;
             renderDecisions();
         }
 
-        function filterByDecisionType() {
-            const select = document.getElementById('decisionTypeSelect');
-            currentFilter = select.value;
-            renderDecisions();
-        }
-
         function createListRow(decision) {
             const progress = calculateProgress(decision.steps);
-            
-            // Determine status color based on actual values
             let statusColor = '#64748b';
             const status = (decision.decision_status || '').trim();
             
-            if (status === 'Active' || status === 'active' || 
-                status === 'Active Discussion' || status === 'active discussion') {
+            if (status.toLowerCase() === 'active') {
                 statusColor = '#0079FF';
-            } else if (status === 'Completed' || status === 'completed') {
+            } else if (status.toLowerCase() === 'completed') {
                 statusColor = '#10b981';
-            } else if (status === 'Backlog' || status === 'backlog') {
+            } else if (status.toLowerCase() === 'backlog') {
                 statusColor = '#94a3b8';
+            } else if (status.toLowerCase() === 'shaping') {
+                statusColor = '#f59e0b';
             }
             
             const displayStatus = decision.decision_status || 'Unknown';
@@ -1016,33 +1004,12 @@
             
             let filteredDecisions = decisions;
             
-            console.log('=== FILTERING DEBUG ===');
-            console.log('All decisions:', decisions);
-            console.log('Current filter:', currentFilter);
-            console.log('Current decision level:', currentDecisionLevel);
-            
             // Apply status filter
-            if (currentFilter === 'active') {
+            if (currentFilter !== 'all') {
                 filteredDecisions = filteredDecisions.filter(d => {
                     const status = (d.decision_status || '').trim();
-                    // Match "Active" or "Active Discussion"
-                    return status === 'Active' || status === 'active' || 
-                           status === 'Active Discussion' || status === 'active discussion';
+                    return status.toLowerCase() === currentFilter.toLowerCase();
                 });
-                console.log('Active filtered:', filteredDecisions);
-            } else if (currentFilter === 'completed') {
-                filteredDecisions = filteredDecisions.filter(d => {
-                    const status = (d.decision_status || '').trim();
-                    return status === 'Completed' || status === 'completed' || 
-                           status === 'Complete' || status === 'complete';
-                });
-                console.log('Completed filtered:', filteredDecisions);
-            } else if (currentFilter === 'backlog') {
-                filteredDecisions = filteredDecisions.filter(d => {
-                    const status = (d.decision_status || '').trim();
-                    return status === 'Backlog' || status === 'backlog';
-                });
-                console.log('Backlog filtered:', filteredDecisions);
             }
             
             // Apply decision level filter
@@ -1050,10 +1017,7 @@
                 filteredDecisions = filteredDecisions.filter(d => {
                     return d.decision_level && d.decision_level.trim() === currentDecisionLevel;
                 });
-                console.log('Decision level filtered:', filteredDecisions);
             }
-            
-            console.log('Final filtered decisions:', filteredDecisions.length);
             
             gridContainer.innerHTML = filteredDecisions.map(d => createDecisionCard(d)).join('');
             listContainer.innerHTML = filteredDecisions.map(d => createListRow(d)).join('');
@@ -1065,37 +1029,19 @@
             const totalDecisions = decisions.length;
             
             const completedDecisions = decisions.filter(d => {
-                const status = (d.decision_status || '').trim();
-                return status === 'Completed' || status === 'completed';
+                const status = (d.decision_status || '').trim().toLowerCase();
+                return status === 'completed' || status === 'complete';
             }).length;
             
             const activeDecisions = decisions.filter(d => {
-                const status = (d.decision_status || '').trim();
-                // Count both "Active" and "Active Discussion"
-                return status === 'Active' || status === 'active' || 
-                       status === 'Active Discussion' || status === 'active discussion';
+                const status = (d.decision_status || '').trim().toLowerCase();
+                return status === 'active' || status === 'active discussion';
             }).length;
             
             const backlogDecisions = decisions.filter(d => {
-                const status = (d.decision_status || '').trim();
-                return status === 'Backlog' || status === 'backlog';
+                const status = (d.decision_status || '').trim().toLowerCase();
+                return status === 'backlog';
             }).length;
-            
-            console.log('=== STATS DEBUG ===');
-            console.log('Total:', totalDecisions);
-            console.log('Active:', activeDecisions);
-            console.log('Completed:', completedDecisions);
-            console.log('Backlog:', backlogDecisions);
-            
-            // Log any decisions with unrecognized status
-            const unrecognized = decisions.filter(d => {
-                const status = (d.decision_status || '').trim();
-                return !['Active', 'active', 'Active Discussion', 'active discussion', 
-                        'Completed', 'completed', 'Backlog', 'backlog'].includes(status);
-            });
-            if (unrecognized.length > 0) {
-                console.warn('Decisions with unrecognized status:', unrecognized);
-            }
             
             document.getElementById('totalDecisions').textContent = totalDecisions;
             document.getElementById('completedDecisions').textContent = completedDecisions;
@@ -1116,20 +1062,15 @@
             const wasExpanded = card.classList.contains('expanded');
             card.classList.toggle('expanded');
             
-            // If card is now expanded, scroll it into view
             if (!wasExpanded && card.classList.contains('expanded')) {
-                // Wait for the expansion animation to start
                 setTimeout(() => {
-                    // Calculate the top position with some offset for better visibility
                     const headerHeight = document.querySelector('.dashboard-header').offsetHeight;
-                    const scrollPosition = card.offsetTop - headerHeight - 20; // 20px extra padding
-                    
-                    // Smooth scroll to the card
+                    const scrollPosition = card.offsetTop - headerHeight - 20;
                     window.scrollTo({
                         top: scrollPosition,
                         behavior: 'smooth'
                     });
-                }, 100); // Small delay to allow expansion to begin
+                }, 100);
             }
         }
 
@@ -1146,16 +1087,10 @@
             }
         }
 
-        function loadData() {
-            // Load from CSV using PapaParse
-            loadDecisionsFromCSV();
-        }
-
         // Initialize dashboard
         window.addEventListener('DOMContentLoaded', () => {
-            loadData();
+            loadDecisionsFromCSV();
             
-            // Add ESC key listener to close expanded cards
             document.addEventListener('keydown', function(event) {
                 if (event.key === 'Escape' || event.key === 'Esc') {
                     const expandedCard = document.querySelector('.decision-card.expanded');
