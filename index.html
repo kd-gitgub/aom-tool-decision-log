@@ -466,7 +466,7 @@
 
         .list-header {
             display: grid;
-            grid-template-columns: 60px 2fr 1.2fr 1fr 1.2fr 120px;
+            grid-template-columns: 60px 1fr 2fr 1.2fr 1fr 1.2fr 120px;
             gap: 20px;
             padding: 15px 20px;
             background: #f8fafc;
@@ -483,7 +483,7 @@
 
         .list-row {
             display: grid;
-            grid-template-columns: 60px 2fr 1.2fr 1fr 1.2fr 120px;
+            grid-template-columns: 60px 1fr 2fr 1.2fr 1fr 1.2fr 120px;
             gap: 20px;
             padding: 20px;
             border-bottom: 1px solid #f1f5f9;
@@ -666,6 +666,7 @@
             <div class="decisions-list" id="decisionsList">
                 <div class="list-header">
                     <div>ID</div>
+                    <div>Decision Level</div>
                     <div>Decision Name</div>
                     <div>Category</div>
                     <div>Status</div>
@@ -684,6 +685,7 @@
         // Decisions array will be populated from CSV
         let decisions = [];
         let currentView = 'grid';
+        let currentlyOpenModalId = null;
 
         // Function to load decisions from CSV file using PapaParse
         async function loadDecisionsFromCSV() {
@@ -1110,7 +1112,7 @@
             const displayStatus = decision.decision_status || 'Unknown';
             
             return `
-                <div class="decision-card" data-id="${decision.decision_id}" onclick="openDecisionModal(${decision.decision_id})">
+                <div class="decision-card" data-id="${decision.decision_id}" onclick="toggleDecisionModal(${decision.decision_id})">
                     <div class="card-top-badges" style="margin-left: -4px;">
                         <div></div>
                         <div>
@@ -1169,8 +1171,15 @@
             const displayStatus = decision.decision_status || 'Unknown';
             
             return `
-                <div class="list-row" onclick="openDecisionModal(${decision.decision_id})">
+                <div class="list-row" onclick="toggleDecisionModal(${decision.decision_id})">
                     <div style="font-weight: 600; color: #475569; justify-content: center;">${decision.decision_id}</div>
+                    <div>
+                        ${decision.decision_level ? `
+                        <span style="font-size: 0.8em; padding: 3px 8px; background: #f1f5f9; color: #475569; border-radius: 4px; font-weight: 600; border: 1px solid #e2e8f0;">
+                            ${decision.decision_level}
+                        </span>
+                        ` : '<span style="color: #94a3b8; font-style: italic;">—</span>'}
+                    </div>
                     <div>${decision.decision_name}</div>
                     <div>${decision.decision_category}</div>
                     <div>
@@ -1190,7 +1199,7 @@
                         </div>
                     </div>
                     <div style="justify-content: center;">
-                        <button class="card-btn btn-view-details" onclick="event.stopPropagation(); openDecisionModal(${decision.decision_id})">View</button>
+                        <button class="card-btn btn-view-details" onclick="event.stopPropagation(); toggleDecisionModal(${decision.decision_id})">View</button>
                     </div>
                 </div>
             `;
@@ -1220,10 +1229,24 @@
             document.getElementById('backlogDecisions').textContent = backlogDecisions;
         }
 
+        function toggleDecisionModal(id) {
+            // If the same modal is currently open, close it
+            if (currentlyOpenModalId === id) {
+                closeModal();
+                return;
+            }
+            
+            // Otherwise, open the new modal
+            openDecisionModal(id);
+        }
+
         function openDecisionModal(id) {
             // Find the decision data
             const decision = decisions.find(d => d.decision_id === id);
             if (!decision) return;
+            
+            // Store the currently open modal ID
+            currentlyOpenModalId = id;
             
             // Create modal content
             const modalContent = createModalCard(decision);
@@ -1352,6 +1375,7 @@
             const modalOverlay = document.getElementById('modalOverlay');
             modalOverlay.classList.remove('active');
             modalOverlay.innerHTML = '';
+            currentlyOpenModalId = null; // Reset the currently open modal ID
         }
 
         function setView(view) {
