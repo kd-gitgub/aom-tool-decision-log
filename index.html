@@ -514,6 +514,7 @@
             z-index: 1000;
             padding: 20px;
             overflow-y: auto;
+            cursor: pointer;
         }
 
         .modal-overlay.active {
@@ -529,6 +530,7 @@
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             position: relative;
             animation: slideDown 0.3s ease;
+            cursor: default;
         }
 
         .modal-close {
@@ -1431,12 +1433,17 @@
                 }
             });
             
-            // Close dropdowns when clicking outside
+            // Close modal or dropdowns when clicking outside
             document.addEventListener('click', function(event) {
-                // Close modal if clicking on overlay background
-                if (event.target.id === 'modalOverlay' && event.target.classList.contains('active')) {
-                    closeModal();
-                    return;
+                const modalOverlay = document.getElementById('modalOverlay');
+                
+                // Close modal if clicking on the overlay itself or modal content
+                if (modalOverlay && modalOverlay.classList.contains('active')) {
+                    // Check if click was on the overlay itself or inside the modal content
+                    if (event.target === modalOverlay || event.target.closest('.modal-card')) {
+                        closeModal();
+                        return;
+                    }
                 }
                 
                 // Close dropdowns when clicking outside
