@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AOM Tooling Governance: Decision Log</title>
+    <title>Analytics Decision Dashboard</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <style>
         * {
@@ -412,6 +412,41 @@
             color: #0079FF;
         }
 
+        /* Card Actions */
+        .card-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .card-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .btn-complete-next {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-complete-next:hover {
+            background: #059669;
+        }
+
+        .btn-view-details {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .btn-view-details:hover {
+            background: #e2e8f0;
+        }
+
         /* List View Styles */
         .decisions-list {
             display: none;
@@ -567,24 +602,24 @@
 <body>
     <div class="dashboard-container">
         <div class="dashboard-header">
-            <h1 class="dashboard-title">AOM Tooling Governance: Decision Log</h1>
-            <p class="dashboard-subtitle">Decision router & tracker</p>
+            <h1 class="dashboard-title">Analytics Decision Dashboard</h1>
+            <p class="dashboard-subtitle">Track multiple analytics tooling decisions across your organization</p>
             
             <div class="summary-stats">
                 <div class="summary-stat">
-                    <div class="summary-value" id="totalDecisions">4</div>
+                    <div class="summary-value" id="totalDecisions">0</div>
                     <div class="summary-label">Total Decisions</div>
                 </div>
                 <div class="summary-stat">
-                    <div class="summary-value" id="activeDecisions">1</div>
+                    <div class="summary-value" id="activeDecisions">0</div>
                     <div class="summary-label">Active</div>
                 </div>
                 <div class="summary-stat">
-                    <div class="summary-value" id="completedDecisions">1</div>
+                    <div class="summary-value" id="completedDecisions">0</div>
                     <div class="summary-label">Completed</div>
                 </div>
                 <div class="summary-stat">
-                    <div class="summary-value" id="backlogDecisions">1</div>
+                    <div class="summary-value" id="backlogDecisions">0</div>
                     <div class="summary-label">Backlog</div>
                 </div>
             </div>
@@ -649,81 +684,158 @@
     </div>
 
     <script>
-        // Sample decisions data
-        let decisions = [
-            {
-                decision_id: 1,
-                decision_name: "Customer Analytics Platform",
-                decision_category: "Customer Intelligence",
-                decision_description: "Implementing a comprehensive analytics platform to gain deeper insights into customer behavior, preferences, and journey patterns across all touchpoints.",
-                decision_material: "https://example.com/analytics-platform-docs",
-                group_discussion: "https://example.com/discussion-forum",
-                decision_status: "Active",
-                decision_level: "Strategic",
-                steps: [
-                    { name: "Identify Requirements", completed: true },
-                    { name: "Shape Solution", completed: true },
-                    { name: "Describe Options", completed: true },
-                    { name: "Consult Stakeholders", completed: false },
-                    { name: "Finalize Decision", completed: false }
-                ],
-                contact_group: "Analytics Team | Data Engineering"
-            },
-            {
-                decision_id: 2,
-                decision_name: "Marketing Attribution Tool",
-                decision_category: "Marketing",
-                decision_description: "Selecting and implementing a multi-touch attribution solution to better understand marketing channel effectiveness and optimize spend allocation.",
-                decision_material: "https://example.com/attribution-research",
-                group_discussion: "https://example.com/marketing-discussion",
-                decision_status: "Shaping",
-                decision_level: "Tactical",
-                steps: [
-                    { name: "Research Tools", completed: true },
-                    { name: "Define Budget", completed: true },
-                    { name: "Vendor Evaluation", completed: false },
-                    { name: "Pilot Testing", completed: false }
-                ],
-                contact_group: "Marketing Ops | Analytics Team"
-            },
-            {
-                decision_id: 3,
-                decision_name: "Data Warehouse Migration",
-                decision_category: "Infrastructure",
-                decision_description: "Migrating our data warehouse to a more scalable cloud solution.",
-                decision_material: "",
-                group_discussion: "",
-                decision_status: "Completed",
-                decision_level: "Strategic",
-                steps: [
-                    { name: "Assess Current State", completed: true },
-                    { name: "Evaluate Options", completed: true },
-                    { name: "Migration Planning", completed: true },
-                    { name: "Execute Migration", completed: true }
-                ],
-                contact_group: "Data Engineering"
-            },
-            {
-                decision_id: 4,
-                decision_name: "Reporting Dashboard Update",
-                decision_category: "Reporting",
-                decision_description: "Updating our executive dashboards with new KPIs and visualizations.",
-                decision_material: "",
-                group_discussion: "",
-                decision_status: "Backlog",
-                decision_level: "Operational",
-                steps: [
-                    { name: "Requirements Gathering", completed: false },
-                    { name: "Design Mockups", completed: false },
-                    { name: "Development", completed: false },
-                    { name: "Testing", completed: false }
-                ],
-                contact_group: "Business Intelligence"
-            }
-        ];
-        
+        // Decisions array will be populated from CSV
+        let decisions = [];
         let currentView = 'grid';
         let currentlyOpenModalId = null;
+
+        // Function to load decisions from CSV file using PapaParse
+        async function loadDecisionsFromCSV() {
+            try {
+                const timestamp = new Date().getTime();
+                const response = await fetch(`decision-log.csv?t=${timestamp}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const csvText = await response.text();
+                
+                const parseResult = Papa.parse(csvText, {
+                    header: true,
+                    skipEmptyLines: true,
+                    dynamicTyping: false,
+                    delimiter: ',',
+                    quoteChar: '"',
+                    escapeChar: '"',
+                    trimHeaders: true
+                });
+                
+                // Transform parsed data to our format
+                decisions = parseResult.data.map((row, idx) => {
+                    const rawStatus = row.decision_status || row['decision_status'] || '';
+                    
+                    // Parse steps (pipe-separated)
+                    const stepsRaw = row.steps || '';
+                    const stepNames = stepsRaw ? stepsRaw.split('|').map(s => s.trim()) : [];
+                    
+                    // Parse completed steps
+                    const completedRaw = row.completed_steps || '';
+                    let completedIndices = [];
+                    if (completedRaw) {
+                        const parts = completedRaw.split(',').map(s => s.trim());
+                        completedIndices = parts.map(part => {
+                            const num = parseFloat(part);
+                            return Math.floor(num);
+                        }).filter(n => !isNaN(n) && n > 0);
+                    }
+                    
+                    // Create step objects
+                    const stepsArray = stepNames.map((name, idx) => ({
+                        name: name,
+                        completed: completedIndices.includes(idx + 1)
+                    }));
+                    
+                    let status = rawStatus || 'Backlog';
+                    status = status.trim();
+                    
+                    return {
+                        decision_id: parseInt(row.decision_id) || (idx + 1),
+                        decision_name: row.decision_name || `Decision ${idx + 1}`,
+                        decision_category: row.decision_category || 'Unknown',
+                        decision_description: row.decision_description || '',
+                        decision_material: row.decision_material || '',
+                        group_discussion: row.group_discussion || '',
+                        decision_status: status,
+                        decision_level: row.decision_level || '',
+                        steps: stepsArray.length > 0 ? stepsArray : [{ name: 'No steps defined', completed: false }],
+                        completed_steps: completedIndices,
+                        contact_group: row.contact_group || ''
+                    };
+                }).filter(d => d.decision_name && d.decision_name !== '');
+                
+                console.log(`Successfully loaded ${decisions.length} decisions from CSV`);
+                
+                populateFilters();
+                applyFilters();
+                
+            } catch (error) {
+                console.error('Error loading CSV:', error);
+                
+                // Fallback sample data
+                decisions = [
+                    {
+                        decision_id: 1,
+                        decision_name: "Customer Analytics Platform",
+                        decision_category: "Customer Intelligence",
+                        decision_description: "Implementing a comprehensive analytics platform to gain deeper insights into customer behavior, preferences, and journey patterns across all touchpoints.",
+                        decision_material: "https://example.com/analytics-platform-docs",
+                        group_discussion: "https://example.com/discussion-forum",
+                        decision_status: "Active",
+                        decision_level: "Strategic",
+                        steps: [
+                            { name: "Identify Requirements", completed: true },
+                            { name: "Shape Solution", completed: true },
+                            { name: "Describe Options", completed: true },
+                            { name: "Consult Stakeholders", completed: false },
+                            { name: "Finalize Decision", completed: false }
+                        ],
+                        contact_group: "Analytics Team | Data Engineering"
+                    },
+                    {
+                        decision_id: 2,
+                        decision_name: "Marketing Attribution Tool",
+                        decision_category: "Marketing",
+                        decision_description: "Selecting and implementing a multi-touch attribution solution to better understand marketing channel effectiveness and optimize spend allocation.",
+                        decision_material: "https://example.com/attribution-research",
+                        group_discussion: "https://example.com/marketing-discussion",
+                        decision_status: "Shaping",
+                        decision_level: "Tactical",
+                        steps: [
+                            { name: "Research Tools", completed: true },
+                            { name: "Define Budget", completed: true },
+                            { name: "Vendor Evaluation", completed: false },
+                            { name: "Pilot Testing", completed: false }
+                        ],
+                        contact_group: "Marketing Ops | Analytics Team"
+                    },
+                    {
+                        decision_id: 3,
+                        decision_name: "Data Warehouse Migration",
+                        decision_category: "Infrastructure",
+                        decision_description: "Migrating our data warehouse to a more scalable cloud solution.",
+                        decision_material: "",
+                        group_discussion: "",
+                        decision_status: "Completed",
+                        decision_level: "Strategic",
+                        steps: [
+                            { name: "Assess Current State", completed: true },
+                            { name: "Evaluate Options", completed: true },
+                            { name: "Migration Planning", completed: true },
+                            { name: "Execute Migration", completed: true }
+                        ],
+                        contact_group: "Data Engineering"
+                    },
+                    {
+                        decision_id: 4,
+                        decision_name: "Reporting Dashboard Update",
+                        decision_category: "Reporting",
+                        decision_description: "Updating our executive dashboards with new KPIs and visualizations.",
+                        decision_material: "",
+                        group_discussion: "",
+                        decision_status: "Backlog",
+                        decision_level: "Operational",
+                        steps: [
+                            { name: "Requirements Gathering", completed: false },
+                            { name: "Design Mockups", completed: false },
+                            { name: "Development", completed: false },
+                            { name: "Testing", completed: false }
+                        ],
+                        contact_group: "Business Intelligence"
+                    }
+                ];
+                populateFilters();
+                applyFilters();
+            }
+        }
 
         function populateFilters() {
             // Populate status filter
@@ -776,8 +888,10 @@
             const otherCheckboxes = document.querySelectorAll('#decisionStatusDropdown input[type="checkbox"]:not([value="all"])');
             
             if (allCheckbox.checked) {
+                // Check all individual items
                 otherCheckboxes.forEach(cb => cb.checked = true);
             } else {
+                // Uncheck all individual items
                 otherCheckboxes.forEach(cb => cb.checked = false);
             }
             
@@ -790,11 +904,14 @@
             const allCheckbox = document.querySelector('#decisionStatusDropdown input[value="all"]');
             const otherCheckboxes = document.querySelectorAll('#decisionStatusDropdown input[type="checkbox"]:not([value="all"])');
             
+            // Check if all individual items are now selected
             const allIndividualChecked = Array.from(otherCheckboxes).every(cb => cb.checked);
             
             if (allIndividualChecked) {
+                // If all individual items are checked, check "All" too
                 allCheckbox.checked = true;
             } else {
+                // If not all individual items are checked, uncheck "All"
                 allCheckbox.checked = false;
             }
             
@@ -807,8 +924,10 @@
             const otherCheckboxes = document.querySelectorAll('#decisionLevelDropdown input[type="checkbox"]:not([value="all"])');
             
             if (allCheckbox.checked) {
+                // Check all individual items
                 otherCheckboxes.forEach(cb => cb.checked = true);
             } else {
+                // Uncheck all individual items
                 otherCheckboxes.forEach(cb => cb.checked = false);
             }
             
@@ -821,11 +940,14 @@
             const allCheckbox = document.querySelector('#decisionLevelDropdown input[value="all"]');
             const otherCheckboxes = document.querySelectorAll('#decisionLevelDropdown input[type="checkbox"]:not([value="all"])');
             
+            // Check if all individual items are now selected
             const allIndividualChecked = Array.from(otherCheckboxes).every(cb => cb.checked);
             
             if (allIndividualChecked) {
+                // If all individual items are checked, check "All" too
                 allCheckbox.checked = true;
             } else {
+                // If not all individual items are checked, uncheck "All"
                 allCheckbox.checked = false;
             }
             
@@ -883,20 +1005,24 @@
             if (selectedStatuses.includes('all')) {
                 // Show all statuses
             } else if (selectedStatuses.length === 0) {
+                // Show none
                 filteredDecisions = [];
             } else {
+                // Show only selected statuses
                 filteredDecisions = filteredDecisions.filter(d => {
                     return selectedStatuses.includes(d.decision_status);
                 });
             }
             
-            // Apply level filter
+            // Apply level filter (only if we still have decisions)
             if (filteredDecisions.length > 0) {
                 if (selectedLevels.includes('all')) {
                     // Show all levels
                 } else if (selectedLevels.length === 0) {
+                    // Show none
                     filteredDecisions = [];
                 } else {
+                    // Show only selected levels
                     filteredDecisions = filteredDecisions.filter(d => {
                         return selectedLevels.includes(d.decision_level);
                     });
@@ -917,6 +1043,7 @@
         }
 
         function toggleDropdown(dropdownId) {
+            // Close other dropdowns
             document.querySelectorAll('.custom-dropdown').forEach(dropdown => {
                 if (dropdown.id !== dropdownId) {
                     dropdown.classList.remove('open');
@@ -924,6 +1051,7 @@
                 }
             });
             
+            // Toggle current dropdown
             const dropdown = document.getElementById(dropdownId);
             const content = dropdown.querySelector('.dropdown-content');
             dropdown.classList.toggle('open');
@@ -969,6 +1097,7 @@
             const progress = calculateProgress(decision.steps);
             const stepCount = decision.steps ? decision.steps.length : 0;
             
+            // Determine status badge color
             let statusColor = '#64748b';
             const status = (decision.decision_status || '').trim();
             
@@ -1014,7 +1143,7 @@
                     <div class="card-bottom-section">
                         <div style="font-size: 0.85em; color: #64748b; display: flex; justify-content: space-between; align-items: center;">
                             <div style="display: flex; align-items: center; gap: 8px;">
-                                <span class="decision-id-badge">ID: ${decision.decision_id}</span>
+                                <span class="decision-id-badge">Decision ID: ${decision.decision_id}</span>
                                 <span style="font-size: 0.75em; padding: 3px 8px; background: ${statusColor}20; color: ${statusColor}; border-radius: 4px; font-weight: 600;">
                                     ${displayStatus}
                                 </span>
@@ -1103,24 +1232,31 @@
         }
 
         function toggleDecisionModal(id) {
+            // If the same modal is currently open, close it
             if (currentlyOpenModalId === id) {
                 closeModal();
                 return;
             }
+            
+            // Otherwise, open the new modal
             openDecisionModal(id);
         }
 
         function openDecisionModal(id) {
+            // Find the decision data
             const decision = decisions.find(d => d.decision_id === id);
             if (!decision) return;
             
+            // Store the currently open modal ID
             currentlyOpenModalId = id;
             
+            // Create modal content
             const modalContent = createModalCard(decision);
             const modalOverlay = document.getElementById('modalOverlay');
             modalOverlay.innerHTML = modalContent;
             modalOverlay.classList.add('active');
             
+            // Add event listener to close button
             const closeBtn = modalOverlay.querySelector('.modal-close');
             if (closeBtn) {
                 closeBtn.addEventListener('click', closeModal);
@@ -1146,7 +1282,7 @@
                 <div class="modal-card">
                     <button class="modal-close">×</button>
                     <div style="margin-bottom: 20px;">
-                        <span class="decision-id-badge">ID: ${decision.decision_id}</span>
+                        <span class="decision-id-badge">Decision ID: ${decision.decision_id}</span>
                         ${decision.decision_level ? `
                         <span style="font-size: 0.75em; padding: 3px 8px; background: #f1f5f9; color: #475569; border-radius: 4px; font-weight: 600; border: 1px solid #e2e8f0; margin-left: 8px;">
                             ${decision.decision_level}
@@ -1241,7 +1377,7 @@
             const modalOverlay = document.getElementById('modalOverlay');
             modalOverlay.classList.remove('active');
             modalOverlay.innerHTML = '';
-            currentlyOpenModalId = null;
+            currentlyOpenModalId = null; // Reset the currently open modal ID
         }
 
         function setView(view) {
@@ -1257,20 +1393,39 @@
             }
         }
 
+        function setViewDirect(view) {
+            currentView = view;
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if ((view === 'grid' && btn.textContent === 'Grid') || 
+                    (view === 'list' && btn.textContent === 'List')) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            const container = document.getElementById('decisionsContainer');
+            if (view === 'list') {
+                container.classList.add('list-view');
+            } else {
+                container.classList.remove('list-view');
+            }
+        }
+
         // Initialize dashboard
         window.addEventListener('DOMContentLoaded', () => {
-            populateFilters();
-            applyFilters();
+            loadDecisionsFromCSV();
             
             // Add ESC key listener to close modals and dropdowns
             document.addEventListener('keydown', function(event) {
                 if (event.key === 'Escape' || event.key === 'Esc') {
+                    // Check if modal is open first
                     const modalOverlay = document.getElementById('modalOverlay');
                     if (modalOverlay && modalOverlay.classList.contains('active')) {
                         closeModal();
                         return;
                     }
                     
+                    // Close any open dropdowns
                     document.querySelectorAll('.custom-dropdown').forEach(dropdown => {
                         dropdown.classList.remove('open');
                         dropdown.querySelector('.dropdown-content').classList.remove('open');
@@ -1278,8 +1433,20 @@
                 }
             });
             
-            // Close dropdowns when clicking outside
+            // Close modal or dropdowns when clicking outside
             document.addEventListener('click', function(event) {
+                const modalOverlay = document.getElementById('modalOverlay');
+                
+                // Close modal if clicking on the overlay itself or modal content
+                if (modalOverlay && modalOverlay.classList.contains('active')) {
+                    // Check if click was on the overlay itself or inside the modal content
+                    if (event.target === modalOverlay || event.target.closest('.modal-card')) {
+                        closeModal();
+                        return;
+                    }
+                }
+                
+                // Close dropdowns when clicking outside
                 if (!event.target.closest('.custom-dropdown')) {
                     document.querySelectorAll('.custom-dropdown').forEach(dropdown => {
                         dropdown.classList.remove('open');
