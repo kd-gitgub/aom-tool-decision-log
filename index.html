@@ -689,6 +689,15 @@
         let currentView = 'grid';
         let currentlyOpenModalId = null;
 
+        // Function to get color for decision level badge
+        function getDecisionLevelColor(level) {
+            const levelLower = (level || '').toLowerCase();
+            if (levelLower === 'strategic') return '#dc2626';  // Red
+            if (levelLower === 'tactical') return '#f59e0b';   // Amber
+            if (levelLower === 'operational') return '#10b981'; // Green
+            return '#0079FF'; // Default blue for others
+        }
+
         // Function to load decisions from CSV file using PapaParse
         async function loadDecisionsFromCSV() {
             try {
@@ -748,7 +757,8 @@
                         decision_level: row.decision_level || '',
                         steps: stepsArray.length > 0 ? stepsArray : [{ name: 'No steps defined', completed: false }],
                         completed_steps: completedIndices,
-                        contact_group: row.contact_group || ''
+                        contact_group: row.contact_group || '',
+                        rapporteur: row.rapporteur || ''  // Add rapporteur field
                     };
                 }).filter(d => d.decision_name && d.decision_name !== '');
                 
@@ -778,6 +788,7 @@
                             { name: "Consult Stakeholders", completed: false },
                             { name: "Finalize Decision", completed: false }
                         ],
+                        rapporteur: "john.analyst@company.com",
                         contact_group: "Analytics Team | Data Engineering"
                     },
                     {
@@ -795,6 +806,7 @@
                             { name: "Vendor Evaluation", completed: false },
                             { name: "Pilot Testing", completed: false }
                         ],
+                        rapporteur: "sarah.marketing@company.com",
                         contact_group: "Marketing Ops | Analytics Team"
                     },
                     {
@@ -812,6 +824,7 @@
                             { name: "Migration Planning", completed: true },
                             { name: "Execute Migration", completed: true }
                         ],
+                        rapporteur: "mike.dataeng@company.com",
                         contact_group: "Data Engineering"
                     },
                     {
@@ -829,6 +842,7 @@
                             { name: "Development", completed: false },
                             { name: "Testing", completed: false }
                         ],
+                        rapporteur: "",
                         contact_group: "Business Intelligence"
                     }
                 ];
@@ -1112,6 +1126,7 @@
             }
             
             const displayStatus = decision.decision_status || 'Unknown';
+            const levelColor = getDecisionLevelColor(decision.decision_level);
             
             return `
                 <div class="decision-card" data-id="${decision.decision_id}" onclick="toggleDecisionModal(${decision.decision_id})">
@@ -1119,7 +1134,7 @@
                         <div></div>
                         <div>
                             ${decision.decision_level ? `
-                            <span style="font-size: 0.75em; padding: 3px 8px; background: #f1f5f9; color: #475569; border-radius: 4px; font-weight: 600; border: 1px solid #e2e8f0;">
+                            <span style="font-size: 0.75em; padding: 3px 8px; background: ${levelColor}20; color: ${levelColor}; border-radius: 4px; font-weight: 700; border: 1px solid ${levelColor}40;">
                                 ${decision.decision_level}
                             </span>
                             ` : ''}
@@ -1171,13 +1186,14 @@
             }
             
             const displayStatus = decision.decision_status || 'Unknown';
+            const levelColor = getDecisionLevelColor(decision.decision_level);
             
             return `
                 <div class="list-row" onclick="toggleDecisionModal(${decision.decision_id})">
                     <div style="font-weight: 600; color: #475569; justify-content: center;">${decision.decision_id}</div>
                     <div>
                         ${decision.decision_level ? `
-                        <span style="font-size: 0.8em; padding: 3px 8px; background: #f1f5f9; color: #475569; border-radius: 4px; font-weight: 600; border: 1px solid #e2e8f0;">
+                        <span style="font-size: 0.8em; padding: 3px 8px; background: ${levelColor}20; color: ${levelColor}; border-radius: 4px; font-weight: 700; border: 1px solid ${levelColor}40;">
                             ${decision.decision_level}
                         </span>
                         ` : '<span style="color: #94a3b8; font-style: italic;">—</span>'}
@@ -1278,13 +1294,15 @@
                 statusColor = '#f59e0b';
             }
             
+            const levelColor = getDecisionLevelColor(decision.decision_level);
+            
             return `
                 <div class="modal-card">
                     <button class="modal-close">×</button>
                     <div style="margin-bottom: 20px;">
                         <span class="decision-id-badge">ID: ${decision.decision_id}</span>
                         ${decision.decision_level ? `
-                        <span style="font-size: 0.75em; padding: 3px 8px; background: #f1f5f9; color: #475569; border-radius: 4px; font-weight: 600; border: 1px solid #e2e8f0; margin-left: 8px;">
+                        <span style="font-size: 0.75em; padding: 3px 8px; background: ${levelColor}20; color: ${levelColor}; border-radius: 4px; font-weight: 700; border: 1px solid ${levelColor}40; margin-left: 8px;">
                             ${decision.decision_level}
                         </span>
                         ` : ''}
@@ -1355,19 +1373,30 @@
                             </div>
                         </div>
                         
-                        ${decision.contact_group ? `
-                        <div style="min-width: 200px; padding: 20px; background: #f8fafc; border-radius: 12px;">
-                            <div style="font-size: 0.85em; color: #64748b; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Decision Group</div>
-                            <div style="display: flex; flex-direction: column; gap: 8px;">
-                                ${decision.contact_group.split('|').map(name => name.trim()).filter(name => name).map((name, index) => `
-                                    <div style="font-size: 1em; color: #1e293b; font-weight: 500; padding: 6px 0; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center;">
-                                        <span style="color: #94a3b8; margin-right: 10px; font-weight: 600; font-size: 0.9em;">${index + 1}.</span>
-                                        ${name}
-                                    </div>
-                                `).join('')}
+                        <div style="display: flex; flex-direction: column; gap: 20px;">
+                            ${decision.rapporteur || decision.contact_group ? `
+                            <div style="min-width: 200px; padding: 20px; background: #f8fafc; border-radius: 12px;">
+                                <div style="font-size: 0.85em; color: #64748b; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Rapporteur</div>
+                                <div style="font-size: 0.95em; color: ${decision.rapporteur ? '#1e293b' : '#94a3b8'}; font-style: ${decision.rapporteur ? 'normal' : 'italic'};">
+                                    ${decision.rapporteur || 'Not assigned'}
+                                </div>
                             </div>
+                            ` : ''}
+                            
+                            ${decision.contact_group ? `
+                            <div style="min-width: 200px; padding: 20px; background: #f8fafc; border-radius: 12px;">
+                                <div style="font-size: 0.85em; color: #64748b; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Decision Group</div>
+                                <div style="display: flex; flex-direction: column; gap: 8px;">
+                                    ${decision.contact_group.split('|').map(name => name.trim()).filter(name => name).map((name, index) => `
+                                        <div style="font-size: 1em; color: #1e293b; font-weight: 500; padding: 6px 0; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center;">
+                                            <span style="color: #94a3b8; margin-right: 10px; font-weight: 600; font-size: 0.9em;">${index + 1}.</span>
+                                            ${name}
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                            ` : ''}
                         </div>
-                        ` : ''}
                     </div>
                 </div>
             `;
