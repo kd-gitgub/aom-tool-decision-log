@@ -874,12 +874,9 @@
                 statusDropdown.appendChild(option);
             });
 
-            // Populate level filter
+            // Populate level filter with predefined values in specific order
             const levelDropdown = document.getElementById('decisionLevelDropdown').querySelector('.dropdown-content');
-            const uniqueLevels = [...new Set(decisions
-                .map(d => d.decision_level)
-                .filter(level => level && level.trim() !== '')
-            )].sort();
+            const predefinedLevels = ['I&T SteerCo', 'TRB', 'SRB', 'Global D&A Function'];
             
             levelDropdown.innerHTML = `
                 <label class="dropdown-option">
@@ -887,7 +884,7 @@
                 </label>
             `;
             
-            uniqueLevels.forEach(level => {
+            predefinedLevels.forEach(level => {
                 const option = document.createElement('label');
                 option.className = 'dropdown-option';
                 option.innerHTML = `
