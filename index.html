@@ -228,6 +228,7 @@
             justify-content: space-between;
             align-items: flex-start;
             margin-bottom: 8px;
+            padding-right: 0;
         }
 
         .decision-id-badge {
@@ -697,7 +698,7 @@
         function getDecisionLevelColor(level) {
             const levelLower = (level || '').toLowerCase();
             if (levelLower === 'i&t steerco') return '#dc2626';  // Red
-            if (levelLower === 'trb') return '#f59e0b';   // Amber/Orange
+            if (levelLower === 'trb') return '#8b5cf6';   // Purple
             if (levelLower === 'srb') return '#0079FF'; // Blue
             if (levelLower === 'global d&a function') return '#10b981'; // Green
             return '#6b7280'; // Default gray for others
@@ -785,7 +786,7 @@
                         decision_material: "https://example.com/analytics-platform-docs",
                         group_discussion: "https://example.com/discussion-forum",
                         decision_status: "Active",
-                        decision_level: "Strategic",
+                        decision_level: "I&T SteerCo",
                         steps: [
                             { name: "Identify Requirements", completed: true },
                             { name: "Shape Solution", completed: true },
@@ -804,7 +805,7 @@
                         decision_material: "https://example.com/attribution-research",
                         group_discussion: "https://example.com/marketing-discussion",
                         decision_status: "Shaping",
-                        decision_level: "Tactical",
+                        decision_level: "TRB",
                         steps: [
                             { name: "Research Tools", completed: true },
                             { name: "Define Budget", completed: true },
@@ -822,7 +823,7 @@
                         decision_material: "",
                         group_discussion: "",
                         decision_status: "Completed",
-                        decision_level: "Strategic",
+                        decision_level: "SRB",
                         steps: [
                             { name: "Assess Current State", completed: true },
                             { name: "Evaluate Options", completed: true },
@@ -840,7 +841,7 @@
                         decision_material: "",
                         group_discussion: "",
                         decision_status: "Backlog",
-                        decision_level: "Operational",
+                        decision_level: "Global D&A Function",
                         steps: [
                             { name: "Requirements Gathering", completed: false },
                             { name: "Design Mockups", completed: false },
@@ -1113,19 +1114,8 @@
             const progress = calculateProgress(decision.steps);
             const stepCount = decision.steps ? decision.steps.length : 0;
             
-            // Determine status badge color
-            let statusColor = '#4b5563'; // Default dark gray
-            const status = (decision.decision_status || '').trim();
-            
-            if (status.toLowerCase() === 'active') {
-                statusColor = '#8f29fc';
-            } else if (status.toLowerCase() === 'completed') {
-                statusColor = '#10b981';
-            } else if (status.toLowerCase() === 'backlog') {
-                statusColor = '#4b5563';
-            } else if (status.toLowerCase() === 'shaping') {
-                statusColor = '#AD5321';
-            }
+            // Use consistent gray color for all status badges
+            const statusColor = '#4b5563'; // Gray for all statuses
             
             const displayStatus = decision.decision_status || 'Unknown';
             const levelColor = getDecisionLevelColor(decision.decision_level);
@@ -1136,16 +1126,17 @@
                         <div>
                             <span class="decision-id-badge">Decision ID: ${decision.decision_id}</span>
                         </div>
-                        <div></div>
+                        <div>
+                            ${decision.decision_level ? `
+                            <span style="font-size: 0.85em; padding: 4px 10px; background: ${levelColor}20; color: ${levelColor}; border-radius: 4px; font-weight: 700; border: 1px solid ${levelColor}40; display: inline-block;">
+                                ${decision.decision_level}
+                            </span>
+                            ` : ''}
+                        </div>
                     </div>
                     
-                    <div style="margin-bottom: 18px; display: flex; justify-content: flex-start; align-items: center; gap: 8px;">
-                        ${decision.decision_level ? `
-                        <span style="font-size: 0.75em; padding: 3px 8px; background: ${levelColor}20; color: ${levelColor}; border-radius: 4px; font-weight: 700; border: 1px solid ${levelColor}40;">
-                            ${decision.decision_level}
-                        </span>
-                        ` : ''}
-                        <span class="card-category">${decision.decision_category}</span>
+                    <div style="margin-bottom: 18px; display: flex; justify-content: flex-end; align-items: center; gap: 8px; padding-right: 0;">
+                        <span style="font-size: 0.85em; color: #001C66; display: inline-block; padding: 4px 10px; background: #f1f5f9; border-radius: 4px;">${decision.decision_category}</span>
                     </div>
                     
                     <div class="card-header">
@@ -1177,18 +1168,8 @@
 
         function createListRow(decision) {
             const progress = calculateProgress(decision.steps);
-            let statusColor = '#4b5563'; // Default dark gray
-            const status = (decision.decision_status || '').trim();
-            
-            if (status.toLowerCase() === 'active') {
-                statusColor = '#8f29fc';
-            } else if (status.toLowerCase() === 'completed') {
-                statusColor = '#10b981';
-            } else if (status.toLowerCase() === 'backlog') {
-                statusColor = '#4b5563';
-            } else if (status.toLowerCase() === 'shaping') {
-                statusColor = '#AD5321';
-            }
+            // Use consistent gray color for all status badges
+            const statusColor = '#4b5563'; // Gray for all statuses
             
             const displayStatus = decision.decision_status || 'Unknown';
             const levelColor = getDecisionLevelColor(decision.decision_level);
@@ -1292,18 +1273,8 @@
         
         function createModalCard(decision) {
             const progress = calculateProgress(decision.steps);
-            let statusColor = '#64748b';
-            const status = (decision.decision_status || '').trim();
-            
-            if (status.toLowerCase() === 'active') {
-                statusColor = '#8f29fc';
-            } else if (status.toLowerCase() === 'completed') {
-                statusColor = '#10b981';
-            } else if (status.toLowerCase() === 'backlog') {
-                statusColor = '#4b5563';
-            } else if (status.toLowerCase() === 'shaping') {
-                statusColor = '#AD5321';
-            }
+            // Use consistent gray color for all status badges
+            const statusColor = '#4b5563'; // Gray for all statuses
             
             const levelColor = getDecisionLevelColor(decision.decision_level);
             
