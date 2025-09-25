@@ -692,10 +692,11 @@
         // Function to get color for decision level badge
         function getDecisionLevelColor(level) {
             const levelLower = (level || '').toLowerCase();
-            if (levelLower === 'strategic') return '#dc2626';  // Red
-            if (levelLower === 'tactical') return '#f59e0b';   // Amber
-            if (levelLower === 'operational') return '#10b981'; // Green
-            return '#0079FF'; // Default blue for others
+            if (levelLower === 'i&t steerco') return '#dc2626';  // Red
+            if (levelLower === 'trb') return '#f59e0b';   // Amber/Orange
+            if (levelLower === 'srb') return '#0079FF'; // Blue
+            if (levelLower === 'global d&a function') return '#10b981'; // Green
+            return '#6b7280'; // Default gray for others
         }
 
         // Function to load decisions from CSV file using PapaParse
