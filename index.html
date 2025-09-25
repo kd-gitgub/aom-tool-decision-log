@@ -35,12 +35,12 @@
 
         .dashboard-title {
             font-size: 2em;
-            color: #1e293b;
+            color: #001C66;
             margin-bottom: 10px;
         }
 
         .dashboard-subtitle {
-            color: #64748b;
+            color: #001C66;
             margin-bottom: 30px;
         }
 
@@ -56,18 +56,18 @@
             background: #f8fafc;
             padding: 20px;
             border-radius: 12px;
-            border-left: 4px solid #001CAD;
+            border-left: 4px solid #001C66;
         }
 
         .summary-value {
             font-size: 2em;
             font-weight: bold;
-            color: #001CAD;
+            color: #001C66;
             margin-bottom: 5px;
         }
 
         .summary-label {
-            color: #001CAD;
+            color: #001C66;
             font-size: 0.9em;
         }
 
@@ -81,7 +81,7 @@
 
         .filter-label {
             font-weight: 600;
-            color: #1e293b;
+            color: #001C66;
             font-size: 0.9em;
             margin-right: 5px;
         }
@@ -155,7 +155,7 @@
             cursor: pointer;
             transition: background-color 0.2s;
             font-size: 0.9em;
-            color: #1e293b;
+            color: #001C66;
         }
 
         .dropdown-option:hover {
@@ -186,13 +186,13 @@
             background: transparent;
             border-radius: 6px;
             cursor: pointer;
-            color: #0079FF;
+            color: #001C66;
             transition: all 0.2s;
         }
 
         .view-btn.active {
             background: white;
-            color: #0079FF;
+            color: #001C66;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
@@ -232,7 +232,7 @@
 
         .decision-id-badge {
             background: #f1f5f9;
-            color: #64748b;
+            color: #001C66;
             padding: 4px 8px;
             border-radius: 6px;
             font-size: 0.75em;
@@ -247,13 +247,13 @@
         .card-title {
             font-size: 1.2em;
             font-weight: 600;
-            color: #1e293b;
+            color: #001C66;
             margin-bottom: 5px;
         }
 
         .card-category {
             font-size: 0.85em;
-            color: #64748b;
+            color: #001C66;
             display: inline-block;
             padding: 4px 10px;
             background: #f1f5f9;
@@ -304,7 +304,7 @@
             transform: translate(-50%, -50%);
             font-size: 1.2em;
             font-weight: bold;
-            color: #1e293b;
+            color: #001C66;
         }
 
         /* Mini Step Indicators */
@@ -337,7 +337,7 @@
             bottom: 16px;
             left: 50%;
             transform: translateX(-50%);
-            background: #1e293b;
+            background: #001C66;
             color: white;
             padding: 6px 10px;
             border-radius: 6px;
@@ -383,7 +383,7 @@
             font-weight: 600;
             background: white;
             border: 2px solid #e2e8f0;
-            color: #94a3b8;
+            color: #001C66;
         }
 
         .detailed-step.completed .detailed-step-indicator {
@@ -404,7 +404,7 @@
 
         .detailed-step-title {
             font-weight: 600;
-            color: #1e293b;
+            color: #001C66;
             margin-bottom: 3px;
         }
 
@@ -440,7 +440,7 @@
 
         .btn-view-details {
             background: #f1f5f9;
-            color: #475569;
+            color: #001C66;
         }
 
         .btn-view-details:hover {
@@ -471,7 +471,7 @@
             padding: 15px 20px;
             background: #f8fafc;
             font-weight: 600;
-            color: #64748b;
+            color: #001C66;
             font-size: 0.85em;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -1112,7 +1112,7 @@
             const stepCount = decision.steps ? decision.steps.length : 0;
             
             // Determine status badge color
-            let statusColor = '#64748b';
+            let statusColor = '#001C66';
             const status = (decision.decision_status || '').trim();
             
             if (status.toLowerCase() === 'active') {
@@ -1120,7 +1120,7 @@
             } else if (status.toLowerCase() === 'completed') {
                 statusColor = '#10b981';
             } else if (status.toLowerCase() === 'backlog') {
-                statusColor = '#94a3b8';
+                statusColor = '#001C66';
             } else if (status.toLowerCase() === 'shaping') {
                 statusColor = '#f59e0b';
             }
@@ -1156,7 +1156,7 @@
                     </div>
                     
                     <div class="card-bottom-section">
-                        <div style="font-size: 0.85em; color: #64748b; display: flex; justify-content: space-between; align-items: center;">
+                        <div style="font-size: 0.85em; color: #001C66; display: flex; justify-content: space-between; align-items: center;">
                             <div style="display: flex; align-items: center; gap: 8px;">
                                 <span class="decision-id-badge">ID: ${decision.decision_id}</span>
                                 <span style="font-size: 0.75em; padding: 3px 8px; background: ${statusColor}20; color: ${statusColor}; border-radius: 4px; font-weight: 600;">
@@ -1172,7 +1172,7 @@
 
         function createListRow(decision) {
             const progress = calculateProgress(decision.steps);
-            let statusColor = '#64748b';
+            let statusColor = '#001C66';
             const status = (decision.decision_status || '').trim();
             
             if (status.toLowerCase() === 'active') {
@@ -1180,7 +1180,7 @@
             } else if (status.toLowerCase() === 'completed') {
                 statusColor = '#10b981';
             } else if (status.toLowerCase() === 'backlog') {
-                statusColor = '#94a3b8';
+                statusColor = '#001C66';
             } else if (status.toLowerCase() === 'shaping') {
                 statusColor = '#f59e0b';
             }
@@ -1190,16 +1190,16 @@
             
             return `
                 <div class="list-row" onclick="toggleDecisionModal(${decision.decision_id})">
-                    <div style="font-weight: 600; color: #475569; justify-content: center;">${decision.decision_id}</div>
+                    <div style="font-weight: 600; color: #001C66; justify-content: center;">${decision.decision_id}</div>
                     <div>
                         ${decision.decision_level ? `
                         <span style="font-size: 0.8em; padding: 3px 8px; background: ${levelColor}20; color: ${levelColor}; border-radius: 4px; font-weight: 700; border: 1px solid ${levelColor}40;">
                             ${decision.decision_level}
                         </span>
-                        ` : '<span style="color: #94a3b8; font-style: italic;">—</span>'}
+                        ` : '<span style="color: #001C66; font-style: italic;">—</span>'}
                     </div>
-                    <div>${decision.decision_name}</div>
-                    <div>${decision.decision_category}</div>
+                    <div style="color: #001C66;">${decision.decision_name}</div>
+                    <div style="color: #001C66;">${decision.decision_category}</div>
                     <div>
                         <span style="font-size: 0.8em; padding: 3px 8px; background: ${statusColor}20; color: ${statusColor}; border-radius: 4px; font-weight: 600;">
                             ${displayStatus}
@@ -1210,9 +1210,9 @@
                             <div style="flex: 1; height: 8px; background: #e2e8f0; border-radius: 4px;">
                                 <div style="width: ${progress}%; height: 100%; background: ${progress === 100 ? '#10b981' : '#0079FF'}; border-radius: 4px; transition: width 0.3s;"></div>
                             </div>
-                            <span style="font-weight: 600; color: #64748b; font-size: 0.9em; min-width: 40px;">${progress}%</span>
+                            <span style="font-weight: 600; color: #001C66; font-size: 0.9em; min-width: 40px;">${progress}%</span>
                         </div>
-                        <div style="font-size: 0.75em; color: #94a3b8; text-align: center;">
+                        <div style="font-size: 0.75em; color: #001C66; text-align: center;">
                             ${decision.steps.filter(s => s.completed).length}/${decision.steps.length} steps
                         </div>
                     </div>
@@ -1362,7 +1362,7 @@
                                     return `
                                         <div class="detailed-step ${completed ? 'completed' : ''} ${active ? 'active' : ''}">
                                             <div class="detailed-step-indicator">
-                                                ${completed ? '✔' : index + 1}
+                                                ${completed ? '✓' : index + 1}
                                             </div>
                                             <div class="detailed-step-content">
                                                 <div class="detailed-step-title">${index + 1}: ${step.name}</div>
