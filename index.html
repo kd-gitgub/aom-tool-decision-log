@@ -47,7 +47,7 @@
         /* Summary Stats */
         .summary-stats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 20px;
             margin-bottom: 20px;
         }
@@ -56,7 +56,23 @@
             background: #f8fafc;
             padding: 20px;
             border-radius: 12px;
-            border-left: 4px solid #001C66;
+            border-left: 7px solid #001C66;
+        }
+
+        .summary-stat.completed {
+            border-left-color: #10b981;
+        }
+
+        .summary-stat.active {
+            border-left-color: #8f29fc;
+        }
+
+        .summary-stat.shaping {
+            border-left-color: #AD5321;
+        }
+
+        .summary-stat.backlog {
+            border-left-color: #4b5563;
         }
 
         .summary-value {
@@ -207,7 +223,7 @@
         .decision-card {
             background: white;
             border-radius: 12px;
-            padding: 20px;
+            padding: 12px 20px 10px 20px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
             transition: all 0.3s ease;
             cursor: pointer;
@@ -227,16 +243,16 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 15px;
+            margin-bottom: 8px;
         }
 
         .decision-id-badge {
-            background: #f1f5f9;
+            background: #F7D5C6;
             color: #001C66;
             padding: 4px 8px;
             border-radius: 6px;
             font-size: 0.75em;
-            font-weight: 600;
+            font-weight: 500;
             border: 1px solid #e2e8f0;
         }
 
@@ -246,7 +262,7 @@
 
         .card-title {
             font-size: 1.2em;
-            font-weight: 600;
+            font-weight: 500;
             color: #001C66;
             margin-bottom: 5px;
         }
@@ -270,7 +286,7 @@
 
         .card-bottom-section {
             margin-top: auto;
-            padding-top: 10px;
+            padding-top: 5px;
         }
 
         /* Progress Ring */
@@ -278,7 +294,7 @@
             display: flex;
             align-items: center;
             gap: 20px;
-            margin: 20px 0;
+            margin: 20px 0 2px 0;
         }
 
         .progress-ring {
@@ -610,15 +626,19 @@
                     <div class="summary-value" id="totalDecisions">0</div>
                     <div class="summary-label">Total Decisions</div>
                 </div>
-                <div class="summary-stat">
-                    <div class="summary-value" id="activeDecisions">0</div>
-                    <div class="summary-label">Active</div>
-                </div>
-                <div class="summary-stat">
+                <div class="summary-stat completed">
                     <div class="summary-value" id="completedDecisions">0</div>
                     <div class="summary-label">Completed</div>
                 </div>
-                <div class="summary-stat">
+                <div class="summary-stat active">
+                    <div class="summary-value" id="activeDecisions">0</div>
+                    <div class="summary-label">Active</div>
+                </div>
+                <div class="summary-stat shaping">
+                    <div class="summary-value" id="shapingDecisions">0</div>
+                    <div class="summary-label">Shaping</div>
+                </div>
+                <div class="summary-stat backlog">
                     <div class="summary-value" id="backlogDecisions">0</div>
                     <div class="summary-label">Backlog</div>
                 </div>
@@ -1110,17 +1130,17 @@
             const stepCount = decision.steps ? decision.steps.length : 0;
             
             // Determine status badge color
-            let statusColor = '#001C66';
+            let statusColor = '#4b5563'; // Default dark gray
             const status = (decision.decision_status || '').trim();
             
             if (status.toLowerCase() === 'active') {
-                statusColor = '#0079FF';
+                statusColor = '#8f29fc';
             } else if (status.toLowerCase() === 'completed') {
                 statusColor = '#10b981';
             } else if (status.toLowerCase() === 'backlog') {
-                statusColor = '#001C66';
+                statusColor = '#4b5563';
             } else if (status.toLowerCase() === 'shaping') {
-                statusColor = '#f59e0b';
+                statusColor = '#AD5321';
             }
             
             const displayStatus = decision.decision_status || 'Unknown';
@@ -1135,7 +1155,7 @@
                         <div></div>
                     </div>
                     
-                    <div style="margin-bottom: 15px; display: flex; justify-content: flex-start; align-items: center; gap: 8px;">
+                    <div style="margin-bottom: 18px; display: flex; justify-content: flex-start; align-items: center; gap: 8px;">
                         ${decision.decision_level ? `
                         <span style="font-size: 0.75em; padding: 3px 8px; background: ${levelColor}20; color: ${levelColor}; border-radius: 4px; font-weight: 700; border: 1px solid ${levelColor}40;">
                             ${decision.decision_level}
@@ -1173,17 +1193,17 @@
 
         function createListRow(decision) {
             const progress = calculateProgress(decision.steps);
-            let statusColor = '#001C66';
+            let statusColor = '#4b5563'; // Default dark gray
             const status = (decision.decision_status || '').trim();
             
             if (status.toLowerCase() === 'active') {
-                statusColor = '#0079FF';
+                statusColor = '#8f29fc';
             } else if (status.toLowerCase() === 'completed') {
                 statusColor = '#10b981';
             } else if (status.toLowerCase() === 'backlog') {
-                statusColor = '#001C66';
+                statusColor = '#4b5563';
             } else if (status.toLowerCase() === 'shaping') {
-                statusColor = '#f59e0b';
+                statusColor = '#AD5321';
             }
             
             const displayStatus = decision.decision_status || 'Unknown';
@@ -1237,6 +1257,11 @@
                 return status === 'active' || status === 'active discussion';
             }).length;
             
+            const shapingDecisions = decisions.filter(d => {
+                const status = (d.decision_status || '').trim().toLowerCase();
+                return status === 'shaping';
+            }).length;
+            
             const backlogDecisions = decisions.filter(d => {
                 const status = (d.decision_status || '').trim().toLowerCase();
                 return status === 'backlog';
@@ -1245,6 +1270,7 @@
             document.getElementById('totalDecisions').textContent = totalDecisions;
             document.getElementById('completedDecisions').textContent = completedDecisions;
             document.getElementById('activeDecisions').textContent = activeDecisions;
+            document.getElementById('shapingDecisions').textContent = shapingDecisions;
             document.getElementById('backlogDecisions').textContent = backlogDecisions;
         }
 
@@ -1286,13 +1312,13 @@
             const status = (decision.decision_status || '').trim();
             
             if (status.toLowerCase() === 'active') {
-                statusColor = '#0079FF';
+                statusColor = '#8f29fc';
             } else if (status.toLowerCase() === 'completed') {
                 statusColor = '#10b981';
             } else if (status.toLowerCase() === 'backlog') {
-                statusColor = '#94a3b8';
+                statusColor = '#4b5563';
             } else if (status.toLowerCase() === 'shaping') {
-                statusColor = '#f59e0b';
+                statusColor = '#AD5321';
             }
             
             const levelColor = getDecisionLevelColor(decision.decision_level);
