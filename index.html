@@ -1129,16 +1129,18 @@
                 <div class="decision-card" data-id="${decision.decision_id}" onclick="toggleDecisionModal(${decision.decision_id})">
                     <div class="card-top-badges">
                         <div>
-                            <span class="decision-id-badge">ID: ${decision.decision_id}</span>
+                            <span class="decision-id-badge">Decision ID: ${decision.decision_id}</span>
                         </div>
-                        <div>
-                            ${decision.decision_level ? `
-                            <span style="font-size: 0.75em; padding: 3px 8px; background: ${levelColor}20; color: ${levelColor}; border-radius: 4px; font-weight: 700; border: 1px solid ${levelColor}40;">
-                                ${decision.decision_level}
-                            </span>
-                            ` : ''}
-                            <span class="card-category" style="${decision.decision_level ? 'margin-left: 8px;' : ''}">${decision.decision_category}</span>
-                        </div>
+                        <div></div>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px; display: flex; justify-content: flex-start; align-items: center; gap: 8px;">
+                        ${decision.decision_level ? `
+                        <span style="font-size: 0.75em; padding: 3px 8px; background: ${levelColor}20; color: ${levelColor}; border-radius: 4px; font-weight: 700; border: 1px solid ${levelColor}40;">
+                            ${decision.decision_level}
+                        </span>
+                        ` : ''}
+                        <span class="card-category">${decision.decision_category}</span>
                     </div>
                     
                     <div class="card-header">
@@ -1298,7 +1300,7 @@
                 <div class="modal-card">
                     <button class="modal-close">×</button>
                     <div style="margin-bottom: 20px;">
-                        <span class="decision-id-badge">ID: ${decision.decision_id}</span>
+                        <span class="decision-id-badge">Decision ID: ${decision.decision_id}</span>
                         ${decision.decision_level ? `
                         <span style="font-size: 0.75em; padding: 3px 8px; background: ${levelColor}20; color: ${levelColor}; border-radius: 4px; font-weight: 700; border: 1px solid ${levelColor}40; margin-left: 8px;">
                             ${decision.decision_level}
