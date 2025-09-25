@@ -225,8 +225,8 @@
 
         .card-top-badges {
             display: flex;
-            justify-content: flex-start;
-            align-items: center;
+            justify-content: space-between;
+            align-items: flex-start;
             margin-bottom: 15px;
         }
 
@@ -1127,8 +1127,10 @@
             
             return `
                 <div class="decision-card" data-id="${decision.decision_id}" onclick="toggleDecisionModal(${decision.decision_id})">
-                    <div class="card-top-badges" style="margin-left: -4px;">
-                        <div></div>
+                    <div class="card-top-badges">
+                        <div>
+                            <span class="decision-id-badge">ID: ${decision.decision_id}</span>
+                        </div>
                         <div>
                             ${decision.decision_level ? `
                             <span style="font-size: 0.75em; padding: 3px 8px; background: ${levelColor}20; color: ${levelColor}; border-radius: 4px; font-weight: 700; border: 1px solid ${levelColor}40;">
@@ -1155,7 +1157,6 @@
                     <div class="card-bottom-section">
                         <div style="font-size: 0.85em; color: #001C66; display: flex; justify-content: space-between; align-items: center;">
                             <div style="display: flex; align-items: center; gap: 8px;">
-                                <span class="decision-id-badge">ID: ${decision.decision_id}</span>
                                 <span style="font-size: 0.75em; padding: 3px 8px; background: ${statusColor}20; color: ${statusColor}; border-radius: 4px; font-weight: 600;">
                                     ${displayStatus}
                                 </span>
