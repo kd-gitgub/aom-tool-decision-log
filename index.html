@@ -189,8 +189,32 @@
             border-radius: 8px 8px 0 0;
         }
 
-        .view-toggle {
+        .investment-profile-btn {
+            padding: 8px 16px;
+            border: 1px solid #001C66;
+            background: #001C66;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9em;
+            font-family: inherit;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 140px;
             margin-left: auto;
+            margin-right: 15px;
+        }
+
+        .investment-profile-btn:hover {
+            background: #002080;
+            border-color: #002080;
+        }
+
+        .view-toggle {
             display: flex;
             gap: 5px;
             background: #f1f5f9;
@@ -485,7 +509,7 @@
 
         .list-header {
             display: grid;
-            grid-template-columns: 60px 1fr 2fr 1.2fr 1fr 1.2fr 120px;
+            grid-template-columns: 60px 1fr 2fr 1.2fr 1fr 1.2fr;
             gap: 20px;
             padding: 15px 20px;
             background: #f8fafc;
@@ -502,12 +526,12 @@
 
         .list-row {
             display: grid;
-            grid-template-columns: 60px 1fr 2fr 1.2fr 1fr 1.2fr 120px;
+            grid-template-columns: 60px 1fr 2fr 1.2fr 1fr 1.2fr;
             gap: 20px;
             padding: 20px;
             border-bottom: 1px solid #f1f5f9;
             align-items: center;
-            transition: background 0.2s;
+            transition: all 0.2s ease;
             cursor: pointer;
         }
         
@@ -518,7 +542,9 @@
         }
 
         .list-row:hover {
-            background: #fafafa;
+            background: #d7dde8;
+            transform: translateX(4px);
+            border-left: 4px solid #0079FF;
         }
 
         /* Modal Overlay for Cards from List View */
@@ -684,6 +710,10 @@
                     <button class="view-btn active" onclick="setView('grid')">Grid</button>
                     <button class="view-btn" onclick="setView('list')">List</button>
                 </div>
+                
+                <a href="https://centres.weforum.org/centre-for-ai-excellence/home" target="_blank" class="investment-profile-btn">
+                    Investment Profile
+                </a>
             </div>
         </div>
         
@@ -700,7 +730,6 @@
                     <div>Category</div>
                     <div>Status</div>
                     <div>Progress</div>
-                    <div>Decision Card</div>
                 </div>
                 <div id="listContent"></div>
             </div>
@@ -1223,9 +1252,6 @@
                         <div style="font-size: 0.75em; color: #001C66; text-align: center;">
                             ${decision.steps.filter(s => s.completed).length}/${decision.steps.length} steps
                         </div>
-                    </div>
-                    <div style="justify-content: center;">
-                        <button class="card-btn btn-view-details" onclick="event.stopPropagation(); toggleDecisionModal(${decision.decision_id})">View</button>
                     </div>
                 </div>
             `;
