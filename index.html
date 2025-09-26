@@ -455,6 +455,54 @@
             color: #0079FF;
         }
 
+        /* Motivation Section Styles */
+        .motivation-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #fafafa;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .motivation-title {
+            font-size: 0.9em;
+            color: #001c66;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+        }
+
+        .motivation-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .motivation-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #001C66;
+        }
+
+        .motivation-bullet {
+            color: #8F29FC;
+            font-weight: bold;
+            margin-right: 12px;
+            font-size: 1.1em;
+            line-height: 1.4;
+        }
+
+        .motivation-text {
+            flex: 1;
+            color: #1e293b;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
         /* Card Actions */
         .card-actions {
             display: flex;
@@ -800,6 +848,10 @@
                         completed: completedIndices.includes(idx + 1)
                     }));
                     
+                    // Parse motivation (pipe-separated)
+                    const motivationRaw = row.decision_motivation || '';
+                    const motivationItems = motivationRaw ? motivationRaw.split('|').map(s => s.trim()).filter(s => s) : [];
+                    
                     let status = rawStatus || 'Backlog';
                     status = status.trim();
                     
@@ -815,7 +867,8 @@
                         steps: stepsArray.length > 0 ? stepsArray : [{ name: 'No steps defined', completed: false }],
                         completed_steps: completedIndices,
                         contact_group: row.contact_group || '',
-                        rapporteur: row.rapporteur || ''  // Add rapporteur field
+                        rapporteur: row.rapporteur || '',
+                        decision_motivation: motivationItems  // Add motivation field
                     };
                 }).filter(d => d.decision_name && d.decision_name !== '');
                 
@@ -827,7 +880,7 @@
             } catch (error) {
                 console.error('Error loading CSV:', error);
                 
-                // Fallback sample data
+                // Fallback sample data with motivation
                 decisions = [
                     {
                         decision_id: 1,
@@ -846,7 +899,12 @@
                             { name: "Finalize Decision", completed: false }
                         ],
                         rapporteur: "john.analyst@company.com",
-                        contact_group: "Analytics Team | Data Engineering"
+                        contact_group: "Analytics Team | Data Engineering",
+                        decision_motivation: [
+                            "Improve customer retention by 25% through better understanding of behavior patterns",
+                            "Reduce marketing spend waste by targeting the right customers with personalized campaigns",
+                            "Enable real-time decision making for customer service teams"
+                        ]
                     },
                     {
                         decision_id: 2,
@@ -864,7 +922,12 @@
                             { name: "Pilot Testing", completed: false }
                         ],
                         rapporteur: "sarah.marketing@company.com",
-                        contact_group: "Marketing Ops | Analytics Team"
+                        contact_group: "Marketing Ops | Analytics Team",
+                        decision_motivation: [
+                            "Understand true ROI of marketing channels to optimize $10M annual marketing budget",
+                            "Move beyond last-click attribution to understand full customer journey",
+                            "Align marketing and sales teams with shared performance metrics"
+                        ]
                     },
                     {
                         decision_id: 3,
@@ -882,7 +945,12 @@
                             { name: "Execute Migration", completed: true }
                         ],
                         rapporteur: "mike.dataeng@company.com",
-                        contact_group: "Data Engineering"
+                        contact_group: "Data Engineering",
+                        decision_motivation: [
+                            "Reduce infrastructure costs by 40% through cloud migration",
+                            "Improve query performance from hours to minutes for complex analytics",
+                            "Enable self-service analytics for business users"
+                        ]
                     },
                     {
                         decision_id: 4,
@@ -900,7 +968,11 @@
                             { name: "Testing", completed: false }
                         ],
                         rapporteur: "",
-                        contact_group: "Business Intelligence"
+                        contact_group: "Business Intelligence",
+                        decision_motivation: [
+                            "Provide executives with real-time visibility into business performance",
+                            "Reduce time spent on manual reporting by 60%"
+                        ]
                     }
                 ];
                 populateFilters();
@@ -1344,8 +1416,22 @@
                     
                     <h2 style="font-size: 1.8em; color: #1e293b; margin-bottom: 30px;">${decision.decision_name}</h2>
                     
+                    ${decision.decision_motivation && decision.decision_motivation.length > 0 ? `
+                    <div class="motivation-section">
+                        <div class="motivation-title">Motivation</div>
+                        <div class="motivation-list">
+                            ${decision.decision_motivation.map((item, index) => `
+                                <div class="motivation-item">
+                                    <span class="motivation-text">${item}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    ` : ''}
+                    
                     ${(decision.decision_description || decision.decision_material || decision.group_discussion) ? `
                     <div style="margin-bottom: 30px; padding: 20px; background: #fafafa; border-radius: 12px; border: 1px solid #e2e8f0;">
+                        <div style="font-size: 0.9em; color: #001c66; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700;">Decision Description</div>
                         ${decision.decision_description ? `
                         <div style="margin-bottom: ${(decision.decision_material || decision.group_discussion) ? '16px' : '0'};">
                             <p style="color: #1e293b; font-size: 1em; line-height: 1.6;">${decision.decision_description}</p>
@@ -1377,32 +1463,6 @@
                     ` : ''}
                     
                     <div style="display: flex; gap: 30px; align-items: flex-start;">
-                        <div style="flex: 1;">
-                            <h3 style="font-size: 1.1em; color: #1e293b; margin-bottom: 20px;">Progress: ${progress}%</h3>
-                            <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 25px;">
-                                <div style="flex: 1; height: 12px; background: #e2e8f0; border-radius: 6px;">
-                                    <div style="width: ${progress}%; height: 100%; background: ${progress === 100 ? '#10b981' : '#0079FF'}; border-radius: 6px; transition: width 0.3s;"></div>
-                                </div>
-                            </div>
-                            
-                            <div class="detailed-steps">
-                                ${decision.steps.map((step, index) => {
-                                    const completed = step.completed;
-                                    const active = !completed && decision.steps.slice(0, index).every(s => s.completed);
-                                    return `
-                                        <div class="detailed-step ${completed ? 'completed' : ''} ${active ? 'active' : ''}">
-                                            <div class="detailed-step-indicator">
-                                                ${completed ? '✓' : index + 1}
-                                            </div>
-                                            <div class="detailed-step-content">
-                                                <div class="detailed-step-title">${index + 1}: ${step.name}</div>
-                                            </div>
-                                        </div>
-                                    `;
-                                }).join('')}
-                            </div>
-                        </div>
-                        
                         <div style="display: flex; flex-direction: column; gap: 20px;">
                             ${decision.rapporteur || decision.contact_group ? `
                             <div style="min-width: 200px; padding: 20px; background: #f8fafc; border-radius: 12px;">
@@ -1426,6 +1486,32 @@
                                 </div>
                             </div>
                             ` : ''}
+                        </div>
+                        
+                        <div style="flex: 1;">
+                            <h3 style="font-size: 1.1em; color: #1e293b; margin-bottom: 20px;">Progress: ${progress}%</h3>
+                            <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 25px;">
+                                <div style="flex: 1; height: 12px; background: #e2e8f0; border-radius: 6px;">
+                                    <div style="width: ${progress}%; height: 100%; background: ${progress === 100 ? '#10b981' : '#0079FF'}; border-radius: 6px; transition: width 0.3s;"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="detailed-steps">
+                                ${decision.steps.map((step, index) => {
+                                    const completed = step.completed;
+                                    const active = !completed && decision.steps.slice(0, index).every(s => s.completed);
+                                    return `
+                                        <div class="detailed-step ${completed ? 'completed' : ''} ${active ? 'active' : ''}">
+                                            <div class="detailed-step-indicator">
+                                                ${completed ? '✔' : index + 1}
+                                            </div>
+                                            <div class="detailed-step-content">
+                                                <div class="detailed-step-title">${index + 1}: ${step.name}</div>
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
                         </div>
                     </div>
                 </div>
