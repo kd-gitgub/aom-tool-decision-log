@@ -489,7 +489,7 @@
         }
 
         .motivation-bullet {
-            color: #8F29FC;
+            color: #001C66;
             font-weight: bold;
             margin-right: 12px;
             font-size: 1.1em;
@@ -498,7 +498,7 @@
 
         .motivation-text {
             flex: 1;
-            color: #1e293b;
+            color: #001c66;
             font-size: 0.95em;
             line-height: 1.5;
         }
@@ -640,13 +640,13 @@
             align-items: center;
             justify-content: center;
             transition: all 0.2s;
-            color: #64748b;
+            color: #001c66;
             font-size: 18px;
         }
 
         .modal-close:hover {
             background: #e2e8f0;
-            color: #1e293b;
+            color: #001c66;
         }
 
         @keyframes pulse {
@@ -1414,7 +1414,7 @@
                         </span>
                     </div>
                     
-                    <h2 style="font-size: 1.8em; color: #1e293b; margin-bottom: 30px;">${decision.decision_name}</h2>
+                    <h2 style="font-size: 1.8em; color: #001c66; margin-bottom: 30px;">${decision.decision_name}</h2>
                     
                     ${decision.decision_motivation && decision.decision_motivation.length > 0 ? `
                     <div class="motivation-section">
@@ -1434,7 +1434,7 @@
                         <div style="font-size: 0.9em; color: #001c66; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700;">Decision Description</div>
                         ${decision.decision_description ? `
                         <div style="margin-bottom: ${(decision.decision_material || decision.group_discussion) ? '16px' : '0'};">
-                            <p style="color: #1e293b; font-size: 1em; line-height: 1.6;">${decision.decision_description}</p>
+                            <p style="color: #001c66; font-size: 1em; line-height: 1.6;">${decision.decision_description}</p>
                         </div>
                         ` : ''}
                         <div style="display: flex; gap: 12px; flex-wrap: wrap;">
@@ -1466,8 +1466,8 @@
                         <div style="display: flex; flex-direction: column; gap: 20px;">
                             ${decision.rapporteur || decision.contact_group ? `
                             <div style="min-width: 200px; padding: 20px; background: #f8fafc; border-radius: 12px;">
-                                <div style="font-size: 0.85em; color: #64748b; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Rapporteur</div>
-                                <div style="font-size: 0.95em; color: ${decision.rapporteur ? '#1e293b' : '#94a3b8'}; font-style: ${decision.rapporteur ? 'normal' : 'italic'};">
+                                <div style="font-size: 0.9em; color: #001c66; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700;">Rapporteur</div>
+                                <div style="font-size: 0.95em; color: ${decision.rapporteur ? '#001c66' : '#001c66'}; font-style: ${decision.rapporteur ? 'normal' : 'italic'};">
                                     ${decision.rapporteur || 'Not assigned'}
                                 </div>
                             </div>
@@ -1475,11 +1475,11 @@
                             
                             ${decision.contact_group ? `
                             <div style="min-width: 200px; padding: 20px; background: #f8fafc; border-radius: 12px;">
-                                <div style="font-size: 0.85em; color: #64748b; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Decision Group</div>
+                                <div style="font-size: 0.9em; color: #001c66; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700;">Decision Design Group</div>
                                 <div style="display: flex; flex-direction: column; gap: 8px;">
                                     ${decision.contact_group.split('|').map(name => name.trim()).filter(name => name).map((name, index) => `
-                                        <div style="font-size: 1em; color: #1e293b; font-weight: 500; padding: 6px 0; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center;">
-                                            <span style="color: #94a3b8; margin-right: 10px; font-weight: 600; font-size: 0.9em;">${index + 1}.</span>
+                                        <div style="font-size: 1em; color: #001c66; font-weight: 500; padding: 6px 0; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center;">
+                                            <span style="color: #001c66; margin-right: 10px; font-weight: 600; font-size: 0.9em;">${index + 1}.</span>
                                             ${name}
                                         </div>
                                     `).join('')}
@@ -1489,7 +1489,7 @@
                         </div>
                         
                         <div style="flex: 1;">
-                            <h3 style="font-size: 1.1em; color: #1e293b; margin-bottom: 20px;">Progress: ${progress}%</h3>
+                            <h3 style="font-size: 1.1em; color: #001c66; margin-bottom: 20px;">Pre- & Post- conditions: ${progress}%</h3>
                             <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 25px;">
                                 <div style="flex: 1; height: 12px; background: #e2e8f0; border-radius: 6px;">
                                     <div style="width: ${progress}%; height: 100%; background: ${progress === 100 ? '#10b981' : '#0079FF'}; border-radius: 6px; transition: width 0.3s;"></div>
