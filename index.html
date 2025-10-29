@@ -585,7 +585,7 @@
                 </div>
                 <div class="summary-stat">
                     <div class="summary-value" id="completedDecisions">0</div>
-                    <div class="summary-label">Completed</div>
+                    <div class="summary-label">Implemented</div>
                 </div>
                 <div class="summary-stat">
                     <div class="summary-value" id="approvedDecisions">0</div>
@@ -816,7 +816,7 @@
                         decision_description: "Migrating our data warehouse to a more scalable cloud solution.",
                         decision_material: "",
                         group_discussion: "",
-                        decision_status: "Completed",
+                        decision_status: "Implemented",
                         decision_level: "SRB",
                         steps: [
                             { name: "Assess Current State", completed: true },
@@ -1192,7 +1192,7 @@
             
             const completedDecisions = decisions.filter(d => {
                 const status = (d.decision_status || '').trim().toLowerCase();
-                return status === 'completed' || status === 'complete';
+                return status === 'implemented';
             }).length;
             
             const approvedDecisions = decisions.filter(d => {
