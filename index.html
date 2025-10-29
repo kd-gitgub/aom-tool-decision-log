@@ -182,152 +182,122 @@
 
         .dropdown-option input[type="checkbox"] {
             margin-right: 8px;
+            width: 16px;
+            height: 16px;
             cursor: pointer;
         }
 
-        .custom-dropdown.open .dropdown-header {
-            border-radius: 8px 8px 0 0;
-        }
-
-        .investment-profile-btn {
-            padding: 8px 16px;
-            border: 1px solid #001C66;
-            background: #001C66;
-            color: white;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 0.9em;
-            font-family: inherit;
-            font-weight: 500;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 140px;
-            margin-left: auto;
-            margin-right: 15px;
-        }
-
-        .investment-profile-btn:hover {
-            background: #002080;
-            border-color: #002080;
-        }
-
+        /* View Toggle */
         .view-toggle {
+            margin-left: auto;
             display: flex;
-            gap: 5px;
-            background: #f1f5f9;
-            padding: 4px;
+            background: #e2e8f0;
             border-radius: 8px;
+            padding: 3px;
         }
 
         .view-btn {
-            padding: 6px 12px;
+            padding: 6px 16px;
             border: none;
             background: transparent;
-            border-radius: 6px;
-            cursor: pointer;
             color: #001C66;
+            cursor: pointer;
+            border-radius: 5px;
             transition: all 0.2s;
+            font-size: 0.9em;
+            font-weight: 500;
         }
 
         .view-btn.active {
             background: white;
-            color: #001C66;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        /* Decision Cards Grid */
+        /* Decision Cards */
         .decisions-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-            margin-top: 30px;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 24px;
+            padding: 20px 0;
         }
 
         .decision-card {
             background: white;
             border-radius: 12px;
-            padding: 12px 20px 10px 20px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            transition: all 0.3s ease;
+            padding: 20px;
+            border: 2px solid #e2e8f0;
+            transition: all 0.2s;
             cursor: pointer;
             position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            min-height: 280px;
+            height: 100%;
         }
 
         .decision-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-color: #0079FF;
         }
 
         .card-top-badges {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 4px;
-            padding-right: 0;
+            margin-bottom: 15px;
         }
 
-        .decision-id-badge {
-            background: #f1f5f9;
-            color: #001C66;
-            padding: 4px 8px;
-            border-radius: 6px;
+        .level-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 16px;
             font-size: 0.75em;
-            font-weight: 500;
-            border: 1px solid #e2e8f0;
+            font-weight: 600;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-badge {
+            padding: 4px 10px;
+            background: #4b5563;
+            color: white;
+            border-radius: 16px;
+            font-size: 0.75em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .card-header {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+        }
+
+        .card-id {
+            color: #6b7280;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-bottom: 5px;
         }
 
         .card-title {
-            font-size: 1.2em;
-            font-weight: 500;
+            font-size: 1.1em;
+            font-weight: 600;
             color: #001C66;
             margin-bottom: 5px;
         }
 
         .card-category {
+            color: #6b7280;
             font-size: 0.85em;
-            color: #001C66;
-            display: inline-block;
-            padding: 4px 10px;
-            background: #f1f5f9;
-            border-radius: 4px;
-            margin-right: 8px;
         }
 
-        .card-middle-section {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .card-bottom-section {
-            margin-top: auto;
-            padding-top: 5px;
-        }
-
-        /* Progress Ring */
-        .progress-ring-container {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            margin: 20px 0 2px 0;
+        .progress-section {
+            margin: 20px 0;
+            text-align: center;
         }
 
         .progress-ring {
             position: relative;
-            width: 80px;
-            height: 80px;
+            display: inline-block;
         }
 
         .progress-ring svg {
@@ -336,8 +306,7 @@
 
         .progress-ring-circle {
             stroke-dasharray: 220;
-            stroke-dashoffset: 220;
-            transition: stroke-dashoffset 0.6s ease;
+            transition: stroke-dashoffset 0.3s;
         }
 
         .progress-ring-value {
@@ -346,23 +315,23 @@
             left: 50%;
             transform: translate(-50%, -50%);
             font-size: 1.2em;
-            font-weight: bold;
+            font-weight: 700;
             color: #001C66;
         }
 
-        /* Mini Step Indicators */
         .mini-steps {
             display: flex;
-            gap: 8px;
-            flex: 1;
+            gap: 4px;
+            justify-content: center;
+            margin-top: 15px;
         }
 
         .mini-step {
-            flex: 1;
-            height: 8px;
+            width: 28px;
+            height: 6px;
             background: #e2e8f0;
-            border-radius: 4px;
-            transition: all 0.3s ease;
+            border-radius: 3px;
+            transition: all 0.3s;
             position: relative;
         }
 
@@ -377,216 +346,144 @@
 
         .mini-step-tooltip {
             position: absolute;
-            bottom: 16px;
+            bottom: 12px;
             left: 50%;
             transform: translateX(-50%);
-            background: #001C66;
+            background: #1f2937;
             color: white;
-            padding: 6px 10px;
-            border-radius: 6px;
+            padding: 4px 8px;
+            border-radius: 4px;
             font-size: 0.75em;
             white-space: nowrap;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.2s;
+            transition: opacity 0.3s;
+            z-index: 10;
         }
 
         .mini-step:hover .mini-step-tooltip {
             opacity: 1;
         }
 
-        /* Detailed Steps for Modal */
+        /* Details Modal Styles */
         .detailed-steps {
-            margin-bottom: 20px;
+            margin-top: 20px;
         }
 
         .detailed-step {
             display: flex;
             align-items: center;
-            padding: 12px;
-            margin-bottom: 10px;
-            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 12px;
             background: #f8fafc;
-            transition: all 0.2s;
-            cursor: default;
+            border-radius: 8px;
+            border-left: 4px solid #e2e8f0;
+            transition: all 0.3s;
         }
 
         .detailed-step.completed {
+            border-left-color: #10b981;
             background: #f0fdf4;
         }
 
+        .detailed-step.active {
+            border-left-color: #0079FF;
+            background: #eff6ff;
+            animation: pulse 2s infinite;
+        }
+
         .detailed-step-indicator {
-            width: 36px;
-            height: 36px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-right: 15px;
             font-weight: 600;
+            margin-right: 15px;
+            font-size: 0.9em;
             background: white;
+            color: #6b7280;
             border: 2px solid #e2e8f0;
-            color: #001C66;
         }
 
         .detailed-step.completed .detailed-step-indicator {
             background: #10b981;
-            border-color: #10b981;
             color: white;
+            border: none;
         }
 
         .detailed-step.active .detailed-step-indicator {
-            border-color: #0079FF;
-            color: #0079FF;
-            box-shadow: 0 0 0 3px rgba(0, 121, 255, 0.1);
-        }
-
-        .detailed-step-content {
-            flex: 1;
+            background: #0079FF;
+            color: white;
+            border: none;
         }
 
         .detailed-step-title {
             font-weight: 600;
             color: #001C66;
-            margin-bottom: 3px;
+            font-size: 1em;
         }
 
-        .detailed-step.active .detailed-step-title {
-            color: #0079FF;
-        }
-
-        /* Motivation Section Styles */
-        .motivation-section {
-            margin-bottom: 30px;
-            padding: 20px;
-            background: #fafafa;
-            border-radius: 12px;
-            border: 1px solid #e2e8f0;
-        }
-
-        .motivation-title {
-            font-size: 0.9em;
-            color: #001c66;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-weight: 700;
-        }
-
-        .motivation-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .motivation-item {
-            display: flex;
-            align-items: flex-start;
-            padding: 10px;
-            background: white;
-            border-radius: 8px;
-            border-left: 4px solid #001C66;
-        }
-
-        .motivation-bullet {
-            color: #001C66;
-            font-weight: bold;
-            margin-right: 12px;
-            font-size: 1.1em;
-            line-height: 1.4;
-        }
-
-        .motivation-text {
-            flex: 1;
-            color: #001c66;
-            font-size: 0.95em;
-            line-height: 1.5;
-        }
-
-        /* Card Actions */
-        .card-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .card-btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 6px;
-            font-size: 0.9em;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-weight: 500;
-        }
-
-        .btn-complete-next {
-            background: #10b981;
+        /* Investment Profile Button */
+        .investment-profile-btn {
+            display: inline-block;
+            padding: 10px 24px;
+            background: #0079FF;
             color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9em;
+            transition: all 0.2s;
+            margin-top: auto;
         }
 
-        .btn-complete-next:hover {
-            background: #059669;
+        .investment-profile-btn:hover {
+            background: #0056b3;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 121, 255, 0.3);
         }
 
-        .btn-view-details {
-            background: #f1f5f9;
-            color: #001C66;
-        }
-
-        .btn-view-details:hover {
-            background: #e2e8f0;
-        }
-
-        /* List View Styles */
+        /* Decision List View Styles */
         .decisions-list {
             display: none;
             background: white;
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-        }
-
-        .list-view .decisions-list {
-            display: block;
+            margin-top: 20px;
         }
 
         .list-view .decisions-grid {
             display: none;
         }
 
+        .list-view .decisions-list {
+            display: block;
+        }
+
         .list-header {
             display: grid;
-            grid-template-columns: 60px 1fr 2fr 1.2fr 1fr 1.2fr;
-            gap: 20px;
+            grid-template-columns: 60px 140px 1fr 150px 120px 100px;
             padding: 15px 20px;
-            background: #f8fafc;
+            background: #001C66;
+            color: white;
             font-weight: 600;
-            color: #001C66;
-            font-size: 0.85em;
+            font-size: 0.9em;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-        }
-        
-        .list-header > div:first-child {
-            text-align: center;
+            gap: 20px;
         }
 
         .list-row {
             display: grid;
-            grid-template-columns: 60px 1fr 2fr 1.2fr 1fr 1.2fr;
-            gap: 20px;
+            grid-template-columns: 60px 140px 1fr 150px 120px 100px;
             padding: 20px;
-            border-bottom: 1px solid #f1f5f9;
+            border-bottom: 1px solid #e2e8f0;
             align-items: center;
-            transition: all 0.2s ease;
+            transition: all 0.2s;
             cursor: pointer;
-        }
-        
-        .list-row > div {
-            display: flex;
-            align-items: center;
-            min-height: 40px;
+            gap: 20px;
         }
 
         .list-row:hover {
@@ -679,15 +576,16 @@
                 margin-left: 0;
                 margin-top: 10px;
             }
-
-            .list-header {
+            
+            .list-header,
+            .list-row {
                 grid-template-columns: 1fr;
                 gap: 10px;
             }
             
-            .list-row {
-                grid-template-columns: 1fr;
-                gap: 10px;
+            .list-header > *,
+            .list-row > * {
+                text-align: left;
             }
         }
     </style>
@@ -696,7 +594,7 @@
     <div class="dashboard-container">
         <div class="dashboard-header">
             <div class="wip-limit-box">
-                WIP limit = 10 decisions maximum in Active + Shaping
+                🔥 Inflight decisions: 3 x Board + 1 Exec owner = 4-decision WIP limit
             </div>
             
             <h1 class="dashboard-title">AOM Tooling Governance: Decision Log</h1>
@@ -710,6 +608,10 @@
                 <div class="summary-stat">
                     <div class="summary-value" id="completedDecisions">0</div>
                     <div class="summary-label">Completed</div>
+                </div>
+                <div class="summary-stat">
+                    <div class="summary-value" id="approvedDecisions">0</div>
+                    <div class="summary-label">Approved</div>
                 </div>
                 <div class="summary-stat">
                     <div class="summary-value" id="activeDecisions">0</div>
@@ -948,33 +850,36 @@
                         contact_group: "Data Engineering",
                         decision_motivation: [
                             "Reduce infrastructure costs by 40% through cloud migration",
-                            "Improve query performance from hours to minutes for complex analytics",
-                            "Enable self-service analytics for business users"
+                            "Improve query performance by 10x for analytical workloads",
+                            "Enable real-time data streaming capabilities"
                         ]
                     },
                     {
                         decision_id: 4,
-                        decision_name: "Reporting Dashboard Update",
-                        decision_category: "Reporting",
-                        decision_description: "Updating our executive dashboards with new KPIs and visualizations.",
+                        decision_name: "AI Ethics Framework",
+                        decision_category: "Governance",
+                        decision_description: "Establishing comprehensive ethical guidelines for AI model deployment.",
                         decision_material: "",
                         group_discussion: "",
-                        decision_status: "Backlog",
+                        decision_status: "Approved",
                         decision_level: "Global D&A Function",
                         steps: [
-                            { name: "Requirements Gathering", completed: false },
-                            { name: "Design Mockups", completed: false },
-                            { name: "Development", completed: false },
-                            { name: "Testing", completed: false }
+                            { name: "Form Ethics Committee", completed: true },
+                            { name: "Draft Guidelines", completed: true },
+                            { name: "Legal Review", completed: true },
+                            { name: "Board Approval", completed: true },
+                            { name: "Implementation", completed: false }
                         ],
-                        rapporteur: "",
-                        contact_group: "Business Intelligence",
+                        rapporteur: "lisa.ethics@company.com",
+                        contact_group: "Ethics Board | Legal | Data Science",
                         decision_motivation: [
-                            "Provide executives with real-time visibility into business performance",
-                            "Reduce time spent on manual reporting by 60%"
+                            "Ensure compliance with emerging AI regulations",
+                            "Build customer trust through transparent AI practices",
+                            "Mitigate reputational risks from AI bias incidents"
                         ]
                     }
                 ];
+                
                 populateFilters();
                 applyFilters();
             }
@@ -1048,10 +953,8 @@
             const allIndividualChecked = Array.from(otherCheckboxes).every(cb => cb.checked);
             
             if (allIndividualChecked) {
-                // If all individual items are checked, check "All" too
                 allCheckbox.checked = true;
             } else {
-                // If not all individual items are checked, uncheck "All"
                 allCheckbox.checked = false;
             }
             
@@ -1084,10 +987,8 @@
             const allIndividualChecked = Array.from(otherCheckboxes).every(cb => cb.checked);
             
             if (allIndividualChecked) {
-                // If all individual items are checked, check "All" too
                 allCheckbox.checked = true;
             } else {
-                // If not all individual items are checked, uncheck "All"
                 allCheckbox.checked = false;
             }
             
@@ -1095,44 +996,48 @@
             applyFilters();
         }
 
-        function getSelectedStatuses() {
-            const checkboxes = document.querySelectorAll('#decisionStatusDropdown input[type="checkbox"]:checked');
-            return Array.from(checkboxes).map(cb => cb.value);
-        }
-
-        function getSelectedLevels() {
-            const checkboxes = document.querySelectorAll('#decisionLevelDropdown input[type="checkbox"]:checked');
-            return Array.from(checkboxes).map(cb => cb.value);
-        }
-
+        // Update status dropdown label
         function updateStatusLabel() {
-            const selected = getSelectedStatuses();
             const label = document.getElementById('decisionStatusLabel');
+            const checkedBoxes = document.querySelectorAll('#decisionStatusDropdown input[type="checkbox"]:checked:not([value="all"])');
             
-            if (selected.includes('all')) {
+            if (document.querySelector('#decisionStatusDropdown input[value="all"]').checked) {
                 label.textContent = 'All';
-            } else if (selected.length === 0) {
+            } else if (checkedBoxes.length === 0) {
                 label.textContent = 'None';
-            } else if (selected.length === 1) {
-                label.textContent = selected[0];
+            } else if (checkedBoxes.length === 1) {
+                label.textContent = checkedBoxes[0].value;
             } else {
-                label.textContent = `${selected.length} selected`;
+                label.textContent = `${checkedBoxes.length} selected`;
             }
         }
 
+        // Update level dropdown label
         function updateLevelLabel() {
-            const selected = getSelectedLevels();
             const label = document.getElementById('decisionLevelLabel');
+            const checkedBoxes = document.querySelectorAll('#decisionLevelDropdown input[type="checkbox"]:checked:not([value="all"])');
             
-            if (selected.includes('all')) {
+            if (document.querySelector('#decisionLevelDropdown input[value="all"]').checked) {
                 label.textContent = 'All';
-            } else if (selected.length === 0) {
+            } else if (checkedBoxes.length === 0) {
                 label.textContent = 'None';
-            } else if (selected.length === 1) {
-                label.textContent = selected[0];
+            } else if (checkedBoxes.length === 1) {
+                label.textContent = checkedBoxes[0].value;
             } else {
-                label.textContent = `${selected.length} selected`;
+                label.textContent = `${checkedBoxes.length} selected`;
             }
+        }
+
+        // Get selected statuses
+        function getSelectedStatuses() {
+            const checkedBoxes = document.querySelectorAll('#decisionStatusDropdown input[type="checkbox"]:checked');
+            return Array.from(checkedBoxes).map(cb => cb.value);
+        }
+
+        // Get selected levels
+        function getSelectedLevels() {
+            const checkedBoxes = document.querySelectorAll('#decisionLevelDropdown input[type="checkbox"]:checked');
+            return Array.from(checkedBoxes).map(cb => cb.value);
         }
 
         function applyFilters() {
@@ -1248,41 +1153,28 @@
                     <div class="card-top-badges">
                         <div>
                             ${decision.decision_level ? `
-                            <span style="font-size: 0.85em; padding: 4px 10px; background: ${levelColor}20; color: ${levelColor}; border-radius: 4px; font-weight: 700; border: 1px solid ${levelColor}40; display: inline-block;">
+                            <span class="level-badge" style="background: ${levelColor}">
                                 ${decision.decision_level}
                             </span>
                             ` : ''}
                         </div>
                         <div>
-                            <span class="decision-id-badge">Decision ID: ${decision.decision_id}</span>
+                            <span class="status-badge" style="background: ${statusColor}">
+                                ${displayStatus}
+                            </span>
                         </div>
-                    </div>
-                    
-                    <div style="margin-bottom: 18px; display: flex; justify-content: flex-start; align-items: center; gap: 8px; padding-right: 0;">
-                        <span style="font-size: 0.85em; color: #001C66; display: inline-block; padding: 4px 10px; background: #f1f5f9; border-radius: 4px;">${decision.decision_category}</span>
                     </div>
                     
                     <div class="card-header">
+                        <div class="card-id">Decision #${decision.decision_id}</div>
                         <div class="card-title">${decision.decision_name}</div>
+                        <div class="card-category">${decision.decision_category}</div>
                     </div>
                     
-                    <div class="card-middle-section">
-                        <div class="progress-ring-container">
-                            ${createProgressRing(progress)}
-                            <div class="mini-steps">
-                                ${createMiniSteps(decision.steps)}
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="card-bottom-section">
-                        <div style="font-size: 0.85em; color: #001C66; display: flex; justify-content: space-between; align-items: center;">
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <span style="font-size: 0.75em; padding: 3px 8px; background: ${statusColor}20; color: ${statusColor}; border-radius: 4px; font-weight: 600;">
-                                    ${displayStatus}
-                                </span>
-                            </div>
-                            <span>${stepCount} steps • ${decision.steps.filter(s => s.completed).length} completed</span>
+                    <div class="progress-section">
+                        ${createProgressRing(progress)}
+                        <div class="mini-steps">
+                            ${createMiniSteps(decision.steps)}
                         </div>
                     </div>
                 </div>
@@ -1291,39 +1183,27 @@
 
         function createListRow(decision) {
             const progress = calculateProgress(decision.steps);
-            // Use consistent gray color for all status badges
-            const statusColor = '#4b5563'; // Gray for all statuses
-            
-            const displayStatus = decision.decision_status || 'Unknown';
             const levelColor = getDecisionLevelColor(decision.decision_level);
             
             return `
                 <div class="list-row" onclick="toggleDecisionModal(${decision.decision_id})">
-                    <div style="font-weight: 600; color: #001C66; justify-content: center;">${decision.decision_id}</div>
+                    <div>${decision.decision_id}</div>
                     <div>
                         ${decision.decision_level ? `
-                        <span style="font-size: 0.8em; padding: 3px 8px; background: ${levelColor}20; color: ${levelColor}; border-radius: 4px; font-weight: 700; border: 1px solid ${levelColor}40;">
+                        <span class="level-badge" style="background: ${levelColor}; display: inline-block;">
                             ${decision.decision_level}
                         </span>
-                        ` : '<span style="color: #001C66; font-style: italic;">—</span>'}
+                        ` : '-'}
                     </div>
-                    <div style="color: #001C66;">${decision.decision_name}</div>
-                    <div style="color: #001C66;">${decision.decision_category}</div>
+                    <div style="font-weight: 600; color: #001C66;">${decision.decision_name}</div>
+                    <div>${decision.decision_category}</div>
                     <div>
-                        <span style="font-size: 0.8em; padding: 3px 8px; background: ${statusColor}20; color: ${statusColor}; border-radius: 4px; font-weight: 600;">
-                            ${displayStatus}
+                        <span class="status-badge" style="background: #4b5563; display: inline-block;">
+                            ${decision.decision_status || 'Unknown'}
                         </span>
                     </div>
-                    <div style="flex-direction: column; justify-content: center; align-items: stretch;">
-                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 2px;">
-                            <div style="flex: 1; height: 8px; background: #e2e8f0; border-radius: 4px;">
-                                <div style="width: ${progress}%; height: 100%; background: ${progress === 100 ? '#10b981' : '#0079FF'}; border-radius: 4px; transition: width 0.3s;"></div>
-                            </div>
-                            <span style="font-weight: 600; color: #001C66; font-size: 0.9em; min-width: 40px;">${progress}%</span>
-                        </div>
-                        <div style="font-size: 0.75em; color: #001C66; text-align: center;">
-                            ${decision.steps.filter(s => s.completed).length}/${decision.steps.length} steps
-                        </div>
+                    <div style="text-align: center; font-weight: 700; color: ${progress === 100 ? '#10b981' : '#0079FF'};">
+                        ${progress}%
                     </div>
                 </div>
             `;
@@ -1335,6 +1215,11 @@
             const completedDecisions = decisions.filter(d => {
                 const status = (d.decision_status || '').trim().toLowerCase();
                 return status === 'completed' || status === 'complete';
+            }).length;
+            
+            const approvedDecisions = decisions.filter(d => {
+                const status = (d.decision_status || '').trim().toLowerCase();
+                return status === 'approved';
             }).length;
             
             const activeDecisions = decisions.filter(d => {
@@ -1354,75 +1239,70 @@
             
             document.getElementById('totalDecisions').textContent = totalDecisions;
             document.getElementById('completedDecisions').textContent = completedDecisions;
+            document.getElementById('approvedDecisions').textContent = approvedDecisions;
             document.getElementById('activeDecisions').textContent = activeDecisions;
             document.getElementById('shapingDecisions').textContent = shapingDecisions;
             document.getElementById('backlogDecisions').textContent = backlogDecisions;
         }
 
-        function toggleDecisionModal(id) {
-            // If the same modal is currently open, close it
-            if (currentlyOpenModalId === id) {
+        // Toggle decision modal from card or list view
+        function toggleDecisionModal(decisionId) {
+            const decision = decisions.find(d => d.decision_id === decisionId);
+            if (!decision) return;
+            
+            const modalOverlay = document.getElementById('modalOverlay');
+            
+            // If this modal is already open, close it
+            if (currentlyOpenModalId === decisionId && modalOverlay.classList.contains('active')) {
                 closeModal();
                 return;
             }
             
-            // Otherwise, open the new modal
-            openDecisionModal(id);
-        }
-
-        function openDecisionModal(id) {
-            // Find the decision data
-            const decision = decisions.find(d => d.decision_id === id);
-            if (!decision) return;
-            
-            // Store the currently open modal ID
-            currentlyOpenModalId = id;
-            
-            // Create modal content
-            const modalContent = createModalCard(decision);
-            const modalOverlay = document.getElementById('modalOverlay');
-            modalOverlay.innerHTML = modalContent;
+            // Open the new modal
+            currentlyOpenModalId = decisionId;
+            modalOverlay.innerHTML = `
+                <div class="modal-card" onclick="event.stopPropagation()">
+                    <button class="modal-close" onclick="closeModal()">✕</button>
+                    ${renderDetailedDecision(decision)}
+                </div>
+            `;
             modalOverlay.classList.add('active');
-            
-            // Add event listener to close button
-            const closeBtn = modalOverlay.querySelector('.modal-close');
-            if (closeBtn) {
-                closeBtn.addEventListener('click', closeModal);
-            }
         }
         
-        function createModalCard(decision) {
+        // Render detailed decision view (for modals)
+        function renderDetailedDecision(decision) {
             const progress = calculateProgress(decision.steps);
-            // Use consistent gray color for all status badges
-            const statusColor = '#4b5563'; // Gray for all statuses
-            
             const levelColor = getDecisionLevelColor(decision.decision_level);
             
             return `
-                <div class="modal-card">
-                    <button class="modal-close">×</button>
-                    <div style="margin-bottom: 20px;">
-                        <span class="decision-id-badge">Decision ID: ${decision.decision_id}</span>
-                        ${decision.decision_level ? `
-                        <span style="font-size: 0.75em; padding: 3px 8px; background: ${levelColor}20; color: ${levelColor}; border-radius: 4px; font-weight: 700; border: 1px solid ${levelColor}40; margin-left: 8px;">
-                            ${decision.decision_level}
-                        </span>
-                        ` : ''}
-                        <span class="card-category" style="margin-left: 8px;">${decision.decision_category}</span>
-                        <span style="font-size: 0.75em; padding: 3px 8px; background: ${statusColor}20; color: ${statusColor}; border-radius: 4px; font-weight: 600; margin-left: 8px;">
-                            ${decision.decision_status}
-                        </span>
+                <div style="margin-bottom: 25px;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+                        <div>
+                            <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
+                                ${decision.decision_level ? `
+                                <span class="level-badge" style="background: ${levelColor}; font-size: 0.85em;">
+                                    ${decision.decision_level}
+                                </span>
+                                ` : ''}
+                                <span class="status-badge" style="background: #4b5563; font-size: 0.85em;">
+                                    ${decision.decision_status || 'Unknown'}
+                                </span>
+                            </div>
+                            <h2 style="font-size: 1.8em; color: #001c66; margin-bottom: 5px;">
+                                Decision #${decision.decision_id}: ${decision.decision_name}
+                            </h2>
+                            <p style="color: #6b7280; font-size: 1em;">${decision.decision_category}</p>
+                        </div>
                     </div>
                     
-                    <h2 style="font-size: 1.8em; color: #001c66; margin-bottom: 30px;">${decision.decision_name}</h2>
-                    
                     ${decision.decision_motivation && decision.decision_motivation.length > 0 ? `
-                    <div class="motivation-section">
-                        <div class="motivation-title">Motivation</div>
-                        <div class="motivation-list">
-                            ${decision.decision_motivation.map((item, index) => `
-                                <div class="motivation-item">
-                                    <span class="motivation-text">${item}</span>
+                    <div style="margin-bottom: 30px; padding: 20px; background: #f0f9ff; border-radius: 12px; border-left: 4px solid #0079FF;">
+                        <div style="font-size: 0.9em; color: #001c66; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700;">Why This Decision Matters</div>
+                        <div style="display: flex; flex-direction: column; gap: 12px;">
+                            ${decision.decision_motivation.map(item => `
+                                <div style="display: flex; align-items: flex-start; gap: 10px;">
+                                    <span style="color: #0079FF; font-size: 1.2em; line-height: 1;">•</span>
+                                    <span style="color: #001c66; font-size: 1em; line-height: 1.5;">${item}</span>
                                 </div>
                             `).join('')}
                         </div>
