@@ -592,10 +592,6 @@
                     <div class="summary-label">Approved</div>
                 </div>
                 <div class="summary-stat">
-                    <div class="summary-value" id="activeDecisions">0</div>
-                    <div class="summary-label">Active</div>
-                </div>
-                <div class="summary-stat">
                     <div class="summary-value" id="shapingDecisions">0</div>
                     <div class="summary-label">Shaping</div>
                 </div>
@@ -769,7 +765,7 @@
                         decision_description: "Implementing a comprehensive analytics platform to gain deeper insights into customer behavior, preferences, and journey patterns across all touchpoints.",
                         decision_material: "https://example.com/analytics-platform-docs",
                         group_discussion: "https://example.com/discussion-forum",
-                        decision_status: "Active",
+                        decision_status: "Shaping",
                         decision_level: "I&T SteerCo",
                         steps: [
                             { name: "Identify Requirements", completed: true },
@@ -1200,11 +1196,6 @@
                 return status === 'approved';
             }).length;
             
-            const activeDecisions = decisions.filter(d => {
-                const status = (d.decision_status || '').trim().toLowerCase();
-                return status === 'active' || status === 'active discussion';
-            }).length;
-            
             const shapingDecisions = decisions.filter(d => {
                 const status = (d.decision_status || '').trim().toLowerCase();
                 return status === 'shaping';
@@ -1218,7 +1209,6 @@
             document.getElementById('totalDecisions').textContent = totalDecisions;
             document.getElementById('completedDecisions').textContent = completedDecisions;
             document.getElementById('approvedDecisions').textContent = approvedDecisions;
-            document.getElementById('activeDecisions').textContent = activeDecisions;
             document.getElementById('shapingDecisions').textContent = shapingDecisions;
             document.getElementById('backlogDecisions').textContent = backlogDecisions;
         }
