@@ -1298,19 +1298,6 @@
                         </div>
                     </div>
                     
-                    ${decision.decision_motivation && decision.decision_motivation.length > 0 ? `
-                    <div style="margin-bottom: 30px; padding: 20px; background: #f0f9ff; border-radius: 12px; border-left: 4px solid #0079FF;">
-                        <div style="font-size: 0.9em; color: #001c66; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700;">Why This Decision Matters</div>
-                        <div style="display: flex; flex-direction: column; gap: 12px;">
-                            ${decision.decision_motivation.map(item => `
-                                <div style="display: flex; align-items: flex-start; gap: 10px;">
-                                    <span style="color: #0079FF; font-size: 1.2em; line-height: 1;">•</span>
-                                    <span style="color: #001c66; font-size: 1em; line-height: 1.5;">${item}</span>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                    ` : ''}
                     
                     ${(decision.decision_description || decision.decision_material || decision.group_discussion) ? `
                     <div style="margin-bottom: 30px; padding: 20px; background: #fafafa; border-radius: 12px; border: 1px solid #e2e8f0;">
