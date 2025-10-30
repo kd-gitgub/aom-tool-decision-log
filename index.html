@@ -731,8 +731,21 @@
                     let status = rawStatus || 'Backlog';
                     status = status.trim();
                     
+                    // Parse decision_id from CSV column, ensuring we use the actual column value
+                    let decisionId = row.decision_id;
+                    if (decisionId === undefined || decisionId === null || decisionId === '') {
+                        console.warn(`Missing decision_id for row ${idx + 1}, using row index as fallback`);
+                        decisionId = idx + 1;
+                    } else {
+                        decisionId = parseInt(decisionId);
+                        if (isNaN(decisionId)) {
+                            console.warn(`Invalid decision_id "${row.decision_id}" for row ${idx + 1}, using row index as fallback`);
+                            decisionId = idx + 1;
+                        }
+                    }
+                    
                     return {
-                        decision_id: parseInt(row.decision_id) || (idx + 1),
+                        decision_id: decisionId,
                         decision_name: row.decision_name || `Decision ${idx + 1}`,
                         decision_category: row.decision_category || 'Unknown',
                         decision_description: row.decision_description || '',
