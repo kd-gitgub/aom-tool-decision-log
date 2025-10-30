@@ -240,8 +240,8 @@
 
         .status-badge {
             padding: 4px 10px;
-            background: #4b5563;
-            color: white;
+            background: #E5E7EB;
+            color: #0A142D;
             border-radius: 16px;
             font-size: 0.75em;
             font-weight: 600;
@@ -672,10 +672,10 @@
         // Function to get color for decision level badge
         function getDecisionLevelColor(level) {
             const levelLower = (level || '').toLowerCase();
-            if (levelLower === 'i&t steerco') return '#dc2626';  // Red
-            if (levelLower === 'trb') return '#8b5cf6';   // Purple
-            if (levelLower === 'srb') return '#0079FF'; // Blue
-            if (levelLower === 'global d&a function') return '#10b981'; // Green
+            if (levelLower === 'i&t steerco') return '#001C66';  // Dark Blue
+            if (levelLower === 'trb') return '#8F29FC';   // Purple
+            if (levelLower === 'srb') return '#AD5321'; // Brown/Orange
+            if (levelLower === 'global d&a function') return '#0079FF'; // Bright Blue
             return '#6b7280'; // Default gray for others
         }
 
@@ -1125,8 +1125,9 @@
             const progress = calculateProgress(decision.steps);
             const stepCount = decision.steps ? decision.steps.length : 0;
             
-            // Use consistent gray color for all status badges
-            const statusColor = '#4b5563'; // Gray for all statuses
+            // Use consistent color for all status badges
+            const statusBgColor = '#E5E7EB'; // Light grey background
+            const statusTextColor = '#0A142D'; // Dark text
             
             const displayStatus = decision.decision_status || 'Unknown';
             const levelColor = getDecisionLevelColor(decision.decision_level);
@@ -1142,7 +1143,7 @@
                             ` : ''}
                         </div>
                         <div>
-                            <span class="status-badge" style="background: ${statusColor}">
+                            <span class="status-badge" style="background: ${statusBgColor}; color: ${statusTextColor}">
                                 ${displayStatus}
                             </span>
                         </div>
@@ -1181,7 +1182,7 @@
                     <div style="font-weight: 600; color: #001C66;">${decision.decision_name}</div>
                     <div>${decision.decision_category}</div>
                     <div>
-                        <span class="status-badge" style="background: #4b5563; display: inline-block;">
+                        <span class="status-badge" style="background: #E5E7EB; color: #0A142D; display: inline-block;">
                             ${decision.decision_status || 'Unknown'}
                         </span>
                     </div>
@@ -1261,7 +1262,7 @@
                                     ${decision.decision_level}
                                 </span>
                                 ` : ''}
-                                <span class="status-badge" style="background: #4b5563; font-size: 0.85em;">
+                                <span class="status-badge" style="background: #E5E7EB; color: #0A142D; font-size: 0.85em;">
                                     ${decision.decision_status || 'Unknown'}
                                 </span>
                             </div>
