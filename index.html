@@ -757,6 +757,15 @@
                     };
                 }).filter(d => d.decision_name && d.decision_name !== '');
                 
+                // Sort decisions by decision_id in ascending order (natural alphanumeric sort)
+                decisions.sort((a, b) => {
+                    // Natural sort comparison that handles alphanumeric strings properly
+                    return a.decision_id.localeCompare(b.decision_id, undefined, {
+                        numeric: true,
+                        sensitivity: 'base'
+                    });
+                });
+                
                 console.log(`Successfully loaded ${decisions.length} decisions from CSV`);
                 
                 populateFilters();
@@ -862,6 +871,14 @@
                         ]
                     }
                 ];
+                
+                // Sort fallback decisions by decision_id as well
+                decisions.sort((a, b) => {
+                    return a.decision_id.localeCompare(b.decision_id, undefined, {
+                        numeric: true,
+                        sensitivity: 'base'
+                    });
+                });
                 
                 populateFilters();
                 applyFilters();
@@ -1056,6 +1073,14 @@
                     });
                 }
             }
+            
+            // Ensure filtered decisions maintain ascending order by decision_id
+            filteredDecisions.sort((a, b) => {
+                return a.decision_id.localeCompare(b.decision_id, undefined, {
+                    numeric: true,
+                    sensitivity: 'base'
+                });
+            });
             
             renderDecisions(filteredDecisions);
         }
