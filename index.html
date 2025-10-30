@@ -731,17 +731,13 @@
                     let status = rawStatus || 'Backlog';
                     status = status.trim();
                     
-                    // Parse decision_id from CSV column, ensuring we use the actual column value
+                    // Get decision_id from CSV column as a string value
                     let decisionId = row.decision_id;
-                    if (decisionId === undefined || decisionId === null || decisionId === '') {
-                        console.warn(`Missing decision_id for row ${idx + 1}, using row index as fallback`);
-                        decisionId = idx + 1;
+                    if (!decisionId || decisionId.trim() === '') {
+                        console.warn(`Missing decision_id for row ${idx + 1}, using fallback`);
+                        decisionId = `${idx + 1}`; // Use row number as string fallback
                     } else {
-                        decisionId = parseInt(decisionId);
-                        if (isNaN(decisionId)) {
-                            console.warn(`Invalid decision_id "${row.decision_id}" for row ${idx + 1}, using row index as fallback`);
-                            decisionId = idx + 1;
-                        }
+                        decisionId = decisionId.trim(); // Keep as string, just trim whitespace
                     }
                     
                     return {
@@ -772,7 +768,7 @@
                 // Fallback sample data with motivation
                 decisions = [
                     {
-                        decision_id: 1,
+                        decision_id: "1",
                         decision_name: "Customer Analytics Platform",
                         decision_category: "Customer Intelligence",
                         decision_description: "Implementing a comprehensive analytics platform to gain deeper insights into customer behavior, preferences, and journey patterns across all touchpoints.",
@@ -796,7 +792,7 @@
                         ]
                     },
                     {
-                        decision_id: 2,
+                        decision_id: "2",
                         decision_name: "Marketing Attribution Tool",
                         decision_category: "Marketing",
                         decision_description: "Selecting and implementing a multi-touch attribution solution to better understand marketing channel effectiveness and optimize spend allocation.",
@@ -819,7 +815,7 @@
                         ]
                     },
                     {
-                        decision_id: 3,
+                        decision_id: "3",
                         decision_name: "Data Warehouse Migration",
                         decision_category: "Infrastructure",
                         decision_description: "Migrating our data warehouse to a more scalable cloud solution.",
@@ -842,7 +838,7 @@
                         ]
                     },
                     {
-                        decision_id: 4,
+                        decision_id: "4",
                         decision_name: "AI Ethics Framework",
                         decision_category: "Governance",
                         decision_description: "Establishing comprehensive ethical guidelines for AI model deployment.",
@@ -1136,7 +1132,7 @@
             const levelColor = getDecisionLevelColor(decision.decision_level);
             
             return `
-                <div class="decision-card" data-id="${decision.decision_id}" onclick="toggleDecisionModal(${decision.decision_id})">
+                <div class="decision-card" data-id="${decision.decision_id}" onclick="toggleDecisionModal('${decision.decision_id}')">
                     <div class="card-top-badges">
                         <div>
                             ${decision.decision_level ? `
@@ -1173,7 +1169,7 @@
             const levelColor = getDecisionLevelColor(decision.decision_level);
             
             return `
-                <div class="list-row" onclick="toggleDecisionModal(${decision.decision_id})">
+                <div class="list-row" onclick="toggleDecisionModal('${decision.decision_id}')">
                     <div>${decision.decision_id}</div>
                     <div>
                         ${decision.decision_level ? `
