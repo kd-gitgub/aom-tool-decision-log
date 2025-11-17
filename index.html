@@ -771,10 +771,6 @@
                 populateFilters();
                 applyFilters();
                 
-                // Check for hash after data is loaded with retry mechanism
-                console.log('CSV loaded successfully, checking for hash...');
-                retryHashCheck();
-                
             } catch (error) {
                 console.error('Error loading CSV:', error);
                 
@@ -886,9 +882,6 @@
                 
                 populateFilters();
                 applyFilters();
-                
-                // Check for hash after fallback data is loaded
-                retryHashCheck();
             }
         }
 
@@ -1257,9 +1250,7 @@
 
         // Toggle decision modal from card or list view
         function toggleDecisionModal(decisionId) {
-            console.log('toggleDecisionModal called with ID:', decisionId);
             const decision = decisions.find(d => d.decision_id === decisionId);
-            console.log('Found decision:', decision ? decision.decision_name : 'NOT FOUND');
             if (!decision) return;
             
             const modalOverlay = document.getElementById('modalOverlay');
@@ -1401,10 +1392,6 @@
             modalOverlay.classList.remove('active');
             modalOverlay.innerHTML = '';
             currentlyOpenModalId = null; // Reset the currently open modal ID
-            // Clear the hash from URL when closing modal
-            if (window.location.hash) {
-                history.pushState("", document.title, window.location.pathname + window.location.search);
-            }
         }
 
         function setView(view) {
@@ -1441,49 +1428,6 @@
         // Initialize dashboard
         window.addEventListener('DOMContentLoaded', () => {
             loadDecisionsFromCSV();
-            
-            // Check for hash in URL and open corresponding modal
-            function checkHashAndOpenModal() {
-                const hash = window.location.hash;
-                console.log('checkHashAndOpenModal called, hash:', hash);
-                if (hash && hash.startsWith('#AOM-')) {
-                    const decisionId = hash.replace('#', '');
-                    console.log('Opening modal for decision:', decisionId);
-                    console.log('Available decisions:', decisions.map(d => d.decision_id));
-                    // Data is already loaded, open modal immediately
-                    toggleDecisionModal(decisionId);
-                } else {
-                    console.log('No valid hash found or hash does not start with #AOM-');
-                }
-            }
-            
-            // Retry hash checking multiple times to handle SharePoint timing issues
-            function retryHashCheck(attempts = 0) {
-                const maxAttempts = 10;
-                const hash = window.location.hash;
-                
-                if (hash && hash.startsWith('#AOM-') && decisions.length > 0) {
-                    const decisionId = hash.replace('#', '');
-                    const decision = decisions.find(d => d.decision_id === decisionId);
-                    if (decision) {
-                        console.log('Found decision on attempt', attempts + 1);
-                        toggleDecisionModal(decisionId);
-                        return;
-                    }
-                }
-                
-                if (attempts < maxAttempts) {
-                    setTimeout(() => retryHashCheck(attempts + 1), 300);
-                }
-            }
-            
-            // Check hash on page load (called after CSV loads)
-            // retryHashCheck is now called from loadDecisionsFromCSV
-            
-            // Listen for hash changes (if user uses back/forward buttons)
-            window.addEventListener('hashchange', () => {
-                retryHashCheck();
-            });
             
             // Add ESC key listener to close modals and dropdowns
             document.addEventListener('keydown', function(event) {
