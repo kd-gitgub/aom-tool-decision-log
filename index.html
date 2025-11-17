@@ -771,9 +771,6 @@
                 populateFilters();
                 applyFilters();
                 
-                // Check for hash after data is loaded
-                checkHashAndOpenModal();
-                
             } catch (error) {
                 console.error('Error loading CSV:', error);
                 
@@ -885,9 +882,6 @@
                 
                 populateFilters();
                 applyFilters();
-                
-                // Check for hash after fallback data is loaded
-                checkHashAndOpenModal();
             }
         }
 
@@ -1398,10 +1392,6 @@
             modalOverlay.classList.remove('active');
             modalOverlay.innerHTML = '';
             currentlyOpenModalId = null; // Reset the currently open modal ID
-            // Clear the hash from URL when closing modal
-            if (window.location.hash) {
-                history.pushState("", document.title, window.location.pathname + window.location.search);
-            }
         }
 
         function setView(view) {
@@ -1438,22 +1428,6 @@
         // Initialize dashboard
         window.addEventListener('DOMContentLoaded', () => {
             loadDecisionsFromCSV();
-            
-            // Check for hash in URL and open corresponding modal
-            function checkHashAndOpenModal() {
-                const hash = window.location.hash;
-                if (hash && hash.startsWith('#AOM-')) {
-                    const decisionId = hash.replace('#', '');
-                    // Data is already loaded, open modal immediately
-                    toggleDecisionModal(decisionId);
-                }
-            }
-            
-            // Check hash on page load (called after CSV loads)
-            // checkHashAndOpenModal is now called from loadDecisionsFromCSV
-            
-            // Listen for hash changes (if user uses back/forward buttons)
-            window.addEventListener('hashchange', checkHashAndOpenModal);
             
             // Add ESC key listener to close modals and dropdowns
             document.addEventListener('keydown', function(event) {
