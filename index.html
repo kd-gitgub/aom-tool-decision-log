@@ -771,6 +771,9 @@
                 populateFilters();
                 applyFilters();
                 
+                // Check for hash after data is loaded
+                checkHashAndOpenModal();
+                
             } catch (error) {
                 console.error('Error loading CSV:', error);
                 
@@ -882,6 +885,9 @@
                 
                 populateFilters();
                 applyFilters();
+                
+                // Check for hash after fallback data is loaded
+                checkHashAndOpenModal();
             }
         }
 
@@ -1438,15 +1444,13 @@
                 const hash = window.location.hash;
                 if (hash && hash.startsWith('#AOM-')) {
                     const decisionId = hash.replace('#', '');
-                    // Wait a bit for CSV to load
-                    setTimeout(() => {
-                        openModal(decisionId);
-                    }, 500);
+                    // Data is already loaded, open modal immediately
+                    openModal(decisionId);
                 }
             }
             
-            // Check hash on page load
-            checkHashAndOpenModal();
+            // Check hash on page load (called after CSV loads)
+            // checkHashAndOpenModal is now called from loadDecisionsFromCSV
             
             // Listen for hash changes (if user uses back/forward buttons)
             window.addEventListener('hashchange', checkHashAndOpenModal);
