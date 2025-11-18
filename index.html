@@ -1158,7 +1158,7 @@
             const levelColor = getDecisionLevelColor(decision.decision_level);
             
             return `
-                <div class="decision-card" data-id="${decision.decision_id}" onclick="toggleDecisionModal('${decision.decision_id}')">
+                <div class="decision-card" id="${decision.decision_id.toLowerCase()}" data-id="${decision.decision_id}" onclick="toggleDecisionModal('${decision.decision_id}')">
                     <div class="card-top-badges">
                         <div>
                             ${decision.decision_level ? `
@@ -1425,9 +1425,41 @@
             }
         }
 
+        // Check URL parameters and open corresponding decision modal
+        function checkURLParametersAndOpenModal() {
+            // Check query parameters first (e.g., ?decision=aom-01)
+            const urlParams = new URLSearchParams(window.location.search);
+            let decisionParam = urlParams.get('decision');
+            
+            // If no query parameter, check for hash anchor (e.g., #aom-01)
+            if (!decisionParam && window.location.hash) {
+                decisionParam = window.location.hash.substring(1); // Remove the # symbol
+            }
+            
+            if (decisionParam && allDecisions.length > 0) {
+                // Convert parameter to uppercase to match decision IDs (e.g., aom-01 -> AOM-01)
+                const decisionId = decisionParam.toUpperCase();
+                
+                // Find the decision with matching ID
+                const decision = allDecisions.find(d => d.decision_id === decisionId);
+                
+                if (decision) {
+                    // Small delay to ensure DOM is ready
+                    setTimeout(() => {
+                        openModal(decision);
+                        // Optionally scroll to top of modal
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }, 300);
+                }
+            }
+        }
+
         // Initialize dashboard
         window.addEventListener('DOMContentLoaded', () => {
             loadDecisionsFromCSV();
+            
+            // Check for URL parameters after data loads (with small delay to ensure data is loaded)
+            setTimeout(checkURLParametersAndOpenModal, 500);
             
             // Add ESC key listener to close modals and dropdowns
             document.addEventListener('keydown', function(event) {
