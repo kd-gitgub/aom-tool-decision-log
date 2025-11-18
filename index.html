@@ -1463,7 +1463,7 @@
                         console.log(`Found decision:`, decision);
                         // Small delay to ensure DOM is ready
                         setTimeout(() => {
-                            openModal(decision);
+                            toggleDecisionModal(decision.decision_id);
                             // Optionally scroll to top of modal
                             window.scrollTo({ top: 0, behavior: 'smooth' });
                         }, 300);
