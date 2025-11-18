@@ -1480,6 +1480,14 @@
 
         // Initialize dashboard
         window.addEventListener('DOMContentLoaded', () => {
+            // Immediate diagnostic - check if URL has parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const decisionParam = urlParams.get('decision');
+            if (decisionParam) {
+                console.log('IMMEDIATE CHECK: URL has decision parameter:', decisionParam);
+                alert('URL parameter detected: ' + decisionParam);
+            }
+            
             loadDecisionsFromCSV();
             
             // Add ESC key listener to close modals and dropdowns
@@ -1521,6 +1529,23 @@
                     });
                 }
             });
+        });
+        
+        // Listen for messages from parent SharePoint page (for iframe scenarios)
+        window.addEventListener('message', function(event) {
+            console.log('Received message:', event.data);
+            if (event.data && event.data.type === 'openDecision' && event.data.decisionId) {
+                console.log('Opening decision from postMessage:', event.data.decisionId);
+                // Wait for decisions to be loaded
+                const checkAndOpen = setInterval(function() {
+                    if (decisions.length > 0) {
+                        clearInterval(checkAndOpen);
+                        toggleDecisionModal(event.data.decisionId);
+                    }
+                }, 100);
+                // Stop checking after 10 seconds
+                setTimeout(function() { clearInterval(checkAndOpen); }, 10000);
+            }
         });
     </script>
 </body>
