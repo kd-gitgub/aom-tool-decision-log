@@ -58,6 +58,10 @@
             padding: 20px;
             border-radius: 12px;
             border-left: 7px solid #001C66;
+            /* Prevent small inline pieces from breaking onto a new line (e.g. 'WACC 7.35% =') */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .summary-value {
@@ -646,7 +650,7 @@
                     <button class="view-btn" onclick="setView('list')">List</button>
                 </div>
                 
-                <a href="https://centres.weforum.org/centre-for-ai-excellence/home" target="_blank" class="investment-profile-btn">
+                <a href="https://bramblesgroup.sharepoint.com/sites/anom-governance/SitePages/aom-tool-decision-investment-profile.aspx" target="_blank" class="investment-profile-btn">
                     Investment Profile
                 </a>
             </div>
