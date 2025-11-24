@@ -752,7 +752,8 @@
                         steps: stepsArray.length > 0 ? stepsArray : [{ name: 'No steps defined', completed: false }],
                         completed_steps: completedIndices,
                         contact_group: row.contact_group || '',
-                        quorate: row.quorate || row['quorate'] || '',
+                        // prefer `quorum` column, fall back to legacy `quorate` for compatibility
+                        quorum: row.quorum || row.quorate || row['quorum'] || row['quorate'] || '',
                             // use `implementation_lead` column from CSV (fallback to rapporteur)
                             lead_facilitator: row.implementation_lead || row.rapporteur || '',
                             rapporteur: row.rapporteur || '',
@@ -1350,7 +1351,7 @@
 
                             <!-- QUORATE box: same size/style as Lead Facilitator, shown immediately below it -->
                             ${(() => {
-                                const qRaw = (decision.quorate || '');
+                                const qRaw = (decision.quorum || '');
                                 const q = qRaw.trim().toLowerCase();
                                 let labelColor = '#001c66';
                                 let statusText = '';
