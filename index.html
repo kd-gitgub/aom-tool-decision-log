@@ -752,6 +752,7 @@
                         steps: stepsArray.length > 0 ? stepsArray : [{ name: 'No steps defined', completed: false }],
                         completed_steps: completedIndices,
                         contact_group: row.contact_group || '',
+                        quorate: row.quorate || row['quorate'] || '',
                             lead_facilitator: row.lead_facilitator || row.rapporteur || '',
                             rapporteur: row.rapporteur || '',
                             decision_motivation: motivationItems  // Add motivation field
@@ -1345,7 +1346,35 @@
                                 </div>
                             </div>
                             ` : ''}
-                            
+
+                            <!-- QUORATE box: same size/style as Lead Facilitator, shown immediately below it -->
+                            ${(() => {
+                                const qRaw = (decision.quorate || '');
+                                const q = qRaw.trim().toLowerCase();
+                                let labelColor = '#001c66';
+                                let statusText = '';
+
+                                if (q === 'green') {
+                                    labelColor = '#10b981'; // green
+                                    statusText = 'Yes';
+                                } else if (q === 'amber') {
+                                    labelColor = '#ffb020'; // amber
+                                    statusText = 'Partial';
+                                } else if (q === 'red') {
+                                    labelColor = '#ef4444'; // red
+                                    statusText = 'No';
+                                }
+
+                                return `
+                                    <div style="min-width: 200px; padding: 8px 15px; background: #f8fafc; border-radius: 12px; display: flex; align-items: center;">
+                                        <div style="font-size: 0.9em; color: ${labelColor}; letter-spacing: 0.5px; font-weight: 700; display:flex; align-items:center;">
+                                            <span style="text-transform: uppercase;">QUORATE:</span>
+                                            ${statusText ? `<span style="text-transform: none; margin-left: 6px;">${statusText}</span>` : ''}
+                                        </div>
+                                    </div>
+                                `;
+                            })()}
+
                             ${decision.contact_group ? `
                             <div style="min-width: 200px; padding: 20px; background: #f8fafc; border-radius: 12px;">
                                 <div style="font-size: 0.9em; color: #001c66; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700;">Decision Design Group</div>
