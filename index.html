@@ -1366,21 +1366,21 @@
                                     statusText = 'No';
                                 }
 
-                                // Keep the "QUORATE ?:" label in a fixed color (match Implementation Lead)
-                                // Replace the Yes/Partial/No text with a small badge showing an icon
-                                // (tick / exclamation / cross) colored according to quorate (green/amber/red).
+                                // Keep the "QUORATE:" label in a fixed color (match Implementation Lead)
+                                // Render a small colored badge and make the inner icon larger/bolder for amber
                                 const icon = (q === 'green') ? '✔' : (q === 'amber') ? '!' : (q === 'red') ? '✖' : '';
-                                // Make the amber (!) badge more prominent by increasing its font-size
-                                const baseIconStyle = `background: ${labelColor}; color: #ffffff; border-radius: 12px; padding: 4px 8px; font-weight: 700; line-height:1; display:inline-block;`;
-                                const sizeStyle = (q === 'amber') ? 'font-size: 1.2em; padding-top:2px; padding-bottom:2px;' : 'font-size: 0.85em;';
-                                const iconStyle = baseIconStyle + sizeStyle;
+                                // Badge container style (fixed badge size)
+                                const baseIconStyle = `background: ${labelColor}; color: #ffffff; border-radius: 12px; line-height:1; display:inline-block; padding: 4px 8px;`;
+                                // Inner icon style: larger and bolder for amber only
+                                const innerIconStyle = (q === 'amber') ? 'font-size: 1.4em; font-weight: 900; display:inline-block; line-height:1;' : 'font-size: 1em; font-weight: 700; display:inline-block; line-height:1;';
+                                const iconStyle = baseIconStyle;
                                 return `
                                     <div style="min-width: 200px; padding: 8px 15px; background: #f8fafc; border-radius: 12px; display: flex; align-items: center;">
                                         <div style="font-size: 0.9em; color: #001c66; letter-spacing: 0.5px; font-weight: 700; display:flex; align-items:center;">
                                             <span style="text-transform: uppercase; color: #001c66;">QUORATE:</span>
                                             ${icon ? `
                                                 <span style="display:inline-flex; align-items:center; justify-content:center; margin-left:8px;">
-                                                    <span aria-hidden="true" style="${iconStyle}">${icon}</span>
+                                                    <span aria-hidden="true" style="${iconStyle}"><span style="${innerIconStyle}">${icon}</span></span>
                                                 </span>
                                             ` : ''}
                                         </div>
