@@ -752,8 +752,9 @@
                         steps: stepsArray.length > 0 ? stepsArray : [{ name: 'No steps defined', completed: false }],
                         completed_steps: completedIndices,
                         contact_group: row.contact_group || '',
-                        rapporteur: row.rapporteur || '',
-                        decision_motivation: motivationItems  // Add motivation field
+                            lead_facilitator: row.lead_facilitator || row.rapporteur || '',
+                            rapporteur: row.rapporteur || '',
+                            decision_motivation: motivationItems  // Add motivation field
                     };
                 }).filter(d => d.decision_name && d.decision_name !== '');
                 
@@ -1336,11 +1337,11 @@
                     
                     <div style="display: flex; gap: 30px; align-items: flex-start;">
                         <div style="display: flex; flex-direction: column; gap: 20px;">
-                            ${decision.rapporteur || decision.contact_group ? `
+                            ${decision.lead_facilitator || decision.rapporteur || decision.contact_group ? `
                             <div style="min-width: 200px; padding: 20px; background: #f8fafc; border-radius: 12px;">
-                                <div style="font-size: 0.9em; color: #001c66; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700;">Rapporteur</div>
-                                <div style="font-size: 0.95em; color: ${decision.rapporteur ? '#001c66' : '#001c66'}; font-style: ${decision.rapporteur ? 'normal' : 'italic'};">
-                                    ${decision.rapporteur || 'Not assigned'}
+                                <div style="font-size: 0.9em; color: #001c66; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700;">Lead Facilitator</div>
+                                <div style="font-size: 0.95em; color: ${decision.lead_facilitator || decision.rapporteur ? '#001c66' : '#001c66'}; font-style: ${decision.lead_facilitator || decision.rapporteur ? 'normal' : 'italic'};">
+                                    ${decision.lead_facilitator || decision.rapporteur || 'Not assigned'}
                                 </div>
                             </div>
                             ` : ''}
