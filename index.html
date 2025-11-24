@@ -31,6 +31,7 @@
             padding: 30px;
             margin-bottom: 30px;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            position: relative;
         }
 
         .dashboard-title {
@@ -570,6 +571,15 @@
                 text-align: left;
             }
         }
+        /* Last-updated timestamp in header */
+        #lastUpdated {
+            position: absolute;
+            top: 18px;
+            right: 24px;
+            color: #001c66;
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
     </style>
 </head>
 <body>
@@ -577,7 +587,7 @@
         <div class="dashboard-header">
             <h1 class="dashboard-title">AOM Tooling Governance: Decision Log</h1>
             <p class="dashboard-subtitle">Decision router & tracker</p>
-            <div id="lastUpdated" style="color:#001c66; margin-top:8px; font-size:0.9em;">Last updated: —</div>
+            <div id="lastUpdated">Last updated: —</div>
             
             <div class="summary-stats">
                 <div class="summary-stat">
