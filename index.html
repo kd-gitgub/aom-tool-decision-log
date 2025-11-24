@@ -823,15 +823,15 @@
                     if (lm) {
                         const parsed = new Date(lm);
                         if (!isNaN(parsed)) {
-                            document.getElementById('lastUpdated').textContent = `Last updated at: ${formatWithShortTZ(parsed)}`;
+                            document.getElementById('lastUpdated').textContent = `Last updated: ${formatWithShortTZ(parsed)}`;
                         } else {
-                            document.getElementById('lastUpdated').textContent = `Last updated at: ${formatWithShortTZ(new Date())}`;
+                            document.getElementById('lastUpdated').textContent = `Last updated: ${formatWithShortTZ(new Date())}`;
                         }
                     } else {
-                        document.getElementById('lastUpdated').textContent = `Last updated at: ${formatWithShortTZ(new Date())} (fetched)`;
+                        document.getElementById('lastUpdated').textContent = `Last updated: ${formatWithShortTZ(new Date())} (fetched)`;
                     }
                 } catch (err) {
-                    document.getElementById('lastUpdated').textContent = `Last updated at: ${formatWithShortTZ(new Date())}`;
+                    document.getElementById('lastUpdated').textContent = `Last updated: ${formatWithShortTZ(new Date())}`;
                 }
 
                 populateFilters();
@@ -953,7 +953,7 @@
                 applyFilters();
                 // For offline fallback/sample data show a local timestamp
                 try {
-                    document.getElementById('lastUpdated').textContent = `Last updated at: ${formatWithShortTZ(new Date())} (local fallback)`;
+                    document.getElementById('lastUpdated').textContent = `Last updated: ${formatWithShortTZ(new Date())} (local fallback)`;
                 } catch (err) {
                     // ignore
                 }
