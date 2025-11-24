@@ -577,6 +577,7 @@
         <div class="dashboard-header">
             <h1 class="dashboard-title">AOM Tooling Governance: Decision Log</h1>
             <p class="dashboard-subtitle">Decision router & tracker</p>
+            <div id="lastUpdated" style="color:#001c66; margin-top:8px; font-size:0.9em;">Last updated: —</div>
             
             <div class="summary-stats">
                 <div class="summary-stat">
@@ -771,10 +772,27 @@
                 });
                 
                 console.log(`Successfully loaded ${decisions.length} decisions from CSV`);
-                
+
+                // Show last-updated time from server if available, otherwise use current time
+                try {
+                    const lm = response.headers.get('Last-Modified') || response.headers.get('last-modified');
+                    if (lm) {
+                        const parsed = new Date(lm);
+                        if (!isNaN(parsed)) {
+                            document.getElementById('lastUpdated').textContent = `Last updated at: ${parsed.toLocaleString()}`;
+                        } else {
+                            document.getElementById('lastUpdated').textContent = `Last updated at: ${new Date().toLocaleString()}`;
+                        }
+                    } else {
+                        document.getElementById('lastUpdated').textContent = `Last updated at: ${new Date().toLocaleString()} (fetched)`;
+                    }
+                } catch (err) {
+                    document.getElementById('lastUpdated').textContent = `Last updated at: ${new Date().toLocaleString()}`;
+                }
+
                 populateFilters();
                 applyFilters();
-                
+
                 // Check URL parameters after data is loaded
                 checkURLParametersAndOpenModal();
                 
@@ -889,6 +907,12 @@
                 
                 populateFilters();
                 applyFilters();
+                // For offline fallback/sample data show a local timestamp
+                try {
+                    document.getElementById('lastUpdated').textContent = `Last updated at: ${new Date().toLocaleString()} (local fallback)`;
+                } catch (err) {
+                    // ignore
+                }
             }
         }
 
