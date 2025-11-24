@@ -1372,12 +1372,12 @@
                                 // Badge container style (fixed badge size)
                                 const baseIconStyle = `background: ${labelColor}; color: #ffffff; border-radius: 12px; line-height:1; display:inline-block; padding: 4px 8px;`;
                                 // Inner icon style: larger and bolder for amber only
-                                const innerIconStyle = (q === 'amber') ? 'font-size: 1.4em; font-weight: 900; display:inline-block; line-height:1;' : 'font-size: 1em; font-weight: 700; display:inline-block; line-height:1;';
+                                const innerIconStyle = (q === 'amber') ? 'font-size: 1.2em; font-weight: 900; display:inline-block; line-height:1;' : 'font-size: 1em; font-weight: 700; display:inline-block; line-height:1;';
                                 const iconStyle = baseIconStyle;
                                 return `
                                     <div style="min-width: 200px; padding: 8px 15px; background: #f8fafc; border-radius: 12px; display: flex; align-items: center;">
                                         <div style="font-size: 0.9em; color: #001c66; letter-spacing: 0.5px; font-weight: 700; display:flex; align-items:center;">
-                                            <span style="text-transform: uppercase; color: #001c66;">QUORATE:</span>
+                                            <span style="text-transform: uppercase; color: #001c66;">QUORUM:</span>
                                             ${icon ? `
                                                 <span style="display:inline-flex; align-items:center; justify-content:center; margin-left:8px;">
                                                     <span aria-hidden="true" style="${iconStyle}"><span style="${innerIconStyle}">${icon}</span></span>
