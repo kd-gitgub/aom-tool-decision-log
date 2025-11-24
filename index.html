@@ -1366,11 +1366,13 @@
                                     statusText = 'No';
                                 }
 
+                                // Keep the "QUORATE ?:" label in a fixed color (match Implementation Lead)
+                                // but keep the Yes/Partial/No status text colored by `labelColor`.
                                 return `
                                     <div style="min-width: 200px; padding: 8px 15px; background: #f8fafc; border-radius: 12px; display: flex; align-items: center;">
-                                        <div style="font-size: 0.9em; color: ${labelColor}; letter-spacing: 0.5px; font-weight: 700; display:flex; align-items:center;">
-                                            <span style="text-transform: uppercase;">QUORATE ?:</span>
-                                            ${statusText ? `<span style="text-transform: none; margin-left: 6px;">${statusText}</span>` : ''}
+                                        <div style="font-size: 0.9em; color: #001c66; letter-spacing: 0.5px; font-weight: 700; display:flex; align-items:center;">
+                                            <span style="text-transform: uppercase; color: #001c66;">QUORATE ?:</span>
+                                            ${statusText ? `<span style="text-transform: none; margin-left: 6px; color: ${labelColor};">${statusText}</span>` : ''}
                                         </div>
                                     </div>
                                 `;
