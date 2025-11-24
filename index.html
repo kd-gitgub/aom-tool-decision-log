@@ -753,7 +753,8 @@
                         completed_steps: completedIndices,
                         contact_group: row.contact_group || '',
                         quorate: row.quorate || row['quorate'] || '',
-                            lead_facilitator: row.lead_facilitator || row.rapporteur || '',
+                            // use `implementation_lead` column from CSV (fallback to rapporteur)
+                            lead_facilitator: row.implementation_lead || row.rapporteur || '',
                             rapporteur: row.rapporteur || '',
                             decision_motivation: motivationItems  // Add motivation field
                     };
@@ -1340,7 +1341,7 @@
                         <div style="display: flex; flex-direction: column; gap: 20px;">
                             ${decision.lead_facilitator || decision.rapporteur || decision.contact_group ? `
                             <div style="min-width: 200px; padding: 20px; background: #f8fafc; border-radius: 12px;">
-                                <div style="font-size: 0.9em; color: #001c66; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700;">Lead Facilitator</div>
+                                <div style="font-size: 0.9em; color: #001c66; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700;">Implementation Lead</div>
                                 <div style="font-size: 0.95em; color: ${decision.lead_facilitator || decision.rapporteur ? '#001c66' : '#001c66'}; font-style: ${decision.lead_facilitator || decision.rapporteur ? 'normal' : 'italic'};">
                                     ${decision.lead_facilitator || decision.rapporteur || 'Not assigned'}
                                 </div>
