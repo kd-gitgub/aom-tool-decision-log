@@ -1370,13 +1370,17 @@
                                 // Replace the Yes/Partial/No text with a small badge showing an icon
                                 // (tick / exclamation / cross) colored according to quorate (green/amber/red).
                                 const icon = (q === 'green') ? '✔' : (q === 'amber') ? '!' : (q === 'red') ? '✖' : '';
+                                // Make the amber (!) badge more prominent by increasing its font-size
+                                const baseIconStyle = `background: ${labelColor}; color: #ffffff; border-radius: 12px; padding: 4px 8px; font-weight: 700; line-height:1; display:inline-block;`;
+                                const sizeStyle = (q === 'amber') ? 'font-size: 1.2em; padding-top:2px; padding-bottom:2px;' : 'font-size: 0.85em;';
+                                const iconStyle = baseIconStyle + sizeStyle;
                                 return `
                                     <div style="min-width: 200px; padding: 8px 15px; background: #f8fafc; border-radius: 12px; display: flex; align-items: center;">
                                         <div style="font-size: 0.9em; color: #001c66; letter-spacing: 0.5px; font-weight: 700; display:flex; align-items:center;">
                                             <span style="text-transform: uppercase; color: #001c66;">QUORATE:</span>
                                             ${icon ? `
                                                 <span style="display:inline-flex; align-items:center; justify-content:center; margin-left:8px;">
-                                                    <span aria-hidden="true" style="background: ${labelColor}; color: #ffffff; border-radius: 12px; padding: 4px 8px; font-weight: 700; font-size: 0.85em; line-height:1; display:inline-block;">${icon}</span>
+                                                    <span aria-hidden="true" style="${iconStyle}">${icon}</span>
                                                 </span>
                                             ` : ''}
                                         </div>
