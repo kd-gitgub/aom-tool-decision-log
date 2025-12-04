@@ -584,6 +584,98 @@
             font-size: 0.9em;
             opacity: 0.9;
         }
+
+        /* THE WHY button styles */
+        .the-why-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 8px 16px;
+            background: #0079FF;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.85em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 4px rgba(0, 121, 255, 0.2);
+        }
+
+        .the-why-btn:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 121, 255, 0.4);
+        }
+
+        /* The Why modal */
+        .why-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 28, 102, 0.8);
+            z-index: 2000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .why-modal-overlay.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .why-modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            max-width: 700px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+            animation: slideDown 0.3s ease;
+        }
+
+        .why-modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 32px;
+            height: 32px;
+            background: #f1f5f9;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            color: #001c66;
+            font-size: 18px;
+        }
+
+        .why-modal-close:hover {
+            background: #e2e8f0;
+            transform: rotate(90deg);
+        }
+
+        .why-modal-title {
+            font-size: 1.8em;
+            color: #001c66;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .why-modal-body {
+            color: #001c66;
+            font-size: 1em;
+            line-height: 1.6;
+        }
     </style>
 </head>
 <body>
@@ -676,6 +768,17 @@
         
         <!-- Modal Overlay for displaying cards from list view -->
         <div id="modalOverlay" class="modal-overlay"></div>
+        
+        <!-- The Why Modal -->
+        <div id="whyModalOverlay" class="why-modal-overlay">
+            <div class="why-modal-content" onclick="event.stopPropagation()">
+                <button class="why-modal-close" onclick="closeWhyModal()">✕</button>
+                <h2 class="why-modal-title">THE WHY</h2>
+                <div class="why-modal-body" id="whyModalBody">
+                    <!-- Content will be populated here -->
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -1378,8 +1481,9 @@
                     
                     
                     ${(decision.decision_description || decision.decision_material || decision.group_discussion) ? `
-                    <div style="margin-bottom: 30px; padding: 20px; background: #fafafa; border-radius: 12px; border: 1px solid #e2e8f0;">
+                    <div style="margin-bottom: 30px; padding: 20px; background: #fafafa; border-radius: 12px; border: 1px solid #e2e8f0; position: relative;">
                         <div style="font-size: 0.9em; color: #001c66; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700;">Decision Description</div>
+                        <button class="the-why-btn" onclick="event.stopPropagation(); openWhyModal('${decision.decision_id}')">THE WHY</button>
                         ${decision.decision_description ? `
                         <div style="margin-bottom: ${(decision.decision_material || decision.group_discussion) ? '16px' : '0'};">
                             <p style="color: #001c66; font-size: 1em; line-height: 1.6;">${decision.decision_description}</p>
@@ -1539,6 +1643,26 @@
             currentlyOpenModalId = null; // Reset the currently open modal ID
         }
 
+        // Open THE WHY modal
+        function openWhyModal(decisionId) {
+            const decision = decisions.find(d => d.decision_id === decisionId);
+            if (!decision) return;
+            
+            const whyModal = document.getElementById('whyModalOverlay');
+            const whyModalBody = document.getElementById('whyModalBody');
+            
+            // For now, display a blank/placeholder message
+            whyModalBody.innerHTML = '<p style="color: #6b7280; font-style: italic;">Content coming soon...</p>';
+            
+            whyModal.classList.add('active');
+        }
+
+        // Close THE WHY modal
+        function closeWhyModal() {
+            const whyModal = document.getElementById('whyModalOverlay');
+            whyModal.classList.remove('active');
+        }
+
         function setView(view) {
             currentView = view;
             document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
@@ -1635,7 +1759,14 @@
             // Add ESC key listener to close modals and dropdowns
             document.addEventListener('keydown', function(event) {
                 if (event.key === 'Escape' || event.key === 'Esc') {
-                    // Check if modal is open first
+                    // Check if why modal is open first
+                    const whyModal = document.getElementById('whyModalOverlay');
+                    if (whyModal && whyModal.classList.contains('active')) {
+                        closeWhyModal();
+                        return;
+                    }
+                    
+                    // Check if modal is open
                     const modalOverlay = document.getElementById('modalOverlay');
                     if (modalOverlay && modalOverlay.classList.contains('active')) {
                         closeModal();
@@ -1652,6 +1783,14 @@
             
             // Close modal or dropdowns when clicking outside
             document.addEventListener('click', function(event) {
+                const whyModal = document.getElementById('whyModalOverlay');
+                
+                // Close why modal if clicking on the overlay
+                if (whyModal && whyModal.classList.contains('active') && event.target === whyModal) {
+                    closeWhyModal();
+                    return;
+                }
+                
                 const modalOverlay = document.getElementById('modalOverlay');
                 
                 // Close modal if clicking on the overlay itself or modal content
