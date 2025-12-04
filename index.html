@@ -1480,6 +1480,35 @@
                     </div>
                     
                     
+                    <div style="margin-bottom: 30px; padding: 20px; background: rgba(215, 221, 232, 0.5); border-radius: 12px; border: 1px solid #e2e8f0;">
+                        <div style="font-size: 0.9em; color: #001c66; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700;">Why</div>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px;">
+                            ${(() => {
+                                const benefits = [
+                                    'Cost savings',
+                                    'Cross-team collaboration',
+                                    'Data connectivity',
+                                    'Data security',
+                                    'Fewer tool integrations',
+                                    'New analytics capability',
+                                    'Productivity increase',
+                                    'Resilience'
+                                ];
+                                
+                                const selectedBenefits = new Set((decision.decision_motivation || []).map(m => m.toLowerCase()));
+                                
+                                return benefits.map((benefit) => {
+                                    const isSelected = selectedBenefits.has(benefit.toLowerCase());
+                                    return `
+                                        <div style="padding: 8px 12px; background: ${isSelected ? '#0079FF' : 'white'}; border-radius: 6px; border: 2px solid ${isSelected ? '#0079FF' : '#e2e8f0'}; color: ${isSelected ? 'white' : '#9ca3af'}; font-size: 0.85em; line-height: 1.4; font-weight: ${isSelected ? '500' : '400'};">
+                                            ${benefit}
+                                        </div>
+                                    `;
+                                }).join('');
+                            })()}
+                        </div>
+                    </div>
+                    
                     ${(decision.decision_description || decision.decision_material || decision.group_discussion) ? `
                     <div style="margin-bottom: 30px; padding: 20px; background: rgba(215, 221, 232, 0.5); border-radius: 12px; border: 1px solid #e2e8f0;">
                         <div style="font-size: 0.9em; color: #001c66; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700;">Description</div>
@@ -1512,35 +1541,6 @@
                         </div>
                     </div>
                     ` : ''}
-                    
-                    <div style="margin-bottom: 30px; padding: 20px; background: rgba(215, 221, 232, 0.5); border-radius: 12px; border: 1px solid #e2e8f0;">
-                        <div style="font-size: 0.9em; color: #001c66; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700;">Why</div>
-                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px;">
-                            ${(() => {
-                                const benefits = [
-                                    'Cost savings',
-                                    'Cross-team collaborations',
-                                    'Data connectivity',
-                                    'Data security',
-                                    'Fewer tool integrations',
-                                    'New analytics capability',
-                                    'Productivity increase',
-                                    'Resilience'
-                                ];
-                                
-                                const selectedBenefits = new Set((decision.decision_motivation || []).map(m => m.toLowerCase()));
-                                
-                                return benefits.map((benefit) => {
-                                    const isSelected = selectedBenefits.has(benefit.toLowerCase());
-                                    return `
-                                        <div style="padding: 8px 12px; background: ${isSelected ? '#0079FF' : 'white'}; border-radius: 6px; border: 2px solid ${isSelected ? '#0079FF' : '#e2e8f0'}; color: ${isSelected ? 'white' : '#9ca3af'}; font-size: 0.85em; line-height: 1.4; font-weight: ${isSelected ? '500' : '400'};">
-                                            ${benefit}
-                                        </div>
-                                    `;
-                                }).join('');
-                            })()}
-                        </div>
-                    </div>
                     
                     <div style="display: flex; gap: 30px; align-items: flex-start;">
                         <div style="display: flex; flex-direction: column; gap: 20px;">
