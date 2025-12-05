@@ -1553,7 +1553,7 @@
                         <div style="display: flex; flex-direction: column; gap: 20px;">
                             ${decision.lead_facilitator || decision.rapporteur || decision.contact_group ? `
                             <div style="min-width: 200px; padding: 20px; background: #f8fafc; border-radius: 12px;">
-                                <div style="font-size: 0.9em; color: #001c66; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700;">Implementation Co-ordinator</div>
+                                <div style="font-size: 0.9em; color: #001c66; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700;">Implementation Coordinator</div>
                                 <div style="font-size: 0.95em; color: ${decision.lead_facilitator || decision.rapporteur ? '#001c66' : '#001c66'}; font-style: ${decision.lead_facilitator || decision.rapporteur ? 'normal' : 'italic'};">
                                     ${decision.lead_facilitator || decision.rapporteur || 'Not assigned'}
                                 </div>
@@ -1578,7 +1578,7 @@
                                     statusText = 'No';
                                 }
 
-                                // Keep the "QUORATE:" label in a fixed color (match Implementation Co-ordinator)
+                                // Keep the "QUORATE:" label in a fixed color (match Implementation Coordinator)
                                 // Render a small colored badge and make the inner icon larger/bolder for amber
                                 const icon = (q === 'green') ? '✔' : (q === 'amber') ? '!' : (q === 'red') ? '✖' : '';
                                 // Badge container style (fixed badge size)
