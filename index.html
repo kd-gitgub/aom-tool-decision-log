@@ -1754,10 +1754,24 @@
         // Check URL parameters and open corresponding decision modal
         function checkURLParametersAndOpenModal() {
             console.log('Checking URL parameters...');
+            console.log('Current URL:', window.location.href);
+            console.log('Parent URL (if in iframe):', window.parent !== window ? document.referrer : 'Not in iframe');
             
             // Check query parameters first (e.g., ?decision=aom-01)
-            const urlParams = new URLSearchParams(window.location.search);
+            let urlParams = new URLSearchParams(window.location.search);
             let decisionParam = urlParams.get('decision');
+            
+            // If in an iframe (SharePoint), try to get parameters from parent URL
+            if (!decisionParam && window.parent !== window && document.referrer) {
+                try {
+                    const parentUrl = new URL(document.referrer);
+                    urlParams = new URLSearchParams(parentUrl.search);
+                    decisionParam = urlParams.get('decision');
+                    console.log('Checking parent URL (iframe) for parameter:', decisionParam);
+                } catch (e) {
+                    console.log('Could not access parent URL:', e);
+                }
+            }
             
             console.log('Query parameter "decision":', decisionParam);
             
@@ -1767,34 +1781,50 @@
                 console.log('Hash anchor found:', decisionParam);
             }
             
+            // Also check parent hash if in iframe
+            if (!decisionParam && window.parent !== window && document.referrer) {
+                try {
+                    const parentUrl = new URL(document.referrer);
+                    if (parentUrl.hash) {
+                        decisionParam = parentUrl.hash.substring(1);
+                        console.log('Parent hash anchor found:', decisionParam);
+                    }
+                } catch (e) {
+                    console.log('Could not access parent hash:', e);
+                }
+            }
+            
             if (decisionParam) {
                 console.log(`Decision parameter found: ${decisionParam}`);
                 console.log(`Total decisions loaded: ${decisions.length}`);
                 
                 if (decisions.length > 0) {
-                    // Convert parameter to uppercase to match decision IDs (e.g., aom-01 -> AOM-01)
-                    const decisionId = decisionParam.toUpperCase();
-                    console.log(`Looking for decision ID: ${decisionId}`);
+                    // Convert parameter to uppercase for comparison (e.g., aom-01 -> AOM-01)
+                    const searchId = decisionParam.toUpperCase();
+                    console.log(`Looking for decision ID: ${searchId}`);
                     
                     // Log all available decision IDs for debugging
                     console.log('Available decision IDs:', decisions.map(d => d.decision_id));
                     
-                    // Find the decision with matching ID
-                    const decision = decisions.find(d => d.decision_id === decisionId);
+                    // Find the decision with case-insensitive matching
+                    const decision = decisions.find(d => d.decision_id.toUpperCase() === searchId);
                     
                     if (decision) {
                         console.log(`Found decision:`, decision);
-                        // Small delay to ensure DOM is ready
+                        // Longer delay to ensure DOM and filters are fully ready
                         setTimeout(() => {
                             toggleDecisionModal(decision.decision_id);
-                            // Optionally scroll to top of modal
+                            // Scroll to top of modal
                             window.scrollTo({ top: 0, behavior: 'smooth' });
-                        }, 300);
+                        }, 500);
                     } else {
-                        console.log(`Decision ${decisionId} not found in loaded decisions`);
+                        console.log(`Decision ${searchId} not found in loaded decisions`);
+                        console.log('Try using the exact ID format from the CSV, e.g., AOM-01 instead of AOM-001');
                     }
                 } else {
-                    console.log('No decisions loaded yet');
+                    console.log('No decisions loaded yet - will retry');
+                    // Retry after a delay if data isn't loaded yet
+                    setTimeout(checkURLParametersAndOpenModal, 500);
                 }
             } else {
                 console.log('No decision parameter found in URL');
