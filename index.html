@@ -412,6 +412,17 @@
             border: none;
         }
 
+        .detailed-step.in-progress {
+            border-left-color: #ffb020;
+            background: #fffbf0;
+        }
+
+        .detailed-step.in-progress .detailed-step-indicator {
+            background: #ffb020;
+            color: white;
+            border: none;
+        }
+
         .detailed-step-title {
             font-weight: 600;
             color: #001C66;
@@ -870,21 +881,31 @@
                     const stepsRaw = row.steps || '';
                     const stepNames = stepsRaw ? stepsRaw.split('|').map(s => s.trim()) : [];
                     
-                    // Parse completed steps
+                    // Parse completed steps and in-progress steps
                     const completedRaw = row.completed_steps || '';
                     let completedIndices = [];
+                    let inProgressIndices = [];
                     if (completedRaw) {
                         const parts = completedRaw.split(',').map(s => s.trim());
-                        completedIndices = parts.map(part => {
+                        parts.forEach(part => {
                             const num = parseFloat(part);
-                            return Math.floor(num);
-                        }).filter(n => !isNaN(n) && n > 0);
+                            const stepNum = Math.floor(num);
+                            if (!isNaN(stepNum) && stepNum > 0) {
+                                // Check if it's a decimal (e.g., 4.5 means step 4 is in progress)
+                                if (part.includes('.')) {
+                                    inProgressIndices.push(stepNum);
+                                } else {
+                                    completedIndices.push(stepNum);
+                                }
+                            }
+                        });
                     }
                     
                     // Create step objects
                     const stepsArray = stepNames.map((name, idx) => ({
                         name: name,
-                        completed: completedIndices.includes(idx + 1)
+                        completed: completedIndices.includes(idx + 1),
+                        inProgress: inProgressIndices.includes(idx + 1)
                     }));
                     
                     // Parse motivation (pipe-separated)
@@ -1634,11 +1655,21 @@
                             <div class="detailed-steps">
                                 ${decision.steps.map((step, index) => {
                                     const completed = step.completed;
-                                    const active = !completed && decision.steps.slice(0, index).every(s => s.completed);
+                                    const inProgress = step.inProgress;
+                                    const active = !completed && !inProgress && decision.steps.slice(0, index).every(s => s.completed);
+                                    let statusClass = '';
+                                    if (completed) statusClass = 'completed';
+                                    else if (inProgress) statusClass = 'in-progress';
+                                    else if (active) statusClass = 'active';
+                                    
+                                    let indicatorContent = index + 1;
+                                    if (completed) indicatorContent = '✔';
+                                    else if (inProgress) indicatorContent = '...';
+                                    
                                     return `
-                                        <div class="detailed-step ${completed ? 'completed' : ''} ${active ? 'active' : ''}">
+                                        <div class="detailed-step ${statusClass}">
                                             <div class="detailed-step-indicator">
-                                                ${completed ? '✔' : index + 1}
+                                                ${indicatorContent}
                                             </div>
                                             <div class="detailed-step-content">
                                                 <div class="detailed-step-title">${step.name}</div>
