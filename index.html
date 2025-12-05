@@ -1522,32 +1522,10 @@
                     <div style="margin-bottom: 30px; padding: 20px; background: rgba(215, 221, 232, 0.5); border-radius: 12px; border: 1px solid #e2e8f0;">
                         <div style="font-size: 0.9em; color: #001c66; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700;">Description</div>
                         ${decision.decision_description ? `
-                        <div style="margin-bottom: ${(decision.decision_material || decision.group_discussion) ? '16px' : '0'};">
+                        <div style="margin-bottom: 0;">
                             <p style="color: #001c66; font-size: 1em; line-height: 1.6;">${decision.decision_description}</p>
                         </div>
                         ` : ''}
-                        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-                            ${decision.decision_material ? `
-                            <a href="${decision.decision_material}" target="_blank" style="display: inline-block; text-decoration: none;">
-                                <button style="padding: 12px 24px; background: #0079FF; color: white; border: none; border-radius: 8px; font-size: 0.95em; font-weight: 600; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px;">
-                                    Decision material
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M5 12L19 12M19 12L12 5M19 12L12 19"/>
-                                    </svg>
-                                </button>
-                            </a>
-                            ` : ''}
-                            ${decision.group_discussion ? `
-                            <a href="${decision.group_discussion}" target="_blank" style="display: inline-block; text-decoration: none;">
-                                <button style="padding: 12px 24px; background: #444791; color: white; border: none; border-radius: 8px; font-size: 0.95em; font-weight: 600; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px;">
-                                    Decision Group Teams chat
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M5 12L19 12M19 12L12 5M19 12L12 19"/>
-                                    </svg>
-                                </button>
-                            </a>
-                            ` : ''}
-                        </div>
                     </div>
                     ` : ''}
                     
@@ -1670,12 +1648,12 @@
                             <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 25px;">
                                 ${decision.decision_material ? `
                                 <a href="${decision.decision_material}" target="_blank" style="display: block; padding: 12px 20px; background: #8F29FC; color: white; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 0.9em; text-align: center; transition: all 0.2s;">
-                                    Working materials
+                                    Group working materials &rarr;
                                 </a>
                                 ` : ''}
                                 ${decision.group_discussion ? `
                                 <a href="${decision.group_discussion}" target="_blank" style="display: block; padding: 12px 20px; background: #0079FF; color: white; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 0.9em; text-align: center; transition: all 0.2s;">
-                                    Discussion room
+                                    Group discussion room &rarr;
                                 </a>
                                 ` : ''}
                             </div>
