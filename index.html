@@ -856,6 +856,11 @@
                 
                 // Transform parsed data to our format
                 decisions = parseResult.data.map((row, idx) => {
+                    const isRowEmpty = Object.values(row || {}).every(value => {
+                        return value === null || value === undefined || String(value).trim() === '';
+                    });
+                    if (isRowEmpty) return null;
+
                     const rawStatus = row.decision_status || row['decision_status'] || '';
                     
                     // Parse steps (pipe-separated)
@@ -914,7 +919,7 @@
                             rapporteur: row.rapporteur || '',
                             decision_motivation: motivationItems  // Add motivation field
                     };
-                }).filter(d => d.decision_name && d.decision_name !== '');
+                }).filter(d => d && d.decision_name && d.decision_name.trim() !== '');
                 
                 // Sort decisions by decision_id in ascending order (natural alphanumeric sort)
                 decisions.sort((a, b) => {
