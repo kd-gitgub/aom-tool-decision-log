@@ -1836,9 +1836,21 @@
             // Immediate diagnostic - check if URL has parameters
             const urlParams = new URLSearchParams(window.location.search);
             const decisionParam = urlParams.get('decision');
-            if (decisionParam) {
-                console.log('IMMEDIATE CHECK: URL has decision parameter:', decisionParam);
-                alert('URL parameter detected: ' + decisionParam);
+            const hashParam = window.location.hash ? window.location.hash.substring(1) : null;
+            
+            console.log('=== URL PARAMETER DEBUGGING ===');
+            console.log('Full URL:', window.location.href);
+            console.log('Search params:', window.location.search);
+            console.log('Hash:', window.location.hash);
+            console.log('Decision param from query:', decisionParam);
+            console.log('Decision param from hash:', hashParam);
+            console.log('In iframe?', window.parent !== window);
+            console.log('Document referrer:', document.referrer);
+            
+            if (decisionParam || hashParam) {
+                const param = decisionParam || hashParam;
+                console.log('IMMEDIATE CHECK: URL has decision parameter:', param);
+                alert('URL parameter detected: ' + param + '\nWill attempt to open modal after data loads.');
             }
             
             loadDecisionsFromCSV();
@@ -1915,6 +1927,23 @@
                 setTimeout(function() { clearInterval(checkAndOpen); }, 10000);
             }
         });
+        
+        // Manual testing function - call from console: openDecisionManually('AOM-01')
+        window.openDecisionManually = function(decisionId) {
+            console.log('Manual open requested for:', decisionId);
+            if (decisions.length === 0) {
+                console.error('No decisions loaded yet. Wait a moment and try again.');
+                return;
+            }
+            const decision = decisions.find(d => d.decision_id.toUpperCase() === decisionId.toUpperCase());
+            if (decision) {
+                toggleDecisionModal(decision.decision_id);
+                console.log('Modal opened for:', decision.decision_id);
+            } else {
+                console.error('Decision not found:', decisionId);
+                console.log('Available IDs:', decisions.map(d => d.decision_id));
+            }
+        };
     </script>
 </body>
 </html>
